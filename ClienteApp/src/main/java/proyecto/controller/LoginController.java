@@ -1,30 +1,26 @@
-package cliente.controller;
+package proyecto.controller;
 
 
 import java.io.*;
 import java.net.Socket;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
-import cliente.Aplicacion;
+import proyecto.Aplicacion;
+import proyecto.modelo.Administrador;
+import proyecto.modelo.GestorEvento;
+import proyecto.modelo.Trabajador;
+import proyecto.modelo.Usuario;
+import proyecto.servicio.LoginServicio;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.layout.BorderPane;
-import javafx.stage.Stage;
 
 public class LoginController implements Initializable{
 
@@ -95,37 +91,30 @@ public class LoginController implements Initializable{
 	}
 
 
+	@FXML
+	private void inicioSesion() {
+		String usuario = txtUsuarioIngreso.getText();
+		String contrasena = txtContrasenaIngreso.getText();
 
-	void inicioSesion() throws IOException {
+		LoginServicio loginServicio = new LoginServicio();
+		Usuario user = loginServicio.iniciarSesion(usuario, contrasena);
 
-		String usuario = txtUsuarioIngreso.getText().toString();
-		String clave = txtContrasenaIngreso.getText().toString();
-
-		String host = "localhost"; // Cambia si el servidor está en otra IP
-		int puerto = 5000;
-
-		try (Socket socket = new Socket(host, puerto);
-			 PrintWriter salida = new PrintWriter(socket.getOutputStream(), true);
-			 BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-
-			// Enviar datos al servidor
-			salida.println(usuario + "|" + clave);
-
-			// Leer respuesta del servidor
-			String respuesta = entrada.readLine();
-			if ("OK".equals(respuesta)) {
-				System.out.println("Inicio de sesión exitoso.");
+		if (user != null) {
+			if (user instanceof Administrador) {
 				mostrarMensajeInformacion("Bienvenido administrador");
 				aplicacion.showAdministrador();
-			} else {
-				System.out.println("Usuario o contraseña incorrectos.");
+			} else if (user instanceof GestorEvento) {
+				mostrarMensajeInformacion("Bienvenido gestor");
+				aplicacion.showGestor();
+			} else if (user instanceof Trabajador) {
+				mostrarMensajeInformacion("Bienvenido trabajador");
+				aplicacion.showTrabajador();
 			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
+		} else {
+			mostrarMensajeError("Credenciales incorrectas");
 		}
-
 	}
+
 
 
 	private void mostrarMensajeInformacion(String mensaje) {

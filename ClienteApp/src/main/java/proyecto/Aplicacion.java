@@ -1,7 +1,6 @@
-package cliente;
+package proyecto;
 
-import cliente.controller.AdministradorController;
-import cliente.controller.LoginController;
+import proyecto.controller.LoginController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -40,7 +39,7 @@ public class Aplicacion extends Application {
         try {
 
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/cliente/view/LoginView.fxml"));
+            loader.setLocation(getClass().getResource("/proyecto/view/LoginView.fxml"));
 
             BorderPane rootLayout = (BorderPane) loader.load();
 
@@ -62,7 +61,7 @@ public class Aplicacion extends Application {
         try {
 
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/cliente/view/AdminView.fxml"));
+            loader.setLocation(getClass().getResource("/proyecto/view/AdminView.fxml"));
             BorderPane rootLayout = (BorderPane) loader.load();
 
             Scene scene = new Scene(rootLayout);
@@ -79,4 +78,10 @@ public class Aplicacion extends Application {
 
     }
 
+    public void showGestor() {
+    }
+
+    public void showTrabajador() {
+
+    }
 }

@@ -1,12 +1,12 @@
-module cliente.clienteapp {
+module proyecto.clienteapp {
     requires javafx.controls;
     requires javafx.fxml;
 
     requires com.dlsc.formsfx;
     requires java.sql;
 
-    opens cliente to javafx.fxml;
-    exports cliente;
-    exports cliente.controller;
-    opens cliente.controller to javafx.fxml;
+    opens proyecto to javafx.fxml;
+    exports proyecto;
+    exports proyecto.controller;
+    opens proyecto.controller to javafx.fxml;
 }
