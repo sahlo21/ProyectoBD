@@ -1,9 +1,12 @@
 package proyecto.controller;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.util.StringConverter;
 import proyecto.Aplicacion;
 import proyecto.modelo.Cargo;
 import proyecto.modelo.GestorEvento;
 import proyecto.modelo.Trabajador;
+import proyecto.servicio.CargoServicio;
 import proyecto.servicio.TrabajadorServicio;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,6 +21,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -182,20 +186,20 @@ public class AdministradorController implements Initializable {
         String nombre = txtNombreTrabajador.getText().trim();
         String usuario = txtUsuarioTrabajador.getText().trim();
         String contrasena = txtContrasenaTrabajador.getText().trim();
-        int cedula = Integer.parseInt(txtCedulaGestor.getText().trim());
-        Cargo cargo = comboBoxCargo.getValue();
+        int cedula = Integer.parseInt(txtCedulaTrabajador.getText().trim());
+        Cargo cargo = new Cargo(1, 1, 123123);
         int precioEvento = Integer.parseInt(txtPrecioEvento.getText().trim());  // Si tienes un campo para eso
 
         ArrayList<String> telefonos = new ArrayList<>();
         telefonos.add(txtTlf1Trabajador.getText().trim());
         telefonos.add(txtTlf2Trabajador.getText().trim());
 
-        Trabajador trabajador = new Trabajador(cedula, nombre, usuario, contrasena, telefonos, cargo, precioEvento);
+        Trabajador trabajador = new Trabajador(cedula, nombre, usuario, contrasena, telefonos, cargo);
 
         TrabajadorServicio servicio = new TrabajadorServicio();
         Trabajador trabajadorAUx = servicio.crearTrabajador(trabajador);
         if (trabajadorAUx != null) {
-
+            System.out.println("taxu"+trabajadorAUx);
             listaTrabajadoresData.add(trabajadorAUx);
             limpiarCamposTrabajador();
             mostrarMensaje("Notificacion Vendedor", null, "El trabajador se ha creado con exito",
@@ -218,11 +222,11 @@ public class AdministradorController implements Initializable {
         if (txtContrasenaTrabajador.getText().trim().isEmpty()) {
             errores.append("- La contraseña no puede estar vacía.\n");
         }
-        if (txtCedulaGestor.getText().trim().isEmpty()) {
+        if (txtCedulaTrabajador.getText().trim().isEmpty()) {
             errores.append("- La cédula no puede estar vacía.\n");
         } else {
             try {
-                Integer.parseInt(txtCedulaGestor.getText().trim());
+                Integer.parseInt(txtCedulaTrabajador.getText().trim());
             } catch (NumberFormatException e) {
                 errores.append("- La cédula debe ser numérica.\n");
             }
@@ -323,16 +327,35 @@ public class AdministradorController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        comboBoxCargo.setItems(FXCollections.observableArrayList(Cargo.values()));
+        //comboBoxCargo.setItems(FXCollections.observableArrayList(Cargo.values()));
+        List<Cargo> cargos = CargoServicio.obtenerCargos();
+        comboBoxCargo.setItems(FXCollections.observableArrayList(cargos));
 
+        comboBoxCargo.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Cargo cargo) {
+                return cargo != null ? "Cargo " + cargo.getName() + " - $" + cargo.getPrecio_evento() : "";
+            }
+
+            @Override
+            public Cargo fromString(String s) {
+                return comboBoxCargo.getItems().stream()
+                        .filter(c -> s.contains(String.valueOf(c.getName())))
+                        .findFirst()
+                        .orElse(null);
+            }
+        });
         lblFecha.setText(lblFecha.getText() + LocalDate.now(Clock.systemDefaultZone()));
         lblHora.setText(lblHora.getText() + LocalTime.now());
 
         columnNombreTrabajador.setCellValueFactory(new PropertyValueFactory<Trabajador, String>("nombre"));
-        columnTelefonoPrincipal.setCellValueFactory(new PropertyValueFactory<Trabajador, String>("apellidos"));
         columnCedulaTrabajador.setCellValueFactory(new PropertyValueFactory<Trabajador, String>("cedula"));
-        columnUsuarioTrabajador.setCellValueFactory(new PropertyValueFactory<Trabajador, String>("telefono principal"));
-        columnCargo.setCellValueFactory(new PropertyValueFactory<Trabajador, Cargo>("cargo"));
+        columnTelefonoPrincipal.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getTelefono().isEmpty() ? "" : cellData.getValue().getTelefono().get(0))
+        );
+        columnUsuarioTrabajador.setCellValueFactory(new PropertyValueFactory<>("usuario")); // si quieres el campo 'usuario'
+
+        tableTrabajador.setItems(listaTrabajadoresData); // AÑADE ESTO en initialize()
 
         tableTrabajador.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
 

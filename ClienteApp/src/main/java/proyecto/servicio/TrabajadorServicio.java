@@ -45,10 +45,17 @@ public class TrabajadorServicio {
             salida.writeObject(Comando.CREAR_TRABAJADOR);
             salida.writeObject(trabajador);
 
-            return (Trabajador) entrada.readObject();
+            Object respuesta = entrada.readObject();
+            if (respuesta instanceof Trabajador) {
+                return (Trabajador) respuesta;
+            } else {
+                return null;
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
+
 }

@@ -1,5 +1,6 @@
 package proyecto;
 
+import proyecto.controller.AdministradorController;
 import proyecto.controller.LoginController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -63,7 +64,8 @@ public class Aplicacion extends Application {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/proyecto/view/AdminView.fxml"));
             BorderPane rootLayout = (BorderPane) loader.load();
-
+            AdministradorController controller = loader.getController();
+            controller.setAplicacion(this);
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
             primaryStage.setTitle("Portal administrativo");

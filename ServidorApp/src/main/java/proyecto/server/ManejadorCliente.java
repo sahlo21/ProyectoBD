@@ -1,8 +1,10 @@
 package proyecto.server;
 
 
+import proyecto.dao.CargoDAO;
 import proyecto.dao.LoginDAO;
 import proyecto.dao.TrabajadorDAO;
+import proyecto.modelo.Cargo;
 import proyecto.modelo.Trabajador;
 import proyecto.modelo.Usuario;
 
@@ -21,8 +23,9 @@ public class ManejadorCliente extends Thread {
 
     public void run() {
         try (
-            ObjectInputStream entrada = new ObjectInputStream(socket.getInputStream());
-            ObjectOutputStream salida = new ObjectOutputStream(socket.getOutputStream())
+                ObjectOutputStream salida = new ObjectOutputStream(socket.getOutputStream());
+                ObjectInputStream entrada = new ObjectInputStream(socket.getInputStream());
+
         ) {
             String comando = (String) entrada.readObject();
             ArrayList<String> Telefono = new ArrayList<>();
@@ -30,9 +33,20 @@ public class ManejadorCliente extends Thread {
             if (Comando.CREAR_TRABAJADOR.equals(comando)) {
                 Trabajador trabajador = (Trabajador) entrada.readObject();
                 TrabajadorDAO dao = new TrabajadorDAO();
+                System.out.println(trabajador.toString());
                 boolean exito = dao.crearTrabajador(trabajador);
-                salida.writeObject(exito ? "OK" : "ERROR");
+
+                if (exito) {
+                    System.out.println("exito");
+                    // Puedes devolver el mismo objeto recibido o uno actualizado desde la DB (con ID, por ejemplo)
+                    salida.writeObject(trabajador);
+                } else {
+                    System.out.println("no exito");
+
+                    salida.writeObject(null); // para indicar fallo
+                }
             }
+
             if (Comando.OBTENER_TRABAJADORES.equals(comando)) {
                 TrabajadorDAO dao = new TrabajadorDAO();
                 List<Trabajador> trabajadores = dao.obtenerTrabajadores();
@@ -51,6 +65,11 @@ public class ManejadorCliente extends Thread {
                 } else {
                     salida.writeObject("ERROR");
                 }
+            }
+            if (Comando.OBTENER_CARGOS.equals(comando)) {
+                CargoDAO dao = new CargoDAO();
+                List<Cargo> cargos = dao.obtenerCargos();
+                salida.writeObject(cargos);
             }
 
 
