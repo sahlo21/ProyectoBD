@@ -5,6 +5,7 @@ import javafx.util.StringConverter;
 import proyecto.Aplicacion;
 import proyecto.modelo.Cargo;
 import proyecto.modelo.GestorEvento;
+import proyecto.modelo.Producto;
 import proyecto.modelo.Trabajador;
 import proyecto.servicio.CargoServicio;
 import proyecto.servicio.TrabajadorServicio;
@@ -28,6 +29,7 @@ import java.util.ResourceBundle;
 public class AdministradorController implements Initializable {
 
     ObservableList<Trabajador> listaTrabajadoresData = FXCollections.observableArrayList();
+    ObservableList<Producto> listaProductosData = FXCollections.observableArrayList();
     Trabajador trabajadorSeleccionado;
     @FXML
     private ResourceBundle resources;
@@ -210,6 +212,155 @@ public class AdministradorController implements Initializable {
 
         }
     }
+
+    /**
+     * Métodos de Producto listos para implementar (a la espera de interfaz)
+     *
+     *  private void agregarProducto() {
+     *     // Validar los datos antes de crear el producto
+     *     String error = validarCamposProducto();
+     *     if (!error.isEmpty()) {
+     *         mostrarAlerta("Error en campos", error);
+     *         return;
+     *     }
+     *
+     *     int id = Integer.parseInt(txtIdProducto.getText().trim());
+     *     String nombre = txtNombreProducto.getText().trim();
+     *     String descripcion = txtDescripcionProducto.getText().trim();
+     *     double precio = Double.parseDouble(txtPrecioProducto.getText().trim());
+     *     int cantidad = Integer.parseInt(txtCantidadProducto.getText().trim());
+     *
+     *     Producto producto = new Producto(id, nombre, descripcion, precio, cantidad);
+     *
+     *     ProductoServicio servicio = new ProductoServicio();
+     *     Producto productoAux = servicio.crearProducto(producto);
+     *
+     *     if (productoAux != null) {
+     *         listaProductosData.add(productoAux);
+     *         limpiarCamposProducto();
+     *         mostrarMensaje("Notificación Producto", null, "El producto se ha creado con éxito",
+     *                 Alert.AlertType.INFORMATION);
+     *     } else {
+     *         mostrarMensajeError("El producto con ID: " + id + " ya se encuentra registrado.");
+     *     }
+     * }
+     *
+     * private String validarCamposProducto() {
+     *     StringBuilder errores = new StringBuilder();
+     *
+     *     if (txtIdProducto.getText().trim().isEmpty()) {
+     *         errores.append("- El ID no puede estar vacío.\n");
+     *     } else {
+     *         try {
+     *             Integer.parseInt(txtIdProducto.getText().trim());
+     *         } catch (NumberFormatException e) {
+     *             errores.append("- El ID debe ser numérico.\n");
+     *         }
+     *     }
+     *
+     *     if (txtNombreProducto.getText().trim().isEmpty()) {
+     *         errores.append("- El nombre no puede estar vacío.\n");
+     *     }
+     *
+     *     if (txtDescripcionProducto.getText().trim().isEmpty()) {
+     *         errores.append("- La descripción no puede estar vacía.\n");
+     *     }
+     *
+     *     if (txtPrecioProducto.getText().trim().isEmpty()) {
+     *         errores.append("- El precio no puede estar vacío.\n");
+     *     } else {
+     *         try {
+     *             Double.parseDouble(txtPrecioProducto.getText().trim());
+     *         } catch (NumberFormatException e) {
+     *             errores.append("- El precio debe ser numérico.\n");
+     *         }
+     *     }
+     *
+     *     if (txtCantidadProducto.getText().trim().isEmpty()) {
+     *         errores.append("- La cantidad no puede estar vacía.\n");
+     *     } else {
+     *         try {
+     *             Integer.parseInt(txtCantidadProducto.getText().trim());
+     *         } catch (NumberFormatException e) {
+     *             errores.append("- La cantidad debe ser numérica.\n");
+     *         }
+     *     }
+     *
+     *     return errores.toString();
+     * }
+     *
+     *private void limpiarCamposProducto() {
+     *     txtIdProducto.clear();
+     *     txtNombreProducto.clear();
+     *     txtDescripcionProducto.clear();
+     *     txtPrecioProducto.clear();
+     *     txtCantidadProducto.clear();
+     * }
+     *
+     *private void obtenerProductos() {
+     *     ProductoServicio servicio = new ProductoServicio();
+     *     List<Producto> productos = servicio.obtenerProductos();
+     *
+     *     if (productos != null) {
+     *         listaProductosData.clear();
+     *         listaProductosData.addAll(productos);
+     *     } else {
+     *         mostrarMensajeError("Error al obtener la lista de productos");
+     *     }
+     * }
+     *
+     * private void actualizarProducto() {
+     *     String error = validarCamposProducto();
+     *     if (!error.isEmpty()) {
+     *         mostrarAlerta("Error en campos", error);
+     *         return;
+     *     }
+     *
+     *     int id = Integer.parseInt(txtIdProducto.getText().trim());
+     *     String nombre = txtNombreProducto.getText().trim();
+     *     String descripcion = txtDescripcionProducto.getText().trim();
+     *     double precio = Double.parseDouble(txtPrecioProducto.getText().trim());
+     *     int cantidad = Integer.parseInt(txtCantidadProducto.getText().trim());
+     *
+     *     Producto producto = new Producto(id, nombre, descripcion, precio, cantidad);
+     *
+     *     ProductoServicio servicio = new ProductoServicio();
+     *     boolean exito = servicio.actualizarProducto(producto);
+     *
+     *     if (exito) {
+     *         mostrarMensaje("Notificación", null, "Producto actualizado con éxito", Alert.AlertType.INFORMATION);
+     *         obtenerProductos();
+     *         limpiarCamposProducto();
+     *     } else {
+     *         mostrarMensajeError("No se pudo actualizar el producto con ID: " + id);
+     *     }
+     * }
+     *
+     * private void eliminarProducto() {
+     *     Producto productoSeleccionado = tablaProductos.getSelectionModel().getSelectedItem();
+     *
+     *     if (productoSeleccionado == null) {
+     *         mostrarMensajeError("Debe seleccionar un producto de la tabla para eliminar.");
+     *         return;
+     *     }
+     *
+     *     int id = productoSeleccionado.getId();
+     *
+     *     ProductoServicio servicio = new ProductoServicio();
+     *     boolean exito = servicio.eliminarProducto(id);
+     *
+     *     if (exito) {
+     *         mostrarMensaje("Notificación", null, "Producto eliminado con éxito", Alert.AlertType.INFORMATION);
+     *         obtenerProductos();
+     *         limpiarCamposProducto();
+     *     } else {
+     *         mostrarMensajeError("No se pudo eliminar el producto con ID: " + id);
+     *     }
+     * }
+     *
+     */
+
+
     private String validarCamposTrabajador() {
         StringBuilder errores = new StringBuilder();
 

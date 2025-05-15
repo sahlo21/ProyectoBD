@@ -71,8 +71,36 @@ public class ManejadorCliente extends Thread {
                 List<Cargo> cargos = dao.obtenerCargos();
                 salida.writeObject(cargos);
             }
+            if (Comando.CREAR_PRODUCTO.equals(comando)) {
+                Producto producto = (Producto) entrada.readObject();
+                ProductoDAO dao = new ProductoDAO();
+                boolean exito = dao.crearProducto(producto);
+                if (exito) {
+                    salida.writeObject(producto);
+                } else {
+                    salida.writeObject(null);
+                }
+            }
 
+            if (Comando.OBTENER_PRODUCTOS.equals(comando)) {
+                ProductoDAO dao = new ProductoDAO();
+                List<Producto> productos = dao.obtenerProductos();
+                salida.writeObject(productos);
+            }
 
+            if (Comando.ACTUALIZAR_PRODUCTO.equals(comando)) {
+                Producto producto = (Producto) entrada.readObject();
+                ProductoDAO dao = new ProductoDAO();
+                boolean exito = dao.actualizarProducto(producto);
+                salida.writeObject(exito);
+            }
+
+            if (Comando.ELIMINAR_PRODUCTO.equals(comando)) {
+                int id = (int) entrada.readObject();
+                ProductoDAO dao = new ProductoDAO();
+                boolean exito = dao.eliminarProducto(id);
+                salida.writeObject(exito);
+            }
 
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
