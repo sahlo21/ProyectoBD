@@ -3,8 +3,10 @@ package proyecto.server;
 
 import proyecto.dao.CargoDAO;
 import proyecto.dao.LoginDAO;
+import proyecto.dao.ProductoDAO;
 import proyecto.dao.TrabajadorDAO;
 import proyecto.modelo.Cargo;
+import proyecto.modelo.Producto;
 import proyecto.modelo.Trabajador;
 import proyecto.modelo.Usuario;
 

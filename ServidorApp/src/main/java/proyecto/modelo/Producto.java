@@ -1,3 +1,8 @@
+package proyecto.modelo;
+
+import java.io.Serializable;
+import java.util.Objects;
+
 public class Producto implements Serializable {
 
     int id;

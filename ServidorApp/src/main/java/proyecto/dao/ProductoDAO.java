@@ -1,3 +1,9 @@
+package proyecto.dao;
+
+import proyecto.interfaces.IProductoDAO;
+import proyecto.modelo.Producto;
+import proyecto.server.ConexionBD;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,5 +92,30 @@ public class ProductoDAO implements IProductoDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public void crear(Producto producto) {
+
+    }
+
+    @Override
+    public Producto buscarPorId(int id) {
+        return null;
+    }
+
+    @Override
+    public List<Producto> listarTodos() {
+        return List.of();
+    }
+
+    @Override
+    public void actualizar(Producto producto) {
+
+    }
+
+    @Override
+    public void eliminar(int id) {
+
     }
 }
