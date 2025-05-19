@@ -3,11 +3,9 @@ package proyecto.controller;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.util.StringConverter;
 import proyecto.Aplicacion;
-import proyecto.modelo.Cargo;
-import proyecto.modelo.GestorEvento;
-import proyecto.modelo.Producto;
-import proyecto.modelo.Trabajador;
+import proyecto.modelo.*;
 import proyecto.servicio.CargoServicio;
+import proyecto.servicio.ProveedorServicio;
 import proyecto.servicio.TrabajadorServicio;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -30,6 +28,7 @@ public class AdministradorController implements Initializable {
 
     ObservableList<Trabajador> listaTrabajadoresData = FXCollections.observableArrayList();
     ObservableList<Producto> listaProductosData = FXCollections.observableArrayList();
+    ObservableList<Proveedor> listaProveedoresData = FXCollections.observableArrayList();
     Trabajador trabajadorSeleccionado;
     @FXML
     private ResourceBundle resources;
@@ -148,7 +147,6 @@ public class AdministradorController implements Initializable {
             mostrarMensajeError(e.getMessage());
         }
     }
-
 
 
     @FXML
@@ -360,6 +358,104 @@ public class AdministradorController implements Initializable {
      *
      */
 
+
+    /**
+     * Métodos de proveedor listos para implementar, a la espera de los events y fields
+     * private void agregarProveedor() {
+     *         String id = txtIdProveedor.getText().trim();
+     *         String nombre = txtNombreProveedor.getText().trim();
+     *         String numeroContacto = txtNumeroProveedor.getText().trim();
+     *
+     *         if (id.isEmpty() || nombre.isEmpty() || numeroContacto.isEmpty()) {
+     *             mostrarAlerta("Campos vacíos", "Debe completar todos los campos para agregar un proveedor.");
+     *             return;
+     *         }
+     *
+     *         Proveedor proveedor = new Proveedor(id, nombre, numeroContacto);
+     *
+     *         boolean exito = ProveedorServicio.crearProveedor(proveedor);
+     *         if (exito) {
+     *             listaProveedoresData.add(proveedor);
+     *             limpiarCamposProveedor();
+     *             mostrarMensaje("Proveedor creado", null, "El proveedor se ha registrado con éxito.",
+     *                     Alert.AlertType.INFORMATION);
+     *         } else {
+     *             mostrarMensajeError("No se pudo registrar el proveedor. Puede que ya exista.");
+     *         }
+     *     }
+     *
+     *     private void actualizarProveedor() {
+     *         String id = txtIdProveedor.getText().trim();
+     *         String nombre = txtNombreProveedor.getText().trim();
+     *         String numeroContacto = txtNumeroProveedor.getText().trim();
+     *
+     *         if (id.isEmpty() || nombre.isEmpty() || numeroContacto.isEmpty()) {
+     *             mostrarAlerta("Campos vacíos", "Debe completar todos los campos para actualizar un proveedor.");
+     *             return;
+     *         }
+     *
+     *         Proveedor proveedor = new Proveedor(id, nombre, numeroContacto);
+     *
+     *         boolean exito = ProveedorServicio.actualizarProveedor(proveedor);
+     *         if (exito) {
+     *             mostrarMensaje("Proveedor actualizado", null, "Proveedor actualizado correctamente.",
+     *                     Alert.AlertType.INFORMATION);
+     *             cargarProveedoresEnTabla();  // Vuelve a cargar la lista en la tabla si la usas
+     *         } else {
+     *             mostrarMensajeError("No se pudo actualizar el proveedor.");
+     *         }
+     *     }
+     *
+     *     private void eliminarProveedor() {
+     *         String id = txtIdProveedor.getText().trim();
+     *
+     *         if (id.isEmpty()) {
+     *             mostrarAlerta("Campo ID vacío", "Debe ingresar el ID del proveedor que desea eliminar.");
+     *             return;
+     *         }
+     *
+     *         boolean exito = ProveedorServicio.eliminarProveedor(id);
+     *         if (exito) {
+     *             listaProveedoresData.removeIf(p -> p.getId().equals(id));
+     *             limpiarCamposProveedor();
+     *             mostrarMensaje("Proveedor eliminado", null, "Proveedor eliminado exitosamente.",
+     *                     Alert.AlertType.INFORMATION);
+     *         } else {
+     *             mostrarMensajeError("No se pudo eliminar el proveedor. Verifique si el ID es correcto.");
+     *         }
+     *     }
+     *
+     *     private void buscarProveedor() {
+     *         String id = txtIdProveedor.getText().trim();
+     *
+     *         if (id.isEmpty()) {
+     *             mostrarAlerta("Campo ID vacío", "Debe ingresar el ID del proveedor que desea buscar.");
+     *             return;
+     *         }
+     *
+     *         Proveedor proveedor = ProveedorServicio.buscarProveedor(id);
+     *         if (proveedor != null) {
+     *             txtNombreProveedor.setText(proveedor.getNombre());
+     *             txtNumeroProveedor.setText(proveedor.getNumeroContacto());
+     *             mostrarMensaje("Proveedor encontrado", null, "Proveedor cargado correctamente.",
+     *                     Alert.AlertType.INFORMATION);
+     *         } else {
+     *             mostrarMensajeError("No se encontró el proveedor con ID: " + id);
+     *         }
+     *     }
+     *
+     *     private void cargarProveedoresEnTabla() {
+     *         List<Proveedor> proveedores = ProveedorServicio.obtenerProveedores();
+     *         listaProveedoresData.clear();
+     *         listaProveedoresData.addAll(proveedores);
+     *     }
+     *
+     *     private void limpiarCamposProveedor() {
+     *         txtIdProveedor.clear();
+     *         txtNombreProveedor.clear();
+     *         txtNumeroProveedor.clear();
+     *     }
+     */
 
     private String validarCamposTrabajador() {
         StringBuilder errores = new StringBuilder();
