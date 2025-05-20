@@ -1,0 +1,306 @@
+package proyecto.controller;
+
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.StringConverter;
+import proyecto.modelo.Cargo;
+import proyecto.modelo.Producto;
+import proyecto.modelo.Proveedor;
+import proyecto.modelo.Trabajador;
+import proyecto.servicio.CargoServicio;
+import proyecto.servicio.ProductoServicio;
+import java.net.URL;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.ResourceBundle;
+
+public class GestionadorController implements Initializable {
+
+    ObservableList<Producto> listaProductosData = FXCollections.observableArrayList();
+    ObservableList<Proveedor> listaProveedoresData = FXCollections.observableArrayList();
+    @FXML
+    private ResourceBundle resources;
+
+    @FXML
+    private URL location;
+
+    @FXML
+    private Button btnCerrarSesion2;
+
+    @FXML
+    private TableColumn<Producto, String> columnAlquilerProducto;
+
+    @FXML
+    private TableColumn<Producto, String> columnCantidadProducto;
+
+    @FXML
+    private TableColumn<Proveedor, String> columnCedulaProveedor;
+
+    @FXML
+    private TableColumn<Producto, String> columnDescripcionProducto;
+
+    @FXML
+    private TableColumn<Producto, String> columnIdProducto;
+
+    @FXML
+    private TableColumn<Producto, String> columnNombreProducto;
+
+    @FXML
+    private TableColumn<Proveedor, String> columnNombreProveedor;
+
+    @FXML
+    private TableColumn<Producto, String> columnPrecioProducto;
+
+    @FXML
+    private TableColumn<Proveedor, String> columnTelefonoProveedor;
+
+    @FXML
+    private Label lblFecha2;
+
+    @FXML
+    private Label lblHora2;
+
+    @FXML
+    private Label lblUserAdmin;
+
+    @FXML
+    private TableView<Producto> tableProdcutos;
+
+    @FXML
+    private TableView<Proveedor> tableProveedor;
+
+    @FXML
+    private TextField txtCantidadProducto;
+
+    @FXML
+    private TextField txtCedulaProveedor;
+
+    @FXML
+    private TextField txtDescripProducto;
+
+    @FXML
+    private TextField txtIdProducto;
+
+    @FXML
+    private TextField txtNombreProducto;
+
+    @FXML
+    private TextField txtNombreProveedor;
+
+    @FXML
+    private TextField txtPrecioAlquilerProducto;
+
+    @FXML
+    private TextField txtPrecioProducto;
+
+    @FXML
+    private TextField txtTelefono;
+
+    @FXML
+    void actualizarPorducto(ActionEvent event) {
+
+    }
+
+    @FXML
+    void actualizarProveedor(ActionEvent event) {
+
+    }
+
+    @FXML
+    void agregarProducto(ActionEvent event) {
+        try {
+            agregarProducto();
+        } catch (Exception e) {
+            mostrarMensajeError(e.getMessage());
+        }
+    }
+
+    @FXML
+    void agregarProveedor(ActionEvent event) {
+
+    }
+
+    @FXML
+    void cerrarSesionAction2(ActionEvent event) {
+
+    }
+
+    @FXML
+    void eliminarProducto(ActionEvent event) {
+
+    }
+
+    @FXML
+    void eliminarTrabajador(ActionEvent event) {
+
+    }
+
+    @FXML
+    void nuevoProducto(ActionEvent event) {
+
+    }
+
+    @FXML
+    void nuevoProveedor(ActionEvent event) {
+
+    }
+
+    public void initialize(URL location, ResourceBundle resources) {
+        //comboBoxCargo.setItems(FXCollections.observableArrayList(Cargo.values()));
+        List<Cargo> cargos = CargoServicio.obtenerCargos();
+        comboBoxCargo.setItems(FXCollections.observableArrayList(cargos));
+
+        comboBoxCargo.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Cargo cargo) {
+                return cargo != null ? "Cargo " + cargo.getName() + " - $" + cargo.getPrecio_evento() : "";
+            }
+
+            @Override
+            public Cargo fromString(String s) {
+                return comboBoxCargo.getItems().stream()
+                        .filter(c -> s.contains(String.valueOf(c.getName())))
+                        .findFirst()
+                        .orElse(null);
+            }
+        });
+        lblFecha.setText(lblFecha.getText() + LocalDate.now(Clock.systemDefaultZone()));
+        lblHora.setText(lblHora.getText() + LocalTime.now());
+
+        columnNombreTrabajador.setCellValueFactory(new PropertyValueFactory<Trabajador, String>("nombre"));
+        columnCedulaTrabajador.setCellValueFactory(new PropertyValueFactory<Trabajador, String>("cedula"));
+        columnTelefonoPrincipal.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getTelefono().isEmpty() ? "" : cellData.getValue().getTelefono().get(0))
+        );
+        columnUsuarioTrabajador.setCellValueFactory(new PropertyValueFactory<>("usuario")); // si quieres el campo 'usuario'
+
+        tableTrabajador.setItems(listaTrabajadoresData); // AÑADE ESTO en initialize()
+
+        tableTrabajador.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+
+            trabajadorSeleccionado = newSelection;
+
+            mostrarInformacionVendedor(trabajadorSeleccionado);
+
+        });
+    }
+
+    private void mostrarMensajeError(String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setHeaderText(null);
+        alert.setTitle("Confirmacion");
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+
+    private void mostrarMensaje(String titulo, String header, String contenido, Alert.AlertType alertType) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(titulo);
+        alert.setHeaderText(header);
+        alert.setContentText(contenido);
+        alert.showAndWait();
+    }
+
+    private void mostrarAlerta(String titulo, String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+
+    private void agregarProducto() {
+        // Validar los datos antes de crear el producto
+        String error = validarCamposProducto();
+        if (!error.isEmpty()) {
+            mostrarAlerta("Error en campos", error);
+            return;
+        }
+        int id = Integer.parseInt(txtIdProducto.getText().trim());
+        String nombre = txtNombreProducto.getText().trim();
+        String descripcion = txtDescripProducto.getText().trim();
+        double precio = Double.parseDouble(txtPrecioProducto.getText().trim());
+        int cantidad = Integer.parseInt(txtCantidadProducto.getText().trim());
+
+        Producto producto = new Producto(nombre, id, descripcion, precio, cantidad);
+
+        ProductoServicio servicio = new ProductoServicio();
+        Producto productoAux = servicio.crearProducto(producto);
+
+        if (productoAux != null) {
+            listaProductosData.add(productoAux);
+            limpiarCamposProducto();
+            mostrarMensaje("Notificación Producto", null, "El producto se ha creado con éxito",
+                    Alert.AlertType.INFORMATION);
+        } else {
+            mostrarMensajeError("El producto con ID: " + id + " ya se encuentra registrado.");
+        }
+    }
+
+    private String validarCamposProducto() {
+        StringBuilder errores = new StringBuilder();
+
+        if (txtNombreProducto.getText().trim().isEmpty()) {
+            errores.append("- El nombre no puede estar vacío.\n");
+        }
+        if (txtIdProducto.getText().trim().isEmpty()) {
+            errores.append("- El usuario no puede estar vacío.\n");
+        }
+        if (txtDescripProducto.getText().trim().isEmpty()) {
+            errores.append("- La contraseña no puede estar vacía.\n");
+        } else {
+            try {
+
+                Integer.parseInt(txtIdProducto.getText().trim());
+            } catch (NumberFormatException e) {
+                errores.append("- La cédula debe ser numérica.\n");
+            }
+        }
+
+//PONER CODIGO VALIDACIONES DE LOS VALORES INT (Como el Try de arriba)
+
+
+        if (txtPrecioProducto.getText().trim().isEmpty()) {
+            errores.append("- El precio del evento no puede estar vacío.\n");
+        } else {
+            try {
+                Integer.parseInt(txtPrecioProducto.getText().trim());
+            } catch (NumberFormatException e) {
+                errores.append("- El precio del evento debe ser numérico.\n");
+            }
+        }
+        if (txtPrecioAlquilerProducto.getText().trim().isEmpty()) {
+            errores.append("- El precio del evento no puede estar vacío.\n");
+        } else {
+            try {
+                Integer.parseInt(txtPrecioAlquilerProducto.getText().trim());
+            } catch (NumberFormatException e) {
+                errores.append("- El precio del evento debe ser numérico.\n");
+            }
+        }
+
+        return errores.toString();
+    }
+
+    private void limpiarCamposProducto() {
+        txtNombreProducto.clear();
+        txtIdProducto.clear();
+        txtCantidadProducto.clear();
+        txtDescripProducto.clear();
+        txtPrecioProducto.clear();
+        txtPrecioAlquilerProducto.clear();
+
+    }
+
+
+
+}
+
