@@ -15,6 +15,8 @@ import proyecto.modelo.Proveedor;
 import proyecto.modelo.Trabajador;
 import proyecto.servicio.CargoServicio;
 import proyecto.servicio.ProductoServicio;
+import proyecto.servicio.ProveedorServicio;
+
 import java.net.URL;
 import java.time.Clock;
 import java.time.LocalDate;
@@ -105,27 +107,23 @@ public class GestionadorController implements Initializable {
     private TextField txtTelefono;
 
     @FXML
-    void actualizarPorducto(ActionEvent event) {
-
+    void actualizarPrducto(ActionEvent event) {
+        actualizarProducto();
     }
 
     @FXML
     void actualizarProveedor(ActionEvent event) {
-
+        actualizarProveedor();
     }
 
     @FXML
     void agregarProducto(ActionEvent event) {
-        try {
-            agregarProducto();
-        } catch (Exception e) {
-            mostrarMensajeError(e.getMessage());
-        }
+        agregarProducto();
     }
 
     @FXML
     void agregarProveedor(ActionEvent event) {
-
+        agregarProveedor();
     }
 
     @FXML
@@ -135,7 +133,7 @@ public class GestionadorController implements Initializable {
 
     @FXML
     void eliminarProducto(ActionEvent event) {
-
+        eliminarProducto();
     }
 
     @FXML
@@ -145,13 +143,14 @@ public class GestionadorController implements Initializable {
 
     @FXML
     void nuevoProducto(ActionEvent event) {
-
+        limpiarCamposProducto();
     }
 
     @FXML
     void nuevoProveedor(ActionEvent event) {
-
+        limpiarCamposProveedor();
     }
+
 
     public void initialize(URL location, ResourceBundle resources) {
         //comboBoxCargo.setItems(FXCollections.observableArrayList(Cargo.values()));
@@ -217,88 +216,264 @@ public class GestionadorController implements Initializable {
         alert.showAndWait();
     }
 
+
+    public void initializeTableProducto(URL location, ResourceBundle resources) {
+        columnIdProducto.setCellValueFactory(new PropertyValueFactory<>("id"));
+        columnNombreProducto.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        columnDescripcionProducto.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+        columnPrecioProducto.setCellValueFactory(new PropertyValueFactory<>("precio"));
+        columnCantidadProducto.setCellValueFactory(new PropertyValueFactory<>("cantidad"));
+        columnAlquilerProducto.setCellValueFactory(new PropertyValueFactory<>("precioDeAlquiler"));
+
+        cargarProductosEnTabla();
+    }
+
+    private void cargarProductosEnTabla() {
+        ProductoServicio servicio = new ProductoServicio();
+        List<Producto> productos = servicio.obtenerProductos();
+
+        ObservableList<Producto> listaObservable = FXCollections.observableArrayList(productos);
+        tableProdcutos.setItems(listaObservable);
+    }
+
+
+
     private void agregarProducto() {
-        // Validar los datos antes de crear el producto
+          // Validar los datos antes de crear el producto
+          String error = validarCamposProducto();
+          if (!error.isEmpty()) {
+              mostrarAlerta("Error en campos", error);
+              return;
+          }
+
+          int id = Integer.parseInt(txtIdProducto.getText().trim());
+          String nombre = txtNombreProducto.getText().trim();
+          String descripcion = txtDescripProducto.getText().trim();
+          double precio = Double.parseDouble(txtPrecioProducto.getText().trim());
+          int cantidad = Integer.parseInt(txtCantidadProducto.getText().trim());
+          double precioDeAlquiler = Double.parseDouble(txtPrecioAlquilerProducto.getText().trim());
+
+          Producto producto = new Producto(nombre, id, descripcion, precio, precioDeAlquiler, cantidad);
+
+          ProductoServicio servicio = new ProductoServicio();
+          Producto productoAux = servicio.crearProducto(producto);
+
+          if (productoAux != null) {
+              listaProductosData.add(productoAux);
+              limpiarCamposProducto();
+              mostrarMensaje("Notificación Producto", null, "El producto se ha creado con éxito",
+                      Alert.AlertType.INFORMATION);
+          } else {
+              mostrarMensajeError("El producto con ID: " + id + " ya se encuentra registrado.");
+          }
+      }
+
+      private String validarCamposProducto() {
+          StringBuilder errores = new StringBuilder();
+
+          if (txtIdProducto.getText().trim().isEmpty()) {
+              errores.append("- El ID no puede estar vacío.\n");
+          } else {
+              try {
+                  Integer.parseInt(txtIdProducto.getText().trim());
+              } catch (NumberFormatException e) {
+                  errores.append("- El ID debe ser numérico.\n");
+              }
+          }
+
+          if (txtNombreProducto.getText().trim().isEmpty()) {
+              errores.append("- El nombre no puede estar vacío.\n");
+          }
+
+          if (txtDescripProducto.getText().trim().isEmpty()) {
+              errores.append("- La descripción no puede estar vacía.\n");
+          }
+
+          if (txtPrecioProducto.getText().trim().isEmpty()) {
+              errores.append("- El precio no puede estar vacío.\n");
+          } else {
+              try {
+                  Double.parseDouble(txtPrecioProducto.getText().trim());
+              } catch (NumberFormatException e) {
+                  errores.append("- El precio debe ser numérico.\n");
+              }
+          }
+
+          if (txtCantidadProducto.getText().trim().isEmpty()) {
+              errores.append("- La cantidad no puede estar vacía.\n");
+          } else {
+              try {
+                  Integer.parseInt(txtCantidadProducto.getText().trim());
+              } catch (NumberFormatException e) {
+                  errores.append("- La cantidad debe ser numérica.\n");
+              }
+          }
+
+          return errores.toString();
+      }
+
+     private void limpiarCamposProducto() {
+          txtIdProducto.clear();
+          txtNombreProducto.clear();
+          txtDescripProducto.clear();
+          txtPrecioProducto.clear();
+          txtCantidadProducto.clear();
+      }
+
+
+
+    private void actualizarProducto() {
         String error = validarCamposProducto();
         if (!error.isEmpty()) {
             mostrarAlerta("Error en campos", error);
             return;
         }
-        int id = Integer.parseInt(txtIdProducto.getText().trim());
+
+        Producto productoSeleccionado = tableProdcutos.getSelectionModel().getSelectedItem();
+        if (productoSeleccionado == null) {
+            mostrarMensajeError("Debe seleccionar un producto de la tabla para editar.");
+            return;
+        }
+
+        int id = productoSeleccionado.getId();  // Más seguro que confiar en el campo
         String nombre = txtNombreProducto.getText().trim();
         String descripcion = txtDescripProducto.getText().trim();
         double precio = Double.parseDouble(txtPrecioProducto.getText().trim());
         int cantidad = Integer.parseInt(txtCantidadProducto.getText().trim());
+        double precioDeAlquiler = Double.parseDouble(txtPrecioAlquilerProducto.getText().trim());
 
-        Producto producto = new Producto(nombre, id, descripcion, precio, cantidad);
+        Producto producto = new Producto(nombre, id, descripcion, precio, precioDeAlquiler, cantidad);
 
         ProductoServicio servicio = new ProductoServicio();
-        Producto productoAux = servicio.crearProducto(producto);
+        boolean exito = servicio.actualizarProducto(producto);
 
-        if (productoAux != null) {
-            listaProductosData.add(productoAux);
+        if (exito) {
+            mostrarMensaje("Notificación", null, "Producto actualizado con éxito", Alert.AlertType.INFORMATION);
+            cargarProductosEnTabla();
             limpiarCamposProducto();
-            mostrarMensaje("Notificación Producto", null, "El producto se ha creado con éxito",
+        } else {
+            mostrarMensajeError("No se pudo actualizar el producto con ID: " + id);
+        }
+    }
+
+
+    private void eliminarProducto() {
+          Producto productoSeleccionado = tableProdcutos.getSelectionModel().getSelectedItem();
+
+          if (productoSeleccionado == null) {
+              mostrarMensajeError("Debe seleccionar un producto de la tabla para eliminar.");
+              return;
+          }
+
+          int id = productoSeleccionado.getId();
+
+          ProductoServicio servicio = new ProductoServicio();
+          boolean exito = servicio.eliminarProducto(id);
+
+          if (exito) {
+              mostrarMensaje("Notificación", null, "Producto eliminado con éxito", Alert.AlertType.INFORMATION);
+              cargarProductosEnTabla();
+              limpiarCamposProducto();
+          } else {
+              mostrarMensajeError("No se pudo eliminar el producto con ID: " + id);
+          }
+      }
+
+
+    @FXML
+    public void initializeTableProveedores(URL location, ResourceBundle resources) {
+        columnCedulaProveedor.setCellValueFactory(new PropertyValueFactory<>("id"));
+        columnNombreProveedor.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        columnTelefonoProveedor.setCellValueFactory(new PropertyValueFactory<>("numeroContacto"));
+
+        cargarProveedoresEnTabla();
+    }
+
+
+
+    private void agregarProveedor() {
+              String id = txtCedulaProveedor.getText().trim();
+              String nombre = txtNombreProveedor.getText().trim();
+              String numeroContacto = txtTelefono.getText().trim();
+
+              if (id.isEmpty() || nombre.isEmpty() || numeroContacto.isEmpty()) {
+                  mostrarAlerta("Campos vacíos", "Debe completar todos los campos para agregar un proveedor.");
+                  return;
+              }
+
+              Proveedor proveedor = new Proveedor(id, nombre, numeroContacto);
+
+              boolean exito = ProveedorServicio.crearProveedor(proveedor);
+              if (exito) {
+                  listaProveedoresData.add(proveedor);
+                  limpiarCamposProveedor();
+                  mostrarMensaje("Proveedor creado", null, "El proveedor se ha registrado con éxito.",
+                          Alert.AlertType.INFORMATION);
+              } else {
+                  mostrarMensajeError("No se pudo registrar el proveedor. Puede que ya exista.");
+              }
+          }
+
+    private void actualizarProveedor() {
+        Proveedor proveedorSeleccionado = tableProveedor.getSelectionModel().getSelectedItem();
+        if (proveedorSeleccionado == null) {
+            mostrarMensajeError("Debe seleccionar un proveedor de la tabla para editar.");
+            return;
+        }
+
+        String id = proveedorSeleccionado.getId();  // ID no debe cambiar, se toma del proveedor seleccionado
+        String nombre = txtNombreProveedor.getText().trim();
+        String numeroContacto = txtTelefono.getText().trim();
+
+        if (nombre.isEmpty() || numeroContacto.isEmpty()) {
+            mostrarAlerta("Campos vacíos", "Debe completar todos los campos para actualizar un proveedor.");
+            return;
+        }
+
+        Proveedor proveedor = new Proveedor(id, nombre, numeroContacto);
+
+        boolean exito = ProveedorServicio.actualizarProveedor(proveedor);
+        if (exito) {
+            mostrarMensaje("Proveedor actualizado", null, "Proveedor actualizado correctamente.",
                     Alert.AlertType.INFORMATION);
+            cargarProveedoresEnTabla();  // Refresca la tabla
+            limpiarCamposProveedor();
         } else {
-            mostrarMensajeError("El producto con ID: " + id + " ya se encuentra registrado.");
+            mostrarMensajeError("No se pudo actualizar el proveedor.");
         }
     }
 
-    private String validarCamposProducto() {
-        StringBuilder errores = new StringBuilder();
 
-        if (txtNombreProducto.getText().trim().isEmpty()) {
-            errores.append("- El nombre no puede estar vacío.\n");
-        }
-        if (txtIdProducto.getText().trim().isEmpty()) {
-            errores.append("- El usuario no puede estar vacío.\n");
-        }
-        if (txtDescripProducto.getText().trim().isEmpty()) {
-            errores.append("- La contraseña no puede estar vacía.\n");
-        } else {
-            try {
+    private void buscarProveedor() {
+              String id = txtCedulaProveedor.getText().trim();
 
-                Integer.parseInt(txtIdProducto.getText().trim());
-            } catch (NumberFormatException e) {
-                errores.append("- La cédula debe ser numérica.\n");
-            }
-        }
+              if (id.isEmpty()) {
+                  mostrarAlerta("Campo ID vacío", "Debe ingresar el ID del proveedor que desea buscar.");
+                  return;
+              }
 
-//PONER CODIGO VALIDACIONES DE LOS VALORES INT (Como el Try de arriba)
+              Proveedor proveedor = ProveedorServicio.buscarProveedor(id);
+              if (proveedor != null) {
+                  txtNombreProveedor.setText(proveedor.getNombre());
+                  txtTelefono.setText(proveedor.getNumeroContacto());
+                  mostrarMensaje("Proveedor encontrado", null, "Proveedor cargado correctamente.",
+                          Alert.AlertType.INFORMATION);
+              } else {
+                  mostrarMensajeError("No se encontró el proveedor con ID: " + id);
+              }
+          }
 
+              private void cargarProveedoresEnTabla() {
+            List<Proveedor> lista = ProveedorServicio.obtenerProveedores();
+            tableProveedor.getItems().setAll(lista);
+                }
 
-        if (txtPrecioProducto.getText().trim().isEmpty()) {
-            errores.append("- El precio del evento no puede estar vacío.\n");
-        } else {
-            try {
-                Integer.parseInt(txtPrecioProducto.getText().trim());
-            } catch (NumberFormatException e) {
-                errores.append("- El precio del evento debe ser numérico.\n");
-            }
-        }
-        if (txtPrecioAlquilerProducto.getText().trim().isEmpty()) {
-            errores.append("- El precio del evento no puede estar vacío.\n");
-        } else {
-            try {
-                Integer.parseInt(txtPrecioAlquilerProducto.getText().trim());
-            } catch (NumberFormatException e) {
-                errores.append("- El precio del evento debe ser numérico.\n");
-            }
-        }
+          private void limpiarCamposProveedor() {
+              txtCedulaProveedor.clear();
+              txtNombreProveedor.clear();
+              txtTelefono.clear();
+          }
 
-        return errores.toString();
-    }
-
-    private void limpiarCamposProducto() {
-        txtNombreProducto.clear();
-        txtIdProducto.clear();
-        txtCantidadProducto.clear();
-        txtDescripProducto.clear();
-        txtPrecioProducto.clear();
-        txtPrecioAlquilerProducto.clear();
-
-    }
 
 
 

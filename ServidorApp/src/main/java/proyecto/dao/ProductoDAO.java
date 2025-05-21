@@ -8,10 +8,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductoDAO implements IProductoDAO {
+public class ProductoDAO {
 
     public boolean crearProducto(Producto producto) {
-        String sql = "INSERT INTO Producto (id, nombre, descripcion, precio, cantidad) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Producto (id, nombre, descripcion, precio, cantidad, precioDeAlquiler) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ConexionBD.obtenerConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -21,6 +21,7 @@ public class ProductoDAO implements IProductoDAO {
             stmt.setString(3, producto.getDescripcion());
             stmt.setDouble(4, producto.getPrecio());
             stmt.setInt(5, producto.getCantidad());
+            stmt.setDouble(6, producto.getPrecioDeAlquiler());
 
             stmt.executeUpdate();
             return true;
@@ -45,7 +46,8 @@ public class ProductoDAO implements IProductoDAO {
                         rs.getString("nombre"),
                         rs.getString("descripcion"),
                         rs.getDouble("precio"),
-                        rs.getInt("cantidad")
+                        rs.getInt("cantidad"),
+                        rs.getDouble("precioDeAlquiler")
                 );
                 productos.add(producto);
             }
@@ -58,7 +60,7 @@ public class ProductoDAO implements IProductoDAO {
     }
 
     public boolean actualizarProducto(Producto producto) {
-        String sql = "UPDATE Producto SET nombre = ?, descripcion = ?, precio = ?, cantidad = ? WHERE id = ?";
+        String sql = "UPDATE Producto SET nombre = ?, descripcion = ?, precio = ?, cantidad = ?, precioDeAlquiler = ? WHERE id = ?";
 
         try (Connection conn = ConexionBD.obtenerConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -67,7 +69,8 @@ public class ProductoDAO implements IProductoDAO {
             stmt.setString(2, producto.getDescripcion());
             stmt.setDouble(3, producto.getPrecio());
             stmt.setInt(4, producto.getCantidad());
-            stmt.setInt(5, producto.getId());
+            stmt.setDouble(5, producto.getPrecioDeAlquiler());
+            stmt.setInt(6, producto.getId());
 
             int rowsUpdated = stmt.executeUpdate();
             return rowsUpdated > 0;
@@ -77,6 +80,7 @@ public class ProductoDAO implements IProductoDAO {
             return false;
         }
     }
+
 
     public boolean eliminarProducto(int id) {
         String sql = "DELETE FROM Producto WHERE id = ?";
@@ -94,28 +98,5 @@ public class ProductoDAO implements IProductoDAO {
         }
     }
 
-    @Override
-    public void crear(Producto producto) {
 
-    }
-
-    @Override
-    public Producto buscarPorId(int id) {
-        return null;
-    }
-
-    @Override
-    public List<Producto> listarTodos() {
-        return List.of();
-    }
-
-    @Override
-    public void actualizar(Producto producto) {
-
-    }
-
-    @Override
-    public void eliminar(int id) {
-
-    }
 }
