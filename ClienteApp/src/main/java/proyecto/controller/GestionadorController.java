@@ -390,7 +390,6 @@ public class GestionadorController implements Initializable {
     }
 
 
-
     private void agregarProveedor() {
               String id = txtCedulaProveedor.getText().trim();
               String nombre = txtNombreProveedor.getText().trim();
@@ -463,18 +462,38 @@ public class GestionadorController implements Initializable {
               }
           }
 
-              private void cargarProveedoresEnTabla() {
+    private void eliminarProveedor() {
+        Proveedor proveedorSeleccionado = tableProveedor.getSelectionModel().getSelectedItem();
+
+        if (proveedorSeleccionado == null) {
+            mostrarAlerta("Selección requerida", "Debe seleccionar un proveedor en la tabla para eliminar.");
+            return;
+        }
+
+        String id = proveedorSeleccionado.getId();  // Asumiendo que getId() retorna la cédula o identificador del proveedor
+
+        boolean exito = ProveedorServicio.eliminarProveedor(id);
+        if (exito) {
+            listaProveedoresData.remove(proveedorSeleccionado);  // Elimina de la tabla
+            limpiarCamposProveedor();
+            mostrarMensaje("Proveedor eliminado", null, "Proveedor eliminado exitosamente.",
+                    Alert.AlertType.INFORMATION);
+        } else {
+            mostrarMensajeError("No se pudo eliminar el proveedor. Verifique si el ID es correcto.");
+        }
+    }
+
+
+    private void cargarProveedoresEnTabla() {
             List<Proveedor> lista = ProveedorServicio.obtenerProveedores();
             tableProveedor.getItems().setAll(lista);
-                }
 
-          private void limpiarCamposProveedor() {
+            }
+            private void limpiarCamposProveedor() {
               txtCedulaProveedor.clear();
               txtNombreProveedor.clear();
               txtTelefono.clear();
           }
-
-
 
 
 }
