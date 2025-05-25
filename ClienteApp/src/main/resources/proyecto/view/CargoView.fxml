@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="420.0" prefWidth="617.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="proyecto.controller.AdministradorController">
+   <center>
+      <AnchorPane prefHeight="399.0" prefWidth="685.0" BorderPane.alignment="CENTER">
+         <children>
+            <Separator layoutX="92.0" layoutY="55.0" prefHeight="14.0" prefWidth="362.0" />
+            <Label layoutX="210.0" layoutY="27.0" text="Gestion de cargos" textFill="#0080ff">
+               <font>
+                  <Font name="Tahoma Bold" size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="txtNombreCargo" alignment="CENTER" layoutX="258.0" layoutY="102.0" prefHeight="29.0" prefWidth="194.0" promptText="Ingrese el nombre del cargo" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
+            <Label layoutX="90.0" layoutY="107.0" text="Nombre" textFill="#0080ff">
+               <font>
+                  <Font name="Tahoma Bold" size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="txtPrecioCargo" alignment="CENTER" layoutX="257.0" layoutY="149.0" prefHeight="29.0" prefWidth="195.0" promptText="Ingrese el precio del servicio" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
+            <Label layoutX="90.0" layoutY="154.0" text="Precio por labor:" textFill="#0080ff">
+               <font>
+                  <Font name="Tahoma Bold" size="14.0" />
+               </font>
+            </Label>
+            <Button layoutX="85.0" layoutY="204.0" mnemonicParsing="false" onAction="#nuevoCargo" prefHeight="34.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Nuevo" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Button layoutX="345.0" layoutY="203.0" mnemonicParsing="false" onAction="#actualizarCargo" prefHeight="35.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Actualizar" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Button layoutX="220.0" layoutY="203.0" mnemonicParsing="false" onAction="#agregarCargoAction" prefHeight="35.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Agregar" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <TableView fx:id="tableCargo" layoutX="76.0" layoutY="261.0" prefHeight="96.0" prefWidth="405.0">
+              <columns>
+                <TableColumn prefWidth="195.0" text="Nombre" />
+                <TableColumn prefWidth="209.0" text="Cargo" />
+              </columns>
+            </TableView>
+            <Button layoutX="221.0" layoutY="371.0" mnemonicParsing="false" onAction="#eliminarCargoAction" prefHeight="35.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Eliminar" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+         </children>
+      </AnchorPane>
+   </center>
+   <left>
+      <AnchorPane prefHeight="387.0" prefWidth="30.0" style="-fx-background-color: #0080ff;" BorderPane.alignment="CENTER" />
+   </left>
+   <right>
+      <AnchorPane prefHeight="387.0" prefWidth="30.0" style="-fx-background-color: #0080ff;" BorderPane.alignment="CENTER" />
+   </right>
+</BorderPane>
