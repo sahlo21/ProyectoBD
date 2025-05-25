@@ -130,10 +130,6 @@ public class AdministradorController implements Initializable {
 
     }
 
-    @FXML
-    void actualizarTrabajador(ActionEvent event) {
-
-    }
 
     @FXML
     void agregarGestorAction(ActionEvent event) {
@@ -161,10 +157,7 @@ public class AdministradorController implements Initializable {
 
     }
 
-    @FXML
-    void eliminarTrabajador(ActionEvent event) {
 
-    }
 
     @FXML
     void registrarGestor(ActionEvent event) {
@@ -175,6 +168,35 @@ public class AdministradorController implements Initializable {
     void registrarTrabajador(ActionEvent event) {
 
     }
+    @FXML
+    private TableView<?> tableCargo;
+
+    @FXML
+    private TextField txtNombreCargo;
+
+    @FXML
+    private TextField txtPrecioCargo;
+
+    @FXML
+    void actualizarCargo(ActionEvent event) {
+
+    }
+
+    @FXML
+    void agregarCargoAction(ActionEvent event) {
+
+    }
+
+    @FXML
+    void eliminarCargoAction(ActionEvent event) {
+
+    }
+
+    @FXML
+    void nuevoCargo(ActionEvent event) {
+
+    }
+
 
     //Implementacion de metodos auxiliares
     private void agregarTrabajador() {
@@ -210,6 +232,74 @@ public class AdministradorController implements Initializable {
         } else {
             mostrarMensajeError("El vendedor: " + cedula + " ya se encuentra registrado");
 
+        }
+    }
+    @FXML
+    void actualizarTrabajador(ActionEvent event) {
+        if (trabajadorSeleccionado == null) {
+            mostrarMensajeError("Debe seleccionar un trabajador de la tabla para actualizar.");
+            return;
+        }
+
+        String error = validarCamposTrabajador();
+        if (!error.isEmpty()) {
+            mostrarAlerta("Error en campos", error);
+            return;
+        }
+
+        int cedula = Integer.parseInt(txtCedulaTrabajador.getText().trim());
+        String nombre = txtNombreTrabajador.getText().trim();
+        String usuario = txtUsuarioTrabajador.getText().trim();
+        String contrasena = txtContrasenaTrabajador.getText().trim();
+        Cargo cargo = new Cargo(1, 1, 123123); // Puedes ajustar esto si usas comboBoxCargo
+
+        ArrayList<String> telefonos = new ArrayList<>();
+        telefonos.add(txtTlf1Trabajador.getText().trim());
+        telefonos.add(txtTlf2Trabajador.getText().trim());
+
+        Trabajador trabajadorActualizado = new Trabajador(cedula, nombre, usuario, contrasena, telefonos, cargo);
+
+        TrabajadorServicio servicio = new TrabajadorServicio();
+        boolean actualizado = servicio.actualizarTrabajador(trabajadorActualizado);
+
+        if (actualizado) {
+            int index = listaTrabajadoresData.indexOf(trabajadorSeleccionado);
+            listaTrabajadoresData.set(index, trabajadorActualizado);
+            tableTrabajador.refresh();
+            limpiarCamposTrabajador();
+            mostrarMensaje("Actualización", null, "Trabajador actualizado con éxito.", Alert.AlertType.INFORMATION);
+            trabajadorSeleccionado = null;
+        } else {
+            mostrarMensajeError("No se pudo actualizar el trabajador.");
+        }
+    }
+    @FXML
+    void eliminarTrabajador(ActionEvent event) {
+        trabajadorSeleccionado = tableTrabajador.getSelectionModel().getSelectedItem();
+
+        if (trabajadorSeleccionado == null) {
+            mostrarMensajeError("Debe seleccionar un trabajador de la tabla para eliminar.");
+            return;
+        }
+
+        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmacion.setTitle("Confirmar eliminación");
+        confirmacion.setHeaderText(null);
+        confirmacion.setContentText("¿Está seguro de eliminar al trabajador con cédula " + trabajadorSeleccionado.getCedula() + "?");
+
+        Optional<ButtonType> resultado = confirmacion.showAndWait();
+        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            TrabajadorServicio servicio = new TrabajadorServicio();
+            boolean eliminado = servicio.eliminarTrabajador(trabajadorSeleccionado.getCedula());
+
+            if (eliminado) {
+                listaTrabajadoresData.remove(trabajadorSeleccionado);
+                tableTrabajador.refresh();
+                limpiarCamposTrabajador();
+                mostrarMensaje("Eliminación", null, "Trabajador eliminado con éxito.", Alert.AlertType.INFORMATION);
+            } else {
+                mostrarMensajeError("No se pudo eliminar el trabajador.");
+            }
         }
     }
 

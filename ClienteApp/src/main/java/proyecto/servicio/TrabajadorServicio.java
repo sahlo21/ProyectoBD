@@ -58,4 +58,11 @@ public class TrabajadorServicio {
         }
     }
 
+    public boolean actualizarTrabajador(Trabajador trabajadorActualizado) {
+        return false;
+    }
+
+    public boolean eliminarTrabajador(int cedula) {
+        return false;
+    }
 }

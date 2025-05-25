@@ -198,13 +198,19 @@
                                                                               <Font name="Tahoma Bold" size="14.0" />
                                                                            </font>
                                                                         </Label>
-                                                                        <ComboBox fx:id="comboBoxCargo" layoutX="131.0" layoutY="197.0" prefHeight="27.0" prefWidth="238.0" promptText="Seleccione el cargo del trabajador" style="-fx-background-color: #0080ff;" />
-                                                                        <TextField fx:id="txtPrecioEvento" alignment="CENTER" layoutX="532.0" layoutY="197.0" prefHeight="29.0" prefWidth="240.0" promptText="Ingrese el precio por labor realizada" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
-                                                                        <Label layoutX="410.0" layoutY="202.0" text="Precio por labor:" textFill="#0080ff">
+                                                                        <ComboBox fx:id="comboBoxCargo" layoutX="254.0" layoutY="197.0" prefHeight="23.0" prefWidth="238.0" promptText="Seleccione el cargo del trabajador" style="-fx-background-color: #0080ff;" />
+                                                                        <Button layoutX="496.0" layoutY="197.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#actualizarTrabajador" prefHeight="25.0" prefWidth="25.0" style="-fx-background-color: #0080ff;" textFill="WHITE">
                                                                            <font>
-                                                                              <Font name="Tahoma Bold" size="14.0" />
+                                                                              <Font name="System Bold" size="14.0" />
                                                                            </font>
-                                                                        </Label>
+                                                                           <graphic>
+                                                                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                                                                 <image>
+                                                                                    <Image url="@../../img/edit2.png" />
+                                                                                 </image>
+                                                                              </ImageView>
+                                                                           </graphic>
+                                                                        </Button>
                                                                      </children>
                                                                   </AnchorPane>
                                                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="391.0" prefWidth="963.0">
