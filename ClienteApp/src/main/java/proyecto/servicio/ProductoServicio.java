@@ -29,7 +29,7 @@ public class ProductoServicio {
         return null;
     }
 
-    public List<Producto> obtenerProductos() {
+    public static List<Producto> obtenerProductos() {
         try (Socket socket = new Socket(HOST, PUERTO);
              ObjectOutputStream salida = new ObjectOutputStream(socket.getOutputStream());
              ObjectInputStream entrada = new ObjectInputStream(socket.getInputStream())) {

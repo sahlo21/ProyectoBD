@@ -9,6 +9,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.StringConverter;
+import proyecto.Aplicacion;
 import proyecto.modelo.Cargo;
 import proyecto.modelo.Producto;
 import proyecto.modelo.Proveedor;
@@ -16,6 +17,7 @@ import proyecto.modelo.Trabajador;
 import proyecto.servicio.CargoServicio;
 import proyecto.servicio.ProductoServicio;
 import proyecto.servicio.ProveedorServicio;
+import proyecto.servicio.TrabajadorServicio;
 
 import java.net.URL;
 import java.time.Clock;
@@ -25,7 +27,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class GestionadorController implements Initializable {
-
+    private Aplicacion aplicacion;
     ObservableList<Producto> listaProductosData = FXCollections.observableArrayList();
     ObservableList<Proveedor> listaProveedoresData = FXCollections.observableArrayList();
     @FXML
@@ -153,44 +155,66 @@ public class GestionadorController implements Initializable {
 
 
     public void initialize(URL location, ResourceBundle resources) {
-        //comboBoxCargo.setItems(FXCollections.observableArrayList(Cargo.values()));
-        List<Cargo> cargos = CargoServicio.obtenerCargos();
-        comboBoxCargo.setItems(FXCollections.observableArrayList(cargos));
+        columnCedulaProveedor.setCellValueFactory(new PropertyValueFactory<Proveedor, String>("id"));
+        columnNombreProveedor.setCellValueFactory(new PropertyValueFactory<Proveedor, String>("nombre"));
+        columnTelefonoProveedor.setCellValueFactory(new PropertyValueFactory<Proveedor, String>("numeroContacto"));
 
-        comboBoxCargo.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(Cargo cargo) {
-                return cargo != null ? "Cargo " + cargo.getName() + " - $" + cargo.getPrecio_evento() : "";
-            }
+        lblFecha2.setText(lblFecha2.getText() + LocalDate.now(Clock.systemDefaultZone()));
+        lblHora2.setText(lblHora2.getText() + LocalTime.now());
 
-            @Override
-            public Cargo fromString(String s) {
-                return comboBoxCargo.getItems().stream()
-                        .filter(c -> s.contains(String.valueOf(c.getName())))
-                        .findFirst()
-                        .orElse(null);
-            }
-        });
-        lblFecha.setText(lblFecha.getText() + LocalDate.now(Clock.systemDefaultZone()));
-        lblHora.setText(lblHora.getText() + LocalTime.now());
-
-        columnNombreTrabajador.setCellValueFactory(new PropertyValueFactory<Trabajador, String>("nombre"));
-        columnCedulaTrabajador.setCellValueFactory(new PropertyValueFactory<Trabajador, String>("cedula"));
-        columnTelefonoPrincipal.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getTelefono().isEmpty() ? "" : cellData.getValue().getTelefono().get(0))
+        columnNombreProducto.setCellValueFactory(new PropertyValueFactory<Producto, String>("nombre"));
+        columnIdProducto.setCellValueFactory(new PropertyValueFactory<Producto, String>("id"));
+        columnPrecioProducto.setCellValueFactory(new PropertyValueFactory<Producto, String>("precio"));
+        columnCantidadProducto.setCellValueFactory(new PropertyValueFactory<Producto, String>("cantidad"));
+        columnAlquilerProducto.setCellValueFactory(new PropertyValueFactory<Producto, String>("precioDeAlquiler"));
+        columnDescripcionProducto.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDescripcion().isEmpty() ? "" : cellData.getValue().getDescripcion())
         );
-        columnUsuarioTrabajador.setCellValueFactory(new PropertyValueFactory<>("usuario")); // si quieres el campo 'usuario'
 
-        tableTrabajador.setItems(listaTrabajadoresData); // AÑADE ESTO en initialize()
-
-        tableTrabajador.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-
-            trabajadorSeleccionado = newSelection;
-
-            mostrarInformacionVendedor(trabajadorSeleccionado);
-
+        tableProdcutos.setItems(listaProductosData);
+        tableProveedor.setItems(listaProveedoresData);
+        tableProdcutos.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                txtIdProducto.setText(String.valueOf(newSelection.getId()));
+                txtNombreProducto.setText(newSelection.getNombre());
+                txtDescripProducto.setText(newSelection.getDescripcion());
+                txtPrecioProducto.setText(String.valueOf(newSelection.getPrecio()));
+                txtCantidadProducto.setText(String.valueOf(newSelection.getCantidad()));
+                txtPrecioAlquilerProducto.setText(String.valueOf(newSelection.getPrecioDeAlquiler()));
+            }
         });
+        tableProveedor.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                txtCedulaProveedor.setText(newSelection.getId());
+                txtNombreProveedor.setText(newSelection.getNombre());
+                txtTelefono.setText(newSelection.getNumeroContacto());
+            }
+        });
+        cargarProductosEnTabla();
+        cargarProveedoresEnTabla();
+
+
     }
+
+    /*public void initializeTableProducto(URL location, ResourceBundle resources) {
+        columnIdProducto.setCellValueFactory(new PropertyValueFactory<>("id"));
+        columnNombreProducto.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        columnDescripcionProducto.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+        columnPrecioProducto.setCellValueFactory(new PropertyValueFactory<>("precio"));
+        columnCantidadProducto.setCellValueFactory(new PropertyValueFactory<>("cantidad"));
+        columnAlquilerProducto.setCellValueFactory(new PropertyValueFactory<>("precioDeAlquiler"));
+
+        cargarProductosEnTabla();
+    }
+
+    @FXML
+    public void initializeTableProveedores(URL location, ResourceBundle resources) {
+        columnCedulaProveedor.setCellValueFactory(new PropertyValueFactory<>("id"));
+        columnNombreProveedor.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        columnTelefonoProveedor.setCellValueFactory(new PropertyValueFactory<>("numeroContacto"));
+
+        cargarProveedoresEnTabla();
+    }*/
 
     private void mostrarMensajeError(String mensaje) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -217,16 +241,7 @@ public class GestionadorController implements Initializable {
     }
 
 
-    public void initializeTableProducto(URL location, ResourceBundle resources) {
-        columnIdProducto.setCellValueFactory(new PropertyValueFactory<>("id"));
-        columnNombreProducto.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-        columnDescripcionProducto.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
-        columnPrecioProducto.setCellValueFactory(new PropertyValueFactory<>("precio"));
-        columnCantidadProducto.setCellValueFactory(new PropertyValueFactory<>("cantidad"));
-        columnAlquilerProducto.setCellValueFactory(new PropertyValueFactory<>("precioDeAlquiler"));
 
-        cargarProductosEnTabla();
-    }
 
     private void cargarProductosEnTabla() {
         ProductoServicio servicio = new ProductoServicio();
@@ -380,14 +395,7 @@ public class GestionadorController implements Initializable {
       }
 
 
-    @FXML
-    public void initializeTableProveedores(URL location, ResourceBundle resources) {
-        columnCedulaProveedor.setCellValueFactory(new PropertyValueFactory<>("id"));
-        columnNombreProveedor.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-        columnTelefonoProveedor.setCellValueFactory(new PropertyValueFactory<>("numeroContacto"));
 
-        cargarProveedoresEnTabla();
-    }
 
 
     private void agregarProveedor() {
