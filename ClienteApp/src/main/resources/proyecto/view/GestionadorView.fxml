@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="688.0" prefWidth="1067.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="proyecto.controller.AdministradorController">
+   <right>
+      <AnchorPane prefHeight="688.0" prefWidth="99.0" style="-fx-background-color: #0080ff;" BorderPane.alignment="CENTER" />
+   </right>
+   <center>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <TabPane prefHeight="688.0" prefWidth="812.0" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px;" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0">
+              <tabs>
+                <Tab text="Gestion de Productos">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="205.0" prefWidth="159.0">
+                           <children>
+                              <TabPane prefHeight="658.0" prefWidth="969.0" tabClosingPolicy="UNAVAILABLE">
+                                 <tabs>
+                                    <Tab text="Productos">
+                                       <content>
+                                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="436.0" prefWidth="766.0">
+                                             <children>
+                                                <AnchorPane layoutY="-2.0" minHeight="0.0" minWidth="0.0" prefHeight="935.0" prefWidth="966.0">
+                                                   <children>
+                                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="802.0" prefWidth="965.0">
+                                                         <children>
+                                                            <SplitPane dividerPositions="0.36103896103896105" orientation="VERTICAL" prefHeight="772.0" prefWidth="965.0">
+                                                               <items>
+                                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="340.0" prefWidth="963.0">
+                                                                     <children>
+                                                                        <Button layoutX="209.0" layoutY="227.0" mnemonicParsing="false" onAction="#nuevoProducto" prefHeight="34.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Nuevo" textFill="WHITE">
+                                                                           <font>
+                                                                              <Font name="System Bold" size="14.0" />
+                                                                           </font></Button>
+                                                                        <TextField fx:id="txtDescripProducto" alignment="CENTER" layoutX="131.0" layoutY="154.0" prefHeight="29.0" prefWidth="240.0" promptText="Ingrese un usuario para el gestor" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
+                                                                        <TextField fx:id="txtIdProducto" alignment="CENTER" layoutX="131.0" layoutY="117.0" prefHeight="29.0" prefWidth="240.0" promptText="Ingrese la cedula del gestor" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
+                                                                        <Button layoutX="479.0" layoutY="226.0" mnemonicParsing="false" onAction="#actualizarPorducto" prefHeight="35.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Actualizar" textFill="WHITE">
+                                                                           <font>
+                                                                              <Font name="System Bold" size="14.0" />
+                                                                           </font></Button>
+                                                                        <Button layoutX="344.0" layoutY="226.0" mnemonicParsing="false" onAction="#agregarProducto" prefHeight="35.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Agregar" textFill="WHITE">
+                                                                           <font>
+                                                                              <Font name="System Bold" size="14.0" />
+                                                                           </font></Button>
+                                                                        <Separator layoutX="17.0" layoutY="210.0" prefHeight="0.0" prefWidth="770.0" />
+                                                                        <Separator layoutX="18.0" layoutY="48.0" prefHeight="0.0" prefWidth="768.0" AnchorPane.bottomAnchor="202.0" AnchorPane.topAnchor="48.0" />
+                                                                        <TextField fx:id="txtNombreProducto" alignment="CENTER" layoutX="131.0" layoutY="79.0" prefHeight="29.0" prefWidth="240.0" promptText="Ingrese nombre(s) del gestor" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
+                                                                        <Label layoutX="297.0" layoutY="21.0" text="Información del producto" textFill="#0080ff">
+                                                                           <font>
+                                                                              <Font name="Tahoma Bold" size="14.0" />
+                                                                           </font>
+                                                                        </Label>
+                                                                        <TextField fx:id="txtPrecioProducto" alignment="CENTER" layoutX="557.0" layoutY="79.0" prefHeight="29.0" prefWidth="215.0" promptText="Ingrese apellido(s) del gestor" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
+                                                                        <TextField fx:id="txtPrecioAlquilerProducto" alignment="CENTER" layoutX="557.0" layoutY="118.0" prefHeight="29.0" prefWidth="215.0" promptText="Ingrese el telefono del gestor" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
+                                                                        <TextField fx:id="txtCantidadProducto" alignment="CENTER" layoutX="556.0" layoutY="157.0" prefHeight="29.0" prefWidth="216.0" promptText="Ingrese una contraseña para el gestor" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
+                                                                        <Label layoutX="28.0" layoutY="93.0" text="Nombre" textFill="#0080ff">
+                                                                           <font>
+                                                                              <Font name="Tahoma Bold" size="14.0" />
+                                                                           </font>
+                                                                        </Label>
+                                                                        <Label layoutX="28.0" layoutY="128.0" text="Id:" textFill="#0080ff">
+                                                                           <font>
+                                                                              <Font name="Tahoma Bold" size="14.0" />
+                                                                           </font>
+                                                                        </Label>
+                                                                        <Label layoutX="28.0" layoutY="163.0" text="Descripción:" textFill="#0080ff">
+                                                                           <font>
+                                                                              <Font name="Tahoma Bold" size="14.0" />
+                                                                           </font>
+                                                                        </Label>
+                                                                        <Label layoutX="418.0" layoutY="163.0" text="Cantidad:" textFill="#0080ff">
+                                                                           <font>
+                                                                              <Font name="Tahoma Bold" size="14.0" />
+                                                                           </font>
+                                                                        </Label>
+                                                                        <Label layoutX="418.0" layoutY="128.0" text="Precio de Alquiler:" textFill="#0080ff">
+                                                                           <font>
+                                                                              <Font name="Tahoma Bold" size="14.0" />
+                                                                           </font>
+                                                                        </Label>
+                                                                        <Label layoutX="418.0" layoutY="93.0" text="Precio:" textFill="#0080ff">
+                                                                           <font>
+                                                                              <Font name="Tahoma Bold" size="14.0" />
+                                                                           </font>
+                                                                        </Label>
+                                                                     </children>
+                                                                  </AnchorPane>
+                                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="391.0" prefWidth="963.0">
+                                                                     <children>
+                                                                        <TableView fx:id="tableProdcutos" editable="true" layoutX="18.0" layoutY="19.0" prefHeight="275.0" prefWidth="769.0" style="-fx-border-color: #0080ff; -fx-border-width: 3px 3px;" AnchorPane.bottomAnchor="195.0" AnchorPane.topAnchor="19.0">
+                                                                           <columns>
+                                                                              <TableColumn fx:id="columnNombreProducto" prefWidth="114.0" text="Nombre" />
+                                                                              <TableColumn fx:id="columnIdProducto" prefWidth="90.0" text="Id" />
+                                                                              <TableColumn fx:id="columnDescripcionProducto" prefWidth="189.0" text="Descripción" />
+                                                                              <TableColumn fx:id="columnPrecioProducto" prefWidth="132.0" text="Precio" />
+                                                                              <TableColumn fx:id="columnAlquilerProducto" prefWidth="143.0" text="Alquiler" />
+                                                                              <TableColumn fx:id="columnCantidadProducto" prefWidth="102.0" text="Cantidad" />
+                                                                           </columns>
+                                                                           <columnResizePolicy>
+                                                                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                                                           </columnResizePolicy>
+                                                                        </TableView>
+                                                                        <Button layoutX="345.0" layoutY="306.0" mnemonicParsing="false" onAction="#eliminarProducto" prefHeight="33.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Eliminar" textFill="WHITE">
+                                                                           <font>
+                                                                              <Font name="System Bold" size="14.0" />
+                                                                           </font>
+                                                                        </Button>
+                                                                     </children>
+                                                                  </AnchorPane>
+                                                               </items>
+                                                            </SplitPane>
+                                                         </children>
+                                                      </AnchorPane>
+                                                   </children>
+                                                </AnchorPane>
+                                             </children>
+                                          </AnchorPane>
+                                       </content>
+                                    </Tab>
+                                    <Tab text="Proveedores">
+                                       <content>
+                                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="436.0" prefWidth="766.0">
+                                             <children>
+                                                <AnchorPane layoutY="-2.0" minHeight="0.0" minWidth="0.0" prefHeight="935.0" prefWidth="966.0">
+                                                   <children>
+                                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="802.0" prefWidth="965.0">
+                                                         <children>
+                                                            <SplitPane dividerPositions="0.4623376623376623" orientation="VERTICAL" prefHeight="772.0" prefWidth="965.0">
+                                                               <items>
+                                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="276.0" prefWidth="963.0">
+                                                                     <children>
+                                                                        <Button layoutX="209.0" layoutY="291.0" mnemonicParsing="false" onAction="#nuevoProveedor" prefHeight="34.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Nuevo" textFill="WHITE">
+                                                                           <font>
+                                                                              <Font name="System Bold" size="14.0" />
+                                                                           </font>
+                                                                        </Button>
+                                                                        <TextField fx:id="txtTelefono" alignment="CENTER" layoutX="313.0" layoutY="188.0" prefHeight="29.0" prefWidth="337.0" promptText="Ingrese un usuario para el trabajador" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
+                                                                        <TextField fx:id="txtCedulaProveedor" alignment="CENTER" layoutX="314.0" layoutY="132.0" prefHeight="29.0" prefWidth="336.0" promptText="Ingrese la cedula del trabajador" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
+                                                                        <Button layoutX="479.0" layoutY="290.0" mnemonicParsing="false" onAction="#actualizarProveedor" prefHeight="35.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Actualizar" textFill="WHITE">
+                                                                           <font>
+                                                                              <Font name="System Bold" size="14.0" />
+                                                                           </font>
+                                                                        </Button>
+                                                                        <Button layoutX="344.0" layoutY="290.0" mnemonicParsing="false" onAction="#agregarProveedor" prefHeight="35.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Agregar" textFill="WHITE">
+                                                                           <font>
+                                                                              <Font name="System Bold" size="14.0" />
+                                                                           </font>
+                                                                        </Button>
+                                                                        <Separator layoutX="6.0" layoutY="231.0" prefHeight="3.0" prefWidth="802.0" />
+                                                                        <Separator layoutX="-78.0" layoutY="47.0" prefHeight="16.0" prefWidth="887.0" AnchorPane.bottomAnchor="290.0" AnchorPane.topAnchor="47.0" />
+                                                                        <TextField fx:id="txtNombreProveedor" alignment="CENTER" layoutX="315.0" layoutY="78.0" prefHeight="29.0" prefWidth="335.0" promptText="Ingrese nombre(s) del trabajador" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
+                                                                        <Label layoutX="297.0" layoutY="21.0" text="Información del proveedores" textFill="#0080ff">
+                                                                           <font>
+                                                                              <Font name="Tahoma Bold" size="14.0" />
+                                                                           </font>
+                                                                        </Label>
+                                                                        <Label layoutX="201.0" layoutY="84.0" text="Nombre:" textFill="#0080ff">
+                                                                           <font>
+                                                                              <Font name="Tahoma Bold" size="14.0" />
+                                                                           </font>
+                                                                        </Label>
+                                                                        <Label layoutX="201.0" layoutY="138.0" text="Cedula:" textFill="#0080ff">
+                                                                           <font>
+                                                                              <Font name="Tahoma Bold" size="14.0" />
+                                                                           </font>
+                                                                        </Label>
+                                                                        <Label layoutX="199.0" layoutY="194.0" text="Telefono:" textFill="#0080ff">
+                                                                           <font>
+                                                                              <Font name="Tahoma Bold" size="14.0" />
+                                                                           </font>
+                                                                        </Label>
+                                                                        <Label layoutX="410.0" layoutY="202.0" textFill="#0080ff">
+                                                                           <font>
+                                                                              <Font name="Tahoma Bold" size="14.0" />
+                                                                           </font>
+                                                                        </Label>
+                                                                     </children>
+                                                                  </AnchorPane>
+                                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="391.0" prefWidth="963.0">
+                                                                     <children>
+                                                                        <TableView fx:id="tableProveedor" layoutX="18.0" layoutY="78.0" prefHeight="216.0" prefWidth="769.0" style="-fx-border-color: #0080ff; -fx-border-width: 3px 3px;" AnchorPane.bottomAnchor="195.0" AnchorPane.topAnchor="19.0">
+                                                                           <columns>
+                                                                              <TableColumn fx:id="columnNombreProveedor" prefWidth="181.0" text="Nombre" />
+                                                                              <TableColumn fx:id="columnCedulaProveedor" prefWidth="138.33334350585938" text="Cedula" />
+                                                                              <TableColumn fx:id="columnTelefonoProveedor" prefWidth="167.3333740234375" text="Usuario" />
+                                                                           </columns>
+                                                                           <columnResizePolicy>
+                                                                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                                                           </columnResizePolicy>
+                                                                        </TableView>
+                                                                        <Button layoutX="345.0" layoutY="306.0" mnemonicParsing="false" onAction="#eliminarTrabajador" prefHeight="33.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Eliminar" textFill="WHITE">
+                                                                           <font>
+                                                                              <Font name="System Bold" size="14.0" />
+                                                                           </font>
+                                                                        </Button>
+                                                                     </children>
+                                                                  </AnchorPane>
+                                                               </items>
+                                                            </SplitPane>
+                                                         </children>
+                                                      </AnchorPane>
+                                                   </children>
+                                                </AnchorPane>
+                                             </children>
+                                          </AnchorPane>
+                                       </content>
+                                    </Tab>
+                                 </tabs>
+                              </TabPane>
+                           </children>
+                        </AnchorPane>
+                  </content>
+                </Tab>
+              </tabs>
+            </TabPane>
+         </children>
+      </AnchorPane>
+   </center>
+   <left>
+      <AnchorPane prefHeight="688.0" prefWidth="110.0" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fitHeight="143.0" fitWidth="113.0" layoutX="25.0" layoutY="68.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/inventario.png" />
+               </image>
+            </ImageView>
+            <Button fx:id="btnCerrarSesion2" layoutX="32.0" layoutY="407.0" mnemonicParsing="false" onAction="#cerrarSesionAction2" prefHeight="41.0" prefWidth="104.0" style="-fx-background-color: #0080ff;" text="Cerrar Sesion" textFill="#fffefe">
+               <font>
+                  <Font name="Tahoma Bold" size="12.0" />
+               </font>
+            </Button>
+            <Label fx:id="lblHora2" layoutX="22.0" layoutY="326.0" prefHeight="17.0" prefWidth="135.0" text="Hora:" textFill="#0080ff">
+               <font>
+                  <Font name="Tahoma Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="lblFecha2" layoutX="23.0" layoutY="294.0" prefHeight="17.0" prefWidth="130.0" text="Fecha:" textFill="#0080ff">
+               <font>
+                  <Font name="Tahoma Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="lblUserAdmin" alignment="CENTER" layoutX="8.0" layoutY="213.0" prefHeight="17.0" prefWidth="147.0" text="Gestion de Inventario" textFill="#0080ff">
+               <font>
+                  <Font name="Tahoma Bold" size="13.0" />
+               </font>
+            </Label>
+            <Pane layoutY="488.0" prefHeight="200.0" prefWidth="162.0" style="-fx-background-color: #0080ff;" />
+            <Pane prefHeight="45.0" prefWidth="162.0" style="-fx-background-color: #0080ff;" />
+         </children>
+      </AnchorPane>
+   </left>
+</BorderPane>

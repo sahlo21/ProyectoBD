@@ -9,13 +9,15 @@ public class Producto implements Serializable {
     String nombre;
     String descripcion;
     double precio;
+    double precioDeAlquiler;
     int cantidad;
 
-    public Producto(int id, String nombre, String descripcion, double precio, int cantidad) {
+    public Producto(int id, String nombre, String descripcion, double precio, double precioDeAlquiler, int cantidad) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.precio = precio;
+        this.precioDeAlquiler = precioDeAlquiler;
         this.cantidad = cantidad;
     }
 
@@ -57,6 +59,14 @@ public class Producto implements Serializable {
 
     public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
+    }
+
+    public double getPrecioDeAlquiler() {
+        return precioDeAlquiler;
+    }
+
+    public void setPrecioDeAlquiler(double precioDeAlquiler) {
+        this.precioDeAlquiler = precioDeAlquiler;
     }
 
     @Override

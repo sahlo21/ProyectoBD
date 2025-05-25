@@ -103,6 +103,45 @@ public class ManejadorCliente extends Thread {
                 boolean exito = dao.eliminarProducto(id);
                 salida.writeObject(exito);
             }
+            if (Comando.CREAR_PROVEEDOR.equals(comando)) {
+                Proveedor proveedor = (Proveedor) entrada.readObject();
+                ProveedorDAO dao = new ProveedorDAO();
+                boolean creado = dao.crearProveedor(proveedor);
+                salida.writeObject(creado ? "OK" : "ERROR");
+            }
+
+            if (Comando.ACTUALIZAR_PROVEEDOR.equals(comando)) {
+                Proveedor proveedor = (Proveedor) entrada.readObject();
+                ProveedorDAO dao = new ProveedorDAO();
+                boolean actualizado = dao.actualizarProveedor(proveedor);
+                salida.writeObject(actualizado ? "OK" : "ERROR");
+            }
+
+            if (Comando.ELIMINAR_PROVEEDOR.equals(comando)) {
+                String idProveedor = (String) entrada.readObject();
+                ProveedorDAO dao = new ProveedorDAO();
+                boolean eliminado = dao.eliminarProveedor(idProveedor);
+                salida.writeObject(eliminado ? "OK" : "ERROR");
+            }
+
+            if (Comando.BUSCAR_PROVEEDOR.equals(comando)) {
+                String idProveedor = (String) entrada.readObject();
+                ProveedorDAO dao = new ProveedorDAO();
+                Proveedor proveedor = dao.buscarProveedorPorId(idProveedor);
+                if (proveedor != null) {
+                    salida.writeObject("OK");
+                    salida.writeObject(proveedor);
+                } else {
+                    salida.writeObject("ERROR");
+                }
+            }
+
+            if (Comando.OBTENER_PROVEEDORES.equals(comando)) {
+                ProveedorDAO dao = new ProveedorDAO();
+                List<Proveedor> proveedores = dao.obtenerProveedores();
+                salida.writeObject("OK");
+                salida.writeObject(proveedores);
+            }
 
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
