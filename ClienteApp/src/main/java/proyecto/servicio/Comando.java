@@ -2,6 +2,12 @@ package proyecto.servicio;
 
 public class Comando {
     public static final String CREAR_TRABAJADOR = "CREAR_TRABAJADOR";
+    public static final String ACTUALIZAR_TRABAJADOR = "ACTUALIZAR_TRABAJADOR";
+    public static final String ELIMINAR_TRABAJADOR = "ELIMINAR_TRABAJADOR";
+    public static final String CREAR_GESTOR = "CREAR_GESTOR";
+    public static final String ACTUALIZAR_GESTOR = "ACTUALIZAR_GESTOR";
+    public static final String ELIMINAR_GESTOR = "ELIMINAR_GESTOR";
+    public static final String OBTENER_GESTORES = "OBTENER_GESTORES";
     public static final String LOGIN = "LOGIN";
 
     public static final Object OBTENER_CARGOS = "OBTENER_CARGOS";

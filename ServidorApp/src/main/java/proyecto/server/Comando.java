@@ -3,6 +3,8 @@ package proyecto.server;
 public class Comando {
     public static final String CREAR_TRABAJADOR = "CREAR_TRABAJADOR";
     public static final String OBTENER_TRABAJADORES = "OBTENER_TRABAJADORES";
+    public static final String ACTUALIZAR_TRABAJADOR = "ACTUALIZAR_TRABAJADOR";
+    public static final String ELIMINAR_TRABAJADOR = "ELIMINAR_TRABAJADOR";
     public static final String LOGIN = "LOGIN";
     public static final String OBTENER_CARGOS = "OBTENER_CARGOS";
     public static final String CREAR_PRODUCTO = "CREAR_PRODUCTO";
@@ -15,4 +17,9 @@ public class Comando {
     public static final String BUSCAR_PROVEEDOR = "BUSCAR_PROVEEDOR";
     public static final String OBTENER_PROVEEDORES = "OBTENER_PROVEEDORES";
 
+    // Comandos para GestorEvento
+    public static final String CREAR_GESTOR = "CREAR_GESTOR";
+    public static final String OBTENER_GESTORES = "OBTENER_GESTORES";
+    public static final String ACTUALIZAR_GESTOR = "ACTUALIZAR_GESTOR";
+    public static final String ELIMINAR_GESTOR = "ELIMINAR_GESTOR";
 }

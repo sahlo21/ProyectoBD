@@ -2,11 +2,15 @@ package proyecto.server;
 
 
 import proyecto.dao.CargoDAO;
+import proyecto.dao.GestorEventoDAO;
 import proyecto.dao.LoginDAO;
 import proyecto.dao.ProductoDAO;
+import proyecto.dao.ProveedorDAO;
 import proyecto.dao.TrabajadorDAO;
 import proyecto.modelo.Cargo;
+import proyecto.modelo.GestorEvento;
 import proyecto.modelo.Producto;
+import proyecto.modelo.Proveedor;
 import proyecto.modelo.Trabajador;
 import proyecto.modelo.Usuario;
 
@@ -53,6 +57,20 @@ public class ManejadorCliente extends Thread {
                 TrabajadorDAO dao = new TrabajadorDAO();
                 List<Trabajador> trabajadores = dao.obtenerTrabajadores();
                 salida.writeObject(trabajadores);
+            }
+
+            if (Comando.ACTUALIZAR_TRABAJADOR.equals(comando)) {
+                Trabajador trabajador = (Trabajador) entrada.readObject();
+                TrabajadorDAO dao = new TrabajadorDAO();
+                boolean exito = dao.actualizarTrabajador(trabajador);
+                salida.writeObject(exito);
+            }
+
+            if (Comando.ELIMINAR_TRABAJADOR.equals(comando)) {
+                int cedula = (int) entrada.readObject();
+                TrabajadorDAO dao = new TrabajadorDAO();
+                boolean exito = dao.eliminarTrabajador(cedula);
+                salida.writeObject(exito);
             }
             if (Comando.LOGIN.equals(comando)) {
                 String usuario = (String) entrada.readObject();
@@ -141,6 +159,39 @@ public class ManejadorCliente extends Thread {
                 List<Proveedor> proveedores = dao.obtenerProveedores();
                 salida.writeObject("OK");
                 salida.writeObject(proveedores);
+            }
+
+            // Gestión de GestorEvento
+            if (Comando.CREAR_GESTOR.equals(comando)) {
+                GestorEvento gestor = (GestorEvento) entrada.readObject();
+                GestorEventoDAO dao = new GestorEventoDAO();
+                boolean exito = dao.crearGestor(gestor);
+
+                if (exito) {
+                    salida.writeObject(gestor);
+                } else {
+                    salida.writeObject(null);
+                }
+            }
+
+            if (Comando.OBTENER_GESTORES.equals(comando)) {
+                GestorEventoDAO dao = new GestorEventoDAO();
+                List<GestorEvento> gestores = dao.obtenerGestores();
+                salida.writeObject(gestores);
+            }
+
+            if (Comando.ACTUALIZAR_GESTOR.equals(comando)) {
+                GestorEvento gestor = (GestorEvento) entrada.readObject();
+                GestorEventoDAO dao = new GestorEventoDAO();
+                boolean exito = dao.actualizarGestor(gestor);
+                salida.writeObject(exito);
+            }
+
+            if (Comando.ELIMINAR_GESTOR.equals(comando)) {
+                int cedula = (int) entrada.readObject();
+                GestorEventoDAO dao = new GestorEventoDAO();
+                boolean exito = dao.eliminarGestor(cedula);
+                salida.writeObject(exito);
             }
 
         } catch (IOException | ClassNotFoundException e) {

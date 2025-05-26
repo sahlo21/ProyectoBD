@@ -1,4 +1,7 @@
-package proyecto.model;
+package proyecto.modelo;
+
+import java.io.Serializable;
+import java.util.Objects;
 
 public class Proveedor implements Serializable {
 

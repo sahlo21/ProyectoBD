@@ -2,6 +2,7 @@ package proyecto.dao;
 
 import proyecto.modelo.Administrador;
 import proyecto.modelo.Cargo;
+import proyecto.modelo.GestorEvento;
 import proyecto.modelo.Trabajador;
 import proyecto.modelo.Usuario;
 import proyecto.server.ConexionBD;
@@ -68,8 +69,7 @@ public class LoginDAO {
                     case "TRABAJADOR":
                         return new Trabajador(cedula, nombre, usuario, contrasena, telefonos, cargo);
                     case "GESTOREVENTO":
-                        // A implementar si se desea
-                        return null;
+                        return new GestorEvento(cedula, nombre, usuario, contrasena, telefonos);
                 }
             }
 

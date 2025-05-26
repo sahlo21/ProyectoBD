@@ -47,7 +47,7 @@ public class ProductoDAO {
                         rs.getString("descripcion"),
                         rs.getDouble("precio"),
                         rs.getInt("cantidad"),
-                        rs.getDouble("precioDeAlquiler")
+                        rs.getInt("precioDeAlquiler")
                 );
                 productos.add(producto);
             }

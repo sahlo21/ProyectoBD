@@ -1,38 +1,39 @@
 package proyecto.dao;
 
-import proyecto.modelo.Cargo;
-import proyecto.modelo.Trabajador;
+import proyecto.modelo.GestorEvento;
 import proyecto.server.ConexionBD;
 
 import java.sql.*;
 import java.util.*;
 
-public class TrabajadorDAO {
+public class GestorEventoDAO {
 
-    public boolean crearTrabajador(Trabajador trabajador) {
-        String sql = "INSERT INTO Usuario (cedula, nombre, usuario, contrasena) VALUES (?, ?, ?, ?)";
-        String sqlTrabajador = "INSERT INTO Trabajador (cedula, cargo_id) VALUES (?, ?)";
+    public boolean crearGestor(GestorEvento gestor) {
+        String sqlUsuario = "INSERT INTO Usuario (cedula, nombre, usuario, contrasena) VALUES (?, ?, ?, ?)";
+        String sqlGestor = "INSERT INTO GestorEvento (cedula) VALUES (?)";
         String sqlTelefono = "INSERT INTO Telefonos (cedula_usuario, telefono) VALUES (?, ?)";
 
         try (Connection conn = ConexionBD.obtenerConexion()) {
             conn.setAutoCommit(false);
 
-            try (PreparedStatement stmtUsuario = conn.prepareStatement(sql);
-                 PreparedStatement stmtTrabajador = conn.prepareStatement(sqlTrabajador);
+            try (PreparedStatement stmtUsuario = conn.prepareStatement(sqlUsuario);
+                 PreparedStatement stmtGestor = conn.prepareStatement(sqlGestor);
                  PreparedStatement stmtTelefono = conn.prepareStatement(sqlTelefono)) {
 
-                stmtUsuario.setInt(1, trabajador.getCedula());
-                stmtUsuario.setString(2, trabajador.getNombre());
-                stmtUsuario.setString(3, trabajador.getUsuario());
-                stmtUsuario.setString(4, trabajador.getContrasena());
+                // Insertar en tabla Usuario
+                stmtUsuario.setInt(1, gestor.getCedula());
+                stmtUsuario.setString(2, gestor.getNombre());
+                stmtUsuario.setString(3, gestor.getUsuario());
+                stmtUsuario.setString(4, gestor.getContrasena());
                 stmtUsuario.executeUpdate();
 
-                stmtTrabajador.setInt(1, trabajador.getCedula());
-                stmtTrabajador.setInt(2, trabajador.getCargo().getIdCargo());
-                stmtTrabajador.executeUpdate();
+                // Insertar en tabla GestorEvento
+                stmtGestor.setInt(1, gestor.getCedula());
+                stmtGestor.executeUpdate();
 
-                for (String telefono : trabajador.getTelefono()) {
-                    stmtTelefono.setInt(1, trabajador.getCedula());
+                // Insertar teléfonos
+                for (String telefono : gestor.getTelefono()) {
+                    stmtTelefono.setInt(1, gestor.getCedula());
                     stmtTelefono.setString(2, telefono);
                     stmtTelefono.executeUpdate();
                 }
@@ -52,9 +53,8 @@ public class TrabajadorDAO {
         }
     }
 
-    public boolean actualizarTrabajador(Trabajador trabajador) {
+    public boolean actualizarGestor(GestorEvento gestor) {
         String sqlUsuario = "UPDATE Usuario SET nombre = ?, usuario = ?, contrasena = ? WHERE cedula = ?";
-        String sqlTrabajador = "UPDATE Trabajador SET cargo_id = ? WHERE cedula = ?";
         String sqlEliminarTelefonos = "DELETE FROM Telefonos WHERE cedula_usuario = ?";
         String sqlInsertarTelefono = "INSERT INTO Telefonos (cedula_usuario, telefono) VALUES (?, ?)";
 
@@ -62,29 +62,23 @@ public class TrabajadorDAO {
             conn.setAutoCommit(false);
 
             try (PreparedStatement stmtUsuario = conn.prepareStatement(sqlUsuario);
-                 PreparedStatement stmtTrabajador = conn.prepareStatement(sqlTrabajador);
                  PreparedStatement stmtEliminarTelefonos = conn.prepareStatement(sqlEliminarTelefonos);
                  PreparedStatement stmtInsertarTelefono = conn.prepareStatement(sqlInsertarTelefono)) {
 
                 // Actualizar datos de Usuario
-                stmtUsuario.setString(1, trabajador.getNombre());
-                stmtUsuario.setString(2, trabajador.getUsuario());
-                stmtUsuario.setString(3, trabajador.getContrasena());
-                stmtUsuario.setInt(4, trabajador.getCedula());
+                stmtUsuario.setString(1, gestor.getNombre());
+                stmtUsuario.setString(2, gestor.getUsuario());
+                stmtUsuario.setString(3, gestor.getContrasena());
+                stmtUsuario.setInt(4, gestor.getCedula());
                 stmtUsuario.executeUpdate();
 
-                // Actualizar datos de Trabajador
-                stmtTrabajador.setInt(1, trabajador.getCargo().getIdCargo());
-                stmtTrabajador.setInt(2, trabajador.getCedula());
-                stmtTrabajador.executeUpdate();
-
                 // Eliminar teléfonos existentes
-                stmtEliminarTelefonos.setInt(1, trabajador.getCedula());
+                stmtEliminarTelefonos.setInt(1, gestor.getCedula());
                 stmtEliminarTelefonos.executeUpdate();
 
                 // Insertar nuevos teléfonos
-                for (String telefono : trabajador.getTelefono()) {
-                    stmtInsertarTelefono.setInt(1, trabajador.getCedula());
+                for (String telefono : gestor.getTelefono()) {
+                    stmtInsertarTelefono.setInt(1, gestor.getCedula());
                     stmtInsertarTelefono.setString(2, telefono);
                     stmtInsertarTelefono.executeUpdate();
                 }
@@ -104,25 +98,25 @@ public class TrabajadorDAO {
         }
     }
 
-    public boolean eliminarTrabajador(int cedula) {
+    public boolean eliminarGestor(int cedula) {
         String sqlEliminarTelefonos = "DELETE FROM Telefonos WHERE cedula_usuario = ?";
-        String sqlEliminarTrabajador = "DELETE FROM Trabajador WHERE cedula = ?";
+        String sqlEliminarGestor = "DELETE FROM GestorEvento WHERE cedula = ?";
         String sqlEliminarUsuario = "DELETE FROM Usuario WHERE cedula = ?";
 
         try (Connection conn = ConexionBD.obtenerConexion()) {
             conn.setAutoCommit(false);
 
             try (PreparedStatement stmtEliminarTelefonos = conn.prepareStatement(sqlEliminarTelefonos);
-                 PreparedStatement stmtEliminarTrabajador = conn.prepareStatement(sqlEliminarTrabajador);
+                 PreparedStatement stmtEliminarGestor = conn.prepareStatement(sqlEliminarGestor);
                  PreparedStatement stmtEliminarUsuario = conn.prepareStatement(sqlEliminarUsuario)) {
 
                 // Eliminar teléfonos primero (clave foránea)
                 stmtEliminarTelefonos.setInt(1, cedula);
                 stmtEliminarTelefonos.executeUpdate();
 
-                // Eliminar registro de Trabajador
-                stmtEliminarTrabajador.setInt(1, cedula);
-                stmtEliminarTrabajador.executeUpdate();
+                // Eliminar registro de GestorEvento
+                stmtEliminarGestor.setInt(1, cedula);
+                stmtEliminarGestor.executeUpdate();
 
                 // Eliminar registro de Usuario
                 stmtEliminarUsuario.setInt(1, cedula);
@@ -143,13 +137,11 @@ public class TrabajadorDAO {
         }
     }
 
-    public List<Trabajador> obtenerTrabajadores() {
-        Map<Integer, Trabajador> mapa = new HashMap<>();
-        String sql = "SELECT u.cedula, u.nombre, u.usuario, u.contrasena, " +
-                "t.cargo_id, c.precio_evento, tel.telefono " +
+    public List<GestorEvento> obtenerGestores() {
+        Map<Integer, GestorEvento> mapa = new HashMap<>();
+        String sql = "SELECT u.cedula, u.nombre, u.usuario, u.contrasena, tel.telefono " +
                 "FROM Usuario u " +
-                "INNER JOIN Trabajador t ON u.cedula = t.cedula " +
-                "INNER JOIN Cargo c ON t.cargo_id = c.idCargo " +
+                "INNER JOIN GestorEvento g ON u.cedula = g.cedula " +
                 "LEFT JOIN Telefonos tel ON u.cedula = tel.cedula_usuario";
 
         try (Connection conn = ConexionBD.obtenerConexion();
@@ -158,22 +150,19 @@ public class TrabajadorDAO {
 
             while (rs.next()) {
                 int cedula = rs.getInt("cedula");
-                Trabajador trabajador = mapa.get(cedula);
+                GestorEvento gestor = mapa.get(cedula);
 
-                if (trabajador == null) {
+                if (gestor == null) {
                     String nombre = rs.getString("nombre");
                     String usuario = rs.getString("usuario");
                     String contrasena = rs.getString("contrasena");
-                    int cargoId = rs.getInt("cargo_id");
-                    float precioEvento = rs.getFloat("precio_evento");
-                    Cargo cargo = new Cargo(cargoId, 1, precioEvento);
-                    trabajador = new Trabajador(cedula, nombre, usuario, contrasena, new ArrayList<>(), cargo);
-                    mapa.put(cedula, trabajador);
+                    gestor = new GestorEvento(cedula, nombre, usuario, contrasena, new ArrayList<>());
+                    mapa.put(cedula, gestor);
                 }
 
                 String telefono = rs.getString("telefono");
-                if (telefono != null && !trabajador.getTelefono().contains(telefono)) {
-                    trabajador.getTelefono().add(telefono);
+                if (telefono != null && !gestor.getTelefono().contains(telefono)) {
+                    gestor.getTelefono().add(telefono);
                 }
             }
 

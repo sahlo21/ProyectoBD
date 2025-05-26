@@ -1,5 +1,8 @@
 package proyecto.dao;
 
+import proyecto.modelo.Proveedor;
+import proyecto.server.ConexionBD;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

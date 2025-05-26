@@ -5,6 +5,7 @@ import javafx.util.StringConverter;
 import proyecto.Aplicacion;
 import proyecto.modelo.*;
 import proyecto.servicio.CargoServicio;
+import proyecto.servicio.GestorServicio;
 import proyecto.servicio.ProveedorServicio;
 import proyecto.servicio.TrabajadorServicio;
 import javafx.collections.FXCollections;
@@ -29,7 +30,9 @@ public class AdministradorController implements Initializable {
     ObservableList<Trabajador> listaTrabajadoresData = FXCollections.observableArrayList();
     ObservableList<Producto> listaProductosData = FXCollections.observableArrayList();
     ObservableList<Proveedor> listaProveedoresData = FXCollections.observableArrayList();
+    ObservableList<GestorEvento> listaGestoresData = FXCollections.observableArrayList();
     Trabajador trabajadorSeleccionado;
+    GestorEvento gestorSeleccionado;
     @FXML
     private ResourceBundle resources;
 
@@ -124,16 +127,7 @@ public class AdministradorController implements Initializable {
     private TextField txtUsuarioTrabajador;
     private Aplicacion aplicacion;
 
-    @FXML
-    void actualizarGestor(ActionEvent event) {
 
-    }
-
-
-    @FXML
-    void agregarGestorAction(ActionEvent event) {
-
-    }
 
     @FXML
     void agregarTrabajadorAction(ActionEvent event) {
@@ -147,19 +141,156 @@ public class AdministradorController implements Initializable {
 
     @FXML
     void cerrarSesionAction(ActionEvent event) {
-
+        aplicacion.showLogin();
     }
 
     @FXML
     void eliminarGestor(ActionEvent event) {
+        gestorSeleccionado = tableGestores.getSelectionModel().getSelectedItem();
 
+        if (gestorSeleccionado == null) {
+            mostrarMensajeError("Debe seleccionar un gestor de la tabla para eliminar.");
+            return;
+        }
+
+        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmacion.setTitle("Confirmar eliminación");
+        confirmacion.setHeaderText(null);
+        confirmacion.setContentText("¿Está seguro de eliminar al gestor con cédula " + gestorSeleccionado.getCedula() + "?");
+
+        Optional<ButtonType> resultado = confirmacion.showAndWait();
+        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            GestorServicio servicio = new GestorServicio();
+            boolean eliminado = servicio.eliminarGestor(gestorSeleccionado.getCedula());
+
+            if (eliminado) {
+                listaGestoresData.remove(gestorSeleccionado);
+                tableGestores.refresh();
+                limpiarCamposGestor();
+                mostrarMensaje("Eliminación", null, "Gestor eliminado con éxito.", Alert.AlertType.INFORMATION);
+            } else {
+                mostrarMensajeError("No se pudo eliminar el gestor.");
+            }
+        }
+    }
+
+    @FXML
+    void actualizarGestor(ActionEvent event) {
+        if (gestorSeleccionado == null) {
+            mostrarMensajeError("Debe seleccionar un gestor de la tabla para actualizar.");
+            return;
+        }
+
+        String error = validarCamposGestor();
+        if (!error.isEmpty()) {
+            mostrarAlerta("Error en campos", error);
+            return;
+        }
+
+        int cedula = Integer.parseInt(txtCedulaGestor.getText().trim());
+        String nombre = txtNombreGestor.getText().trim();
+        String usuario = txtUsuarioGestor.getText().trim();
+        String contrasena = txtContrasenaGestor.getText().trim();
+
+        ArrayList<String> telefonos = new ArrayList<>();
+        telefonos.add(txtTlf1Gestor.getText().trim());
+        telefonos.add(txtTlf2Gestor.getText().trim());
+
+        GestorEvento gestorActualizado = new GestorEvento(cedula, nombre, usuario, contrasena, telefonos);
+
+        GestorServicio servicio = new GestorServicio();
+        boolean actualizado = servicio.actualizarGestor(gestorActualizado);
+
+        if (actualizado) {
+            int index = listaGestoresData.indexOf(gestorSeleccionado);
+            listaGestoresData.set(index, gestorActualizado);
+            tableGestores.refresh();
+            limpiarCamposGestor();
+            mostrarMensaje("Actualización", null, "Gestor actualizado con éxito.", Alert.AlertType.INFORMATION);
+            gestorSeleccionado = null;
+        } else {
+            mostrarMensajeError("No se pudo actualizar el gestor.");
+        }
     }
 
 
+    @FXML
+    void agregarGestorAction(ActionEvent event) {
+        agregarGestor();
+    }
+
+    private void agregarGestor() {
+        // Validar los datos antes de crear el gestor
+        String error = validarCamposGestor();
+        if (!error.isEmpty()) {
+            mostrarAlerta("Error en campos", error);
+            return;
+        }
+
+        String nombre = txtNombreGestor.getText().trim();
+        String usuario = txtUsuarioGestor.getText().trim();
+        String contrasena = txtContrasenaGestor.getText().trim();
+        int cedula = Integer.parseInt(txtCedulaGestor.getText().trim());
+
+        ArrayList<String> telefonos = new ArrayList<>();
+        telefonos.add(txtTlf1Gestor.getText().trim());
+        telefonos.add(txtTlf2Gestor.getText().trim());
+
+        GestorEvento gestor = new GestorEvento(cedula, nombre, usuario, contrasena, telefonos);
+
+        GestorServicio servicio = new GestorServicio();
+        GestorEvento gestorAux = servicio.crearGestor(gestor);
+        if (gestorAux != null) {
+            listaGestoresData.add(gestorAux);
+            limpiarCamposGestor();
+            mostrarMensaje("Notificación Gestor", null, "El gestor se ha creado con éxito",
+                    Alert.AlertType.INFORMATION);
+        } else {
+            mostrarMensajeError("El gestor con cédula: " + cedula + " ya se encuentra registrado");
+        }
+    }
+
+    private String validarCamposGestor() {
+        StringBuilder errores = new StringBuilder();
+
+        if (txtNombreGestor.getText().trim().isEmpty()) {
+            errores.append("El nombre no puede estar vacío\n");
+        }
+
+        if (txtUsuarioGestor.getText().trim().isEmpty()) {
+            errores.append("El usuario no puede estar vacío\n");
+        }
+
+        if (txtContrasenaGestor.getText().trim().isEmpty()) {
+            errores.append("La contraseña no puede estar vacía\n");
+        }
+
+        if (txtCedulaGestor.getText().trim().isEmpty()) {
+            errores.append("La cédula no puede estar vacía\n");
+        } else if (!isNumericInt(txtCedulaGestor.getText().trim())) {
+            errores.append("La cédula debe ser un número entero\n");
+        }
+
+        if (txtTlf1Gestor.getText().trim().isEmpty()) {
+            errores.append("El teléfono 1 no puede estar vacío\n");
+        }
+
+        return errores.toString();
+    }
+
+    private void limpiarCamposGestor() {
+        txtNombreGestor.clear();
+        txtUsuarioGestor.clear();
+        txtContrasenaGestor.clear();
+        txtCedulaGestor.clear();
+        txtTlf1Gestor.clear();
+        txtTlf2Gestor.clear();
+    }
 
     @FXML
-    void registrarGestor(ActionEvent event) {
-
+    void nuevoGestor(ActionEvent event) {
+        limpiarCamposGestor();
+        gestorSeleccionado = null;
     }
 
     @FXML
@@ -209,8 +340,23 @@ public class AdministradorController implements Initializable {
         String usuario = txtUsuarioTrabajador.getText().trim();
         String contrasena = txtContrasenaTrabajador.getText().trim();
         int cedula = Integer.parseInt(txtCedulaTrabajador.getText().trim());
-        Cargo cargo = new Cargo(1, 1, 123123);
-        int precioEvento = Integer.parseInt(txtPrecioEvento.getText().trim());  // Si tienes un campo para eso
+
+        // Use the selected cargo from comboBoxCargo
+        Cargo cargo = comboBoxCargo.getValue();
+        if (cargo == null) {
+            // If no cargo is selected, create a default one
+            cargo = new Cargo(1, 1, 0);
+        }
+
+        // Update precio_evento if txtPrecioEvento is not null
+        if (txtPrecioEvento != null && !txtPrecioEvento.getText().trim().isEmpty()) {
+            try {
+                int precioEvento = Integer.parseInt(txtPrecioEvento.getText().trim());
+                cargo = new Cargo(cargo.getIdCargo(), cargo.getName(), precioEvento);
+            } catch (NumberFormatException e) {
+                // Already validated in validarCamposTrabajador
+            }
+        }
 
         ArrayList<String> telefonos = new ArrayList<>();
         telefonos.add(txtTlf1Trabajador.getText().trim());
@@ -249,7 +395,27 @@ public class AdministradorController implements Initializable {
         String nombre = txtNombreTrabajador.getText().trim();
         String usuario = txtUsuarioTrabajador.getText().trim();
         String contrasena = txtContrasenaTrabajador.getText().trim();
-        Cargo cargo = new Cargo(1, 1, 123123); // Puedes ajustar esto si usas comboBoxCargo
+
+        // Use the selected cargo from comboBoxCargo
+        Cargo cargo = comboBoxCargo.getValue();
+        if (cargo == null) {
+            // If no cargo is selected, use the one from the selected worker
+            cargo = trabajadorSeleccionado.getCargo();
+            if (cargo == null) {
+                // If still null, create a default one
+                cargo = new Cargo(1, 1, 0);
+            }
+        }
+
+        // Update precio_evento if txtPrecioEvento is not null
+        if (txtPrecioEvento != null && !txtPrecioEvento.getText().trim().isEmpty()) {
+            try {
+                int precioEvento = Integer.parseInt(txtPrecioEvento.getText().trim());
+                cargo = new Cargo(cargo.getIdCargo(), cargo.getName(), precioEvento);
+            } catch (NumberFormatException e) {
+                // Already validated in validarCamposTrabajador
+            }
+        }
 
         ArrayList<String> telefonos = new ArrayList<>();
         telefonos.add(txtTlf1Trabajador.getText().trim());
@@ -329,13 +495,16 @@ public class AdministradorController implements Initializable {
             errores.append("- Al menos un teléfono debe estar presente.\n");
         }
 
-        if (txtPrecioEvento.getText().trim().isEmpty()) {
-            errores.append("- El precio del evento no puede estar vacío.\n");
-        } else {
-            try {
-                Integer.parseInt(txtPrecioEvento.getText().trim());
-            } catch (NumberFormatException e) {
-                errores.append("- El precio del evento debe ser numérico.\n");
+        // Check if txtPrecioEvento is not null before accessing it
+        if (txtPrecioEvento != null) {
+            if (txtPrecioEvento.getText().trim().isEmpty()) {
+                errores.append("- El precio del evento no puede estar vacío.\n");
+            } else {
+                try {
+                    Integer.parseInt(txtPrecioEvento.getText().trim());
+                } catch (NumberFormatException e) {
+                    errores.append("- El precio del evento debe ser numérico.\n");
+                }
             }
         }
 
@@ -345,10 +514,12 @@ public class AdministradorController implements Initializable {
         txtNombreTrabajador.clear();
         txtUsuarioTrabajador.clear();
         txtContrasenaTrabajador.clear();
-        txtCedulaGestor.clear();
+        txtCedulaTrabajador.clear(); // Fixed: was using txtCedulaGestor instead of txtCedulaTrabajador
         txtTlf1Trabajador.clear();
         txtTlf2Trabajador.clear();
-        txtPrecioEvento.clear();
+        if (txtPrecioEvento != null) {
+            txtPrecioEvento.clear();
+        }
         comboBoxCargo.getSelectionModel().clearSelection();
     }
 
@@ -441,21 +612,52 @@ public class AdministradorController implements Initializable {
         lblFecha.setText(lblFecha.getText() + LocalDate.now(Clock.systemDefaultZone()));
         lblHora.setText(lblHora.getText() + LocalTime.now());
 
+        // Configuración de la tabla de trabajadores
         columnNombreTrabajador.setCellValueFactory(new PropertyValueFactory<Trabajador, String>("nombre"));
         columnCedulaTrabajador.setCellValueFactory(new PropertyValueFactory<Trabajador, String>("cedula"));
-        columnTelefonoPrincipal.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getTelefono().isEmpty() ? "" : cellData.getValue().getTelefono().get(0))
-        );
+        columnTelefonoPrincipal.setCellValueFactory(cellData -> {
+            Trabajador trabajador = cellData.getValue();
+            if (trabajador != null) {
+                List<String> telefonos = trabajador.getTelefono();
+                if (telefonos != null && !telefonos.isEmpty()) {
+                    return new SimpleStringProperty(telefonos.get(0));
+                }
+            }
+            return new SimpleStringProperty("");
+        });
         columnUsuarioTrabajador.setCellValueFactory(new PropertyValueFactory<>("usuario")); // si quieres el campo 'usuario'
 
-        tableTrabajador.setItems(listaTrabajadoresData); // AÑADE ESTO en initialize()
+        // Cargar los datos de trabajadores
+        getListaVendedorData();
+        tableTrabajador.setItems(listaTrabajadoresData);
 
         tableTrabajador.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-
             trabajadorSeleccionado = newSelection;
-
             mostrarInformacionVendedor(trabajadorSeleccionado);
+        });
 
+        // Configuración de la tabla de gestores
+        columnNombreGestor.setCellValueFactory(new PropertyValueFactory<GestorEvento, String>("nombre"));
+        columnCedulaGestor.setCellValueFactory(new PropertyValueFactory<GestorEvento, String>("cedula"));
+        columnTelefonoPrincipalGestor.setCellValueFactory(cellData -> {
+            GestorEvento gestor = cellData.getValue();
+            if (gestor != null) {
+                List<String> telefonos = gestor.getTelefono();
+                if (telefonos != null && !telefonos.isEmpty()) {
+                    return new SimpleStringProperty(telefonos.get(0));
+                }
+            }
+            return new SimpleStringProperty("");
+        });
+        columnUsuarioGestor.setCellValueFactory(new PropertyValueFactory<>("usuario"));
+
+        // Cargar los datos de gestores
+        getListaGestorData();
+        tableGestores.setItems(listaGestoresData);
+
+        tableGestores.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            gestorSeleccionado = newSelection;
+            mostrarInformacionGestor(gestorSeleccionado);
         });
     }
 
@@ -466,25 +668,68 @@ public class AdministradorController implements Initializable {
         return listaTrabajadoresData;
     }
 
+    public ObservableList<GestorEvento> getListaGestorData() {
+        listaGestoresData.clear();
+        listaGestoresData.addAll(GestorServicio.obtenerGestores());
+
+        return listaGestoresData;
+    }
+
     public void setAplicacion(Aplicacion aplicacion) {
         this.aplicacion = aplicacion;
         tableTrabajador.getItems().clear();
         tableTrabajador.setItems(getListaVendedorData());
+        tableGestores.getItems().clear();
+        tableGestores.setItems(getListaGestorData());
     }
 
     private void mostrarInformacionVendedor(Trabajador vendedorSeleccionado) {
-
         if (vendedorSeleccionado != null) {
             txtNombreTrabajador.setText(vendedorSeleccionado.getNombre());
             comboBoxCargo.setValue(vendedorSeleccionado.getCargo());
             txtUsuarioTrabajador.setText(vendedorSeleccionado.getUsuario());
             txtContrasenaTrabajador.setText(vendedorSeleccionado.getContrasena());
             txtCedulaTrabajador.setText(String.valueOf(vendedorSeleccionado.getCedula()));
-            txtTlf1Trabajador.setText(vendedorSeleccionado.getTelefono().get(0));
-            txtTlf2Trabajador.setText(vendedorSeleccionado.getTelefono().get(1));
 
+            // Set precio evento if the field exists and the cargo has a precio_evento
+            if (txtPrecioEvento != null && vendedorSeleccionado.getCargo() != null) {
+                txtPrecioEvento.setText(String.valueOf(vendedorSeleccionado.getCargo().getPrecio_evento()));
+            }
 
+            List<String> telefonos = vendedorSeleccionado.getTelefono();
+            if (telefonos != null && !telefonos.isEmpty()) {
+                txtTlf1Trabajador.setText(telefonos.get(0));
+                if (telefonos.size() > 1) {
+                    txtTlf2Trabajador.setText(telefonos.get(1));
+                } else {
+                    txtTlf2Trabajador.setText("");
+                }
+            } else {
+                txtTlf1Trabajador.setText("");
+                txtTlf2Trabajador.setText("");
+            }
         }
+    }
 
+    private void mostrarInformacionGestor(GestorEvento gestorSeleccionado) {
+        if (gestorSeleccionado != null) {
+            txtNombreGestor.setText(gestorSeleccionado.getNombre());
+            txtUsuarioGestor.setText(gestorSeleccionado.getUsuario());
+            txtContrasenaGestor.setText(gestorSeleccionado.getContrasena());
+            txtCedulaGestor.setText(String.valueOf(gestorSeleccionado.getCedula()));
+
+            List<String> telefonos = gestorSeleccionado.getTelefono();
+            if (telefonos != null && !telefonos.isEmpty()) {
+                txtTlf1Gestor.setText(telefonos.get(0));
+                if (telefonos.size() > 1) {
+                    txtTlf2Gestor.setText(telefonos.get(1));
+                } else {
+                    txtTlf2Gestor.setText("");
+                }
+            } else {
+                txtTlf1Gestor.setText("");
+                txtTlf2Gestor.setText("");
+            }
+        }
     }
 }
