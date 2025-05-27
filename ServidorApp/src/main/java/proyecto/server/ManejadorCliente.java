@@ -244,6 +244,14 @@ public class ManejadorCliente extends Thread {
                 salida.writeObject(exito ? evento : null);
             }
 
+            if (Comando.BUSCAR_CLIENTE.equals(comando)) {
+                int cedula = (int) entrada.readObject();
+                ClienteDAO dao = new ClienteDAO();
+                Cliente cliente = dao.buscarClientePorCedula(cedula);
+                salida.writeObject(cliente); // cliente puede ser null si no existe
+                salida.flush();
+            }
+
             if (Comando.ACTUALIZAR_EVENTO.equals(comando)) {
                 Evento evento = (Evento) entrada.readObject();
                 EventoDAO dao = new EventoDAO();

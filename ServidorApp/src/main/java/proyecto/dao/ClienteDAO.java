@@ -152,5 +152,49 @@ public class ClienteDAO {
             return false;
         }
     }
+
+    public Cliente buscarClientePorCedula(int cedula) {
+        Cliente cliente = null;
+
+        String sql = "SELECT u.cedula, u.nombre, u.usuario, u.contrasena, tel.telefono " +
+                " FROM Usuario u " +
+                " INNER JOIN Cliente c ON u.cedula = c.cedula " +
+                " LEFT JOIN Telefonos tel ON u.cedula = tel.cedula_usuario " +
+                " WHERE u.cedula = 7";
+
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, cedula);
+            ResultSet rs = stmt.executeQuery();
+
+            ArrayList<String> telefonos = new ArrayList<>();
+            String nombre = null, usuario = null, contrasena = null;
+            boolean encontrado = false;
+            System.out.println("Vamos aquí");
+            while (rs.next()) {
+                if (!encontrado) {
+                    nombre = rs.getString("nombre");
+                    usuario = rs.getString("usuario");
+                    contrasena = rs.getString("contrasena");
+                    encontrado = true;
+                }
+
+                String telefono = rs.getString("telefono");
+                if (telefono != null && !telefonos.contains(telefono)) {
+                    telefonos.add(telefono);
+                }
+            }
+
+            if (encontrado) {
+                cliente = new Cliente(cedula, nombre, usuario, contrasena, telefonos);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return cliente;
+    }
 }
 

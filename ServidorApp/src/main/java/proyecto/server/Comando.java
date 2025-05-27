@@ -38,5 +38,13 @@ public class Comando {
     // Comandos para Auditoría
     public static final String REGISTRAR_AUDITORIA = "REGISTRAR_AUDITORIA";
     public static final String OBTENER_REGISTROS_AUDITORIA = "OBTENER_REGISTROS_AUDITORIA";
+
+    public static final String OBTENER_CLIENTES = "OBTENER_CLIENTES";
+    public static final String CREAR_CLIENTE = "CREAR_CLIENTE";
+    public static final String ACTUALIZAR_CLIENTE = "ACTUALIZAR_CLIENTE";
+    public static final String ELIMINAR_CLIENTE = "ELIMINAR_CLIENTE";
+    public static final String OBTENER_CLIENTE = "OBTENER_CLIENTE";
+    public static final String OBTENER_PRODUCTOS_EVENTO = "OBTENER_PRODUCTOS_EVENTO";
+    public static final String BUSCAR_CLIENTE = "BUSCAR_CLIENTE";
     public static final String GENERAR_REPORTE_TRABAJADORES_CARGO_PRECIO = "GENERAR_REPORTE_TRABAJADORES_CARGO_PRECIO";
 }

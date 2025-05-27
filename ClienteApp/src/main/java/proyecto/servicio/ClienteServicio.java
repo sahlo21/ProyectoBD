@@ -1,46 +1,106 @@
 package proyecto.servicio;
 
 import proyecto.modelo.Cliente;
-
+import java.io.*;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ClienteServicio {
-    // Simulación de base de datos en memoria
-    private static final List<Cliente> clientes = new ArrayList<>();
 
-    public static Cliente buscarCliente(int cedula) {
-        for (Cliente c : clientes) {
-            if (c.getCedula() == cedula) {
-                return c;
+    private static final String HOST = "localhost";
+    private static final int PUERTO = 5000;
+
+    public static List<Cliente> obtenerCliente() {
+        List<Cliente> clientes = new ArrayList<>();
+        try (Socket socket = new Socket(HOST, PUERTO);
+             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+             ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
+
+            out.writeObject(Comando.OBTENER_CLIENTES);
+
+            Object respuesta = in.readObject();
+            if (respuesta instanceof List<?>) {
+                for (Object obj : (List<?>) respuesta) {
+                    if (obj instanceof Cliente) {
+                        clientes.add((Cliente) obj);
+                    }
+                }
             }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return clientes;
+    }
+    public static Cliente buscarCliente(int cedula) {
+        try (Socket socket = new Socket(HOST, PUERTO);
+             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+             ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
+
+            out.writeObject(Comando.BUSCAR_CLIENTE); // Debes tener este comando en tu enum
+            out.writeObject(cedula);
+
+            Object respuesta = in.readObject();
+            if (respuesta instanceof Cliente) {
+                return (Cliente) respuesta;
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
         return null;
     }
 
-    public static List<Cliente> obtenerClientes() {
-        return new ArrayList<>(clientes);
-    }
+    public Cliente crearCliente(Cliente cliente) {
+        try (Socket socket = new Socket(HOST, PUERTO);
+             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+             ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
 
-    public static boolean crearCliente(Cliente cliente) {
-        if (buscarCliente(cliente.getCedula()) != null) {
-            return false; // Ya existe
-        }
-        clientes.add(cliente);
-        return true;
-    }
+            out.writeObject(Comando.CREAR_CLIENTE);
+            out.writeObject(cliente);
 
-    public static boolean actualizarCliente(Cliente cliente) {
-        for (int i = 0; i < clientes.size(); i++) {
-            if (clientes.get(i).getCedula() == cliente.getCedula()) {
-                clientes.set(i, cliente);
-                return true;
+            Object respuesta = in.readObject();
+            if (respuesta instanceof Cliente) {
+                return (Cliente) respuesta;
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean actualizarCliente(Cliente cliente) {
+        try (Socket socket = new Socket(HOST, PUERTO);
+             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+             ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
+
+            out.writeObject(Comando.ACTUALIZAR_CLIENTE);
+            out.writeObject(cliente);
+
+            Object respuesta = in.readObject();
+            if (respuesta instanceof Boolean) {
+                return (Boolean) respuesta;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return false;
     }
 
-    public static boolean eliminarCliente(int cedula) {
-        return clientes.removeIf(c -> c.getCedula() == cedula);
+    public boolean eliminarCliente(int cedula) {
+        try (Socket socket = new Socket(HOST, PUERTO);
+             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+             ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
+
+            out.writeObject(Comando.ELIMINAR_CLIENTE);
+            out.writeObject(cedula);
+
+            Object respuesta = in.readObject();
+            if (respuesta instanceof Boolean) {
+                return (Boolean) respuesta;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
