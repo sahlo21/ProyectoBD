@@ -42,13 +42,13 @@ public class ProductoDAO {
 
             while (rs.next()) {
                 Producto producto = new Producto(
-                        rs.getInt("id"),
-                        rs.getString("nombre"),
-                        rs.getString("descripcion"),
-                        rs.getDouble("precio"),
-                        rs.getInt("cantidad"),
-                        rs.getInt("precioDeAlquiler")
-                );
+                                        rs.getInt("id"),
+                                        rs.getString("nombre"),
+                                        rs.getString("descripcion"),
+                                        rs.getDouble("precio"),
+                                        rs.getDouble("precioDeAlquiler"),
+                                        rs.getInt("cantidad")
+                                );
                 productos.add(producto);
             }
 
