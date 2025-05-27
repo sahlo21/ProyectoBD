@@ -50,34 +50,34 @@
                                                                               <Font name="System Bold" size="14.0" />
                                                                            </font>
                                                                         </Button>
-                                                                        <TextField fx:id="txtCedulaCliente" alignment="CENTER" layoutX="131.0" layoutY="117.0" prefHeight="29.0" prefWidth="240.0" promptText="Ingrese la cedula del cliente" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
+                                                                        <TextField fx:id="txtCedulaCliente" alignment="CENTER" layoutX="118.0" layoutY="158.0" prefHeight="29.0" prefWidth="240.0" promptText="Ingrese la cedula del cliente" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
                                                                         <Button layoutX="500.0" layoutY="226.0" mnemonicParsing="false" onAction="#crearEvento" prefHeight="35.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Crear" textFill="WHITE">
                                                                            <font>
                                                                               <Font name="System Bold" size="14.0" />
                                                                            </font>
                                                                         </Button>
                                                                         <Separator layoutX="17.0" layoutY="210.0" prefHeight="0.0" prefWidth="770.0" />
-                                                                        <Separator layoutX="18.0" layoutY="48.0" prefHeight="0.0" prefWidth="768.0" AnchorPane.bottomAnchor="202.0" AnchorPane.topAnchor="48.0" />
-                                                                        <TextField fx:id="txtNombreEvento" alignment="CENTER" layoutX="131.0" layoutY="79.0" prefHeight="29.0" prefWidth="240.0" promptText="Ingrese nombre del evento" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
+                                                                        <Separator layoutX="18.0" layoutY="30.0" prefHeight="0.0" prefWidth="768.0" AnchorPane.bottomAnchor="220.0" AnchorPane.topAnchor="30.0" />
+                                                                        <TextField fx:id="txtNombreEvento" alignment="CENTER" layoutX="118.0" layoutY="120.0" prefHeight="29.0" prefWidth="240.0" promptText="Ingrese nombre del evento" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
                                                                         <Label layoutX="297.0" layoutY="21.0" text="Información del evento" textFill="#0080ff">
                                                                            <font>
                                                                               <Font name="Tahoma Bold" size="14.0" />
                                                                            </font>
                                                                         </Label>
-                                                                        <Label layoutX="28.0" layoutY="93.0" text="Nombre" textFill="#0080ff">
+                                                                        <Label layoutX="29.0" layoutY="125.0" prefHeight="0.0" prefWidth="57.0" text="Nombre" textFill="#0080ff">
                                                                            <font>
                                                                               <Font name="Tahoma Bold" size="14.0" />
                                                                            </font>
                                                                         </Label>
-                                                                        <Label layoutX="28.0" layoutY="128.0" text="Cliente" textFill="#0080ff">
+                                                                        <Label layoutX="32.0" layoutY="163.0" prefWidth="50.0" text="Cliente" textFill="#0080ff">
                                                                            <font>
                                                                               <Font name="Tahoma Bold" size="14.0" />
                                                                            </font>
                                                                         </Label>
-                                                                        <DatePicker fx:id="dpFechaEvento" layoutX="486.0" layoutY="81.0" prefHeight="25.0" prefWidth="181.0" promptText="Seleccione una fecha" />
-                                                                        <ComboBox fx:id="comboBoxLugares" layoutX="486.0" layoutY="119.0" prefHeight="25.0" prefWidth="183.0" promptText="Seleccione el lugar" style="-fx-background-color: #0080ff;" />
-                                                                        <ComboBox fx:id="comboBoxTrabajadores" layoutX="69.0" layoutY="159.0" prefHeight="15.0" prefWidth="215.0" promptText="Agregue los trabajadores" style="-fx-background-color: #0080ff;" />
-                                                                        <Button layoutX="295.0" layoutY="159.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#agregarTrabajadores" prefHeight="25.0" prefWidth="25.0" style="-fx-background-color: #0080ff;" textFill="WHITE">
+                                                                        <DatePicker fx:id="dpFechaEvento" layoutX="487.0" layoutY="54.0" prefHeight="25.0" prefWidth="181.0" promptText="Seleccione una fecha" />
+                                                                        <ComboBox fx:id="comboBoxLugares" layoutX="457.0" layoutY="90.0" prefHeight="25.0" prefWidth="225.0" promptText="Seleccione el lugar" style="-fx-background-color: #0080ff;" />
+                                                                        <ComboBox fx:id="comboBoxTrabajadores" layoutX="458.0" layoutY="134.0" prefHeight="25.0" prefWidth="226.0" promptText="Agregue los trabajadores" style="-fx-background-color: #0080ff;" />
+                                                                        <Button layoutX="696.0" layoutY="134.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#agregarTrabajadores" prefHeight="25.0" prefWidth="25.0" style="-fx-background-color: #0080ff;" textFill="WHITE">
                                                                            <font>
                                                                               <Font name="System Bold" size="14.0" />
                                                                            </font>
@@ -89,13 +89,13 @@
                                                                               </ImageView>
                                                                            </graphic>
                                                                         </Button>
-                                                                        <ComboBox fx:id="comboBoxElementos" layoutX="457.0" layoutY="159.0" prefHeight="25.0" prefWidth="228.0" promptText="Agregue los elementos necesarios" style="-fx-background-color: #0080ff;" />
-                                                                        <Button layoutX="696.0" layoutY="159.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#agregarElementos" prefHeight="25.0" prefWidth="25.0" style="-fx-background-color: #0080ff;" textFill="WHITE">
+                                                                        <ComboBox fx:id="comboBoxElementos" layoutX="456.0" layoutY="172.0" prefHeight="25.0" prefWidth="228.0" promptText="Agregue los elementos necesarios" style="-fx-background-color: #0080ff;" />
+                                                                        <Button layoutX="696.0" layoutY="172.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#agregarElementos" prefHeight="25.0" prefWidth="25.0" style="-fx-background-color: #0080ff;" textFill="WHITE">
                                                                            <font>
                                                                               <Font name="System Bold" size="14.0" />
                                                                            </font>
                                                                            <graphic>
-                                                                              <ImageView fitHeight="30.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                                                                              <ImageView fitHeight="30.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                                                                                  <image>
                                                                                     <Image url="@../../img/agregar.png" />
                                                                                  </image>
@@ -117,6 +117,12 @@
                                                                               <Font name="Tahoma" size="14.0" />
                                                                            </font>
                                                                         </Label>
+                                                                        <Label layoutX="37.0" layoutY="82.0" prefHeight="0.0" prefWidth="57.0" text="iD:" textFill="#0080ff">
+                                                                           <font>
+                                                                              <Font name="Tahoma Bold" size="14.0" />
+                                                                           </font>
+                                                                        </Label>
+                                                                        <TextField fx:id="txtIdEvento" alignment="CENTER" layoutX="118.0" layoutY="76.0" prefHeight="29.0" prefWidth="240.0" promptText="Ingrese nombre del evento" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
                                                                      </children>
                                                                   </AnchorPane>
                                                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="391.0" prefWidth="963.0">

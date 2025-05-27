@@ -1,20 +1,8 @@
 package proyecto.server;
 
 
-import proyecto.dao.AuditoriaDAO;
-import proyecto.dao.CargoDAO;
-import proyecto.dao.GestorEventoDAO;
-import proyecto.dao.LoginDAO;
-import proyecto.dao.ProductoDAO;
-import proyecto.dao.ProveedorDAO;
-import proyecto.dao.TrabajadorDAO;
-import proyecto.modelo.Auditoria;
-import proyecto.modelo.Cargo;
-import proyecto.modelo.GestorEvento;
-import proyecto.modelo.Producto;
-import proyecto.modelo.Proveedor;
-import proyecto.modelo.Trabajador;
-import proyecto.modelo.Usuario;
+import proyecto.dao.*;
+import proyecto.modelo.*;
 
 
 import java.io.*;
@@ -238,6 +226,39 @@ public class ManejadorCliente extends Thread {
                 // ya que la auditoría se registra a través del comando REGISTRAR_AUDITORIA
                 salida.writeObject(true);
             }
+            if (Comando.OBTENER_TRABAJADORES.equals(comando)) {
+                TrabajadorDAO dao = new TrabajadorDAO();
+                List<Trabajador> trabajadores = dao.obtenerTrabajadores();
+                salida.writeObject(trabajadores);
+            }
+
+            if (Comando.OBTENER_EVENTOS.equals(comando)) {
+                EventoDAO dao = new EventoDAO();
+                List<Evento> eventos = dao.obtenerEventos();
+                salida.writeObject(eventos);
+            }
+
+            if (Comando.CREAR_EVENTO.equals(comando)) {
+                Evento evento = (Evento) entrada.readObject();
+                EventoDAO dao = new EventoDAO();
+                boolean exito = dao.crearEvento(evento);
+                salida.writeObject(exito ? evento : null);
+            }
+
+            if (Comando.ACTUALIZAR_EVENTO.equals(comando)) {
+                Evento evento = (Evento) entrada.readObject();
+                EventoDAO dao = new EventoDAO();
+                boolean exito = dao.actualizarEvento(evento);
+                salida.writeObject(exito);
+            }
+
+            if (Comando.ELIMINAR_EVENTO.equals(comando)) {
+                int idEvento = (int) entrada.readObject();
+                EventoDAO dao = new EventoDAO();
+                boolean exito = dao.eliminarEvento(idEvento);
+                salida.writeObject(exito);
+            }
+
 
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();

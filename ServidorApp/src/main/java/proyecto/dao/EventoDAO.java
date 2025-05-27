@@ -8,15 +8,16 @@ import proyecto.server.ConexionBD;
 public class EventoDAO {
 
     public boolean crearEvento(Evento evento) {
-        String sql = "INSERT INTO Evento (nombre, fecha, lugar, precio) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Evento (idEvento, nombre, fecha, lugar, precio) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = ConexionBD.obtenerConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, evento.getNombre());
-            stmt.setDate(2, new java.sql.Date(evento.getFecha().getTime()));
-            stmt.setString(3, evento.getLugar());
-            stmt.setDouble(4, evento.getPrecio());
+            stmt.setInt(1, evento.getId()); // idEvento ingresado manualmente
+            stmt.setString(2, evento.getNombre());
+            stmt.setDate(3, new java.sql.Date(evento.getFecha().getTime()));
+            stmt.setString(4, evento.getLugar());
+            stmt.setDouble(5, evento.getPrecio());
 
             stmt.executeUpdate();
             return true;
@@ -26,6 +27,7 @@ public class EventoDAO {
             return false;
         }
     }
+
 
     public boolean actualizarEvento(Evento evento) {
         String sql = "UPDATE Evento SET nombre = ?, fecha = ?, lugar = ?, precio = ? WHERE idEvento = ?";
