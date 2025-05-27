@@ -1,12 +1,14 @@
 package proyecto.server;
 
 
+import proyecto.dao.AuditoriaDAO;
 import proyecto.dao.CargoDAO;
 import proyecto.dao.GestorEventoDAO;
 import proyecto.dao.LoginDAO;
 import proyecto.dao.ProductoDAO;
 import proyecto.dao.ProveedorDAO;
 import proyecto.dao.TrabajadorDAO;
+import proyecto.modelo.Auditoria;
 import proyecto.modelo.Cargo;
 import proyecto.modelo.GestorEvento;
 import proyecto.modelo.Producto;
@@ -213,6 +215,28 @@ public class ManejadorCliente extends Thread {
                 GestorEventoDAO dao = new GestorEventoDAO();
                 boolean exito = dao.eliminarGestor(cedula);
                 salida.writeObject(exito);
+            }
+
+            // Manejo de comandos de auditoría
+            if (Comando.REGISTRAR_AUDITORIA.equals(comando)) {
+                Auditoria auditoria = (Auditoria) entrada.readObject();
+                AuditoriaDAO dao = new AuditoriaDAO();
+                boolean exito = dao.registrarAuditoria(auditoria);
+                salida.writeObject(exito);
+            }
+
+            if (Comando.OBTENER_REGISTROS_AUDITORIA.equals(comando)) {
+                AuditoriaDAO dao = new AuditoriaDAO();
+                List<Auditoria> registros = dao.obtenerRegistrosAuditoria();
+                salida.writeObject(registros);
+            }
+
+            // Manejo del comando LOGOUT
+            if (Comando.LOGOUT.equals(comando)) {
+                int idUsuario = (int) entrada.readObject();
+                // No necesitamos hacer nada especial para el logout en el servidor,
+                // ya que la auditoría se registra a través del comando REGISTRAR_AUDITORIA
+                salida.writeObject(true);
             }
 
         } catch (IOException | ClassNotFoundException e) {
