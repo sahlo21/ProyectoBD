@@ -5,6 +5,7 @@ import java.util.List;
 ;
 
 public class Evento implements Serializable {
+    private static final long serialVersionUID = 1L;
     private int id;
     private String nombre;
     private Date fecha;

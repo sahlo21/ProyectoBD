@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class Trabajador extends Usuario implements Serializable {
+    private static final long serialVersionUID = 1L;
     Cargo cargo;
 
     public Trabajador(int cedula, String nombre, String usuario, String contrasena, ArrayList<String> telefono, Cargo cargo) {

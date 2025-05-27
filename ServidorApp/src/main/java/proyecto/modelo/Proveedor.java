@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class Proveedor implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     String id;
     String nombre;
