@@ -4,15 +4,22 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import proyecto.Aplicacion;
 import proyecto.modelo.*;
-import proyecto.servicio.CargoServicio;
-import proyecto.servicio.GestorServicio;
-import proyecto.servicio.LoginServicio;
-import proyecto.servicio.ProveedorServicio;
-import proyecto.servicio.TrabajadorServicio;
+import proyecto.servicio.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -21,16 +28,17 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
-
 public class AdministradorController implements Initializable {
 
     ObservableList<Trabajador> listaTrabajadoresData = FXCollections.observableArrayList();
@@ -90,6 +98,8 @@ public class AdministradorController implements Initializable {
 
     @FXML
     private Label lblHora;
+    @FXML private ScrollPane scrollPdf;
+    @FXML private VBox vboxPdf;
 
     @FXML
     private Label lblUserAdmin;
@@ -139,7 +149,6 @@ public class AdministradorController implements Initializable {
     @FXML
     private TextField txtUsuarioTrabajador;
     private Aplicacion aplicacion;
-
 
 
     @FXML
@@ -396,6 +405,7 @@ public class AdministradorController implements Initializable {
     void registrarTrabajador(ActionEvent event) {
 
     }
+
     @FXML
     private TableView<Cargo> tableCargo;
 
@@ -458,6 +468,7 @@ public class AdministradorController implements Initializable {
 
     /**
      * Valida los campos del formulario de cargo
+     *
      * @return String con los errores encontrados, o cadena vacía si no hay errores
      */
     private String validarCamposCargo() {
@@ -657,7 +668,7 @@ public class AdministradorController implements Initializable {
         TrabajadorServicio servicio = new TrabajadorServicio();
         Trabajador trabajadorAUx = servicio.crearTrabajador(trabajador);
         if (trabajadorAUx != null) {
-            System.out.println("taxu"+trabajadorAUx);
+            System.out.println("taxu" + trabajadorAUx);
             listaTrabajadoresData.add(trabajadorAUx);
             actualizarNumerosDeFilas(tableTrabajador);
             limpiarCamposTrabajador();
@@ -692,6 +703,7 @@ public class AdministradorController implements Initializable {
             }
         }
     }
+
     @FXML
     void actualizarTrabajador(ActionEvent event) {
         if (trabajadorSeleccionado == null) {
@@ -762,6 +774,7 @@ public class AdministradorController implements Initializable {
             mostrarMensajeError("No se pudo actualizar el trabajador.");
         }
     }
+
     @FXML
     void eliminarTrabajador(ActionEvent event) {
         trabajadorSeleccionado = tableTrabajador.getSelectionModel().getSelectedItem();
@@ -792,7 +805,6 @@ public class AdministradorController implements Initializable {
             }
         }
     }
-
 
 
     private String validarCamposTrabajador() {
@@ -880,6 +892,7 @@ public class AdministradorController implements Initializable {
 
         return errores.toString();
     }
+
     private void limpiarCamposTrabajador() {
         txtNombreTrabajador.clear();
         txtUsuarioTrabajador.clear();
@@ -913,6 +926,7 @@ public class AdministradorController implements Initializable {
             return false;
         }
     }
+
     private void mostrarAlerta(String titulo, String mensaje) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(titulo);
@@ -936,6 +950,7 @@ public class AdministradorController implements Initializable {
             return false;
         }
     }
+
     private void mostrarMensajeInformacion(String mensaje) {
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -944,6 +959,7 @@ public class AdministradorController implements Initializable {
         alert.setContentText(mensaje);
         alert.showAndWait();
     }
+
     private void mostrarMensajeError(String mensaje) {
 
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -953,6 +969,7 @@ public class AdministradorController implements Initializable {
         alert.showAndWait();
 
     }
+
     private void mostrarMensaje(String titulo, String header, String contenido, Alert.AlertType alertType) {
         Alert alert = new Alert(alertType);
         alert.setTitle(titulo);
@@ -1007,8 +1024,8 @@ public class AdministradorController implements Initializable {
         }
 
         // Configuración de la tabla de trabajadores
-        if (columnNombreTrabajador != null && columnCedulaTrabajador != null && 
-            columnTelefonoPrincipal != null && columnUsuarioTrabajador != null) {
+        if (columnNombreTrabajador != null && columnCedulaTrabajador != null &&
+                columnTelefonoPrincipal != null && columnUsuarioTrabajador != null) {
 
             // Crear y configurar la columna de numeración
             columnNumeroTrabajador = new TableColumn<>("No.");
@@ -1018,8 +1035,8 @@ public class AdministradorController implements Initializable {
                     tableTrabajador.getItems().indexOf(column.getValue()) + 1));
 
             // Agregar la columna de numeración como primera columna si no existe ya
-            if (tableTrabajador.getColumns().isEmpty() || 
-                !tableTrabajador.getColumns().get(0).getText().equals("No.")) {
+            if (tableTrabajador.getColumns().isEmpty() ||
+                    !tableTrabajador.getColumns().get(0).getText().equals("No.")) {
                 tableTrabajador.getColumns().add(0, columnNumeroTrabajador);
             }
 
@@ -1065,8 +1082,8 @@ public class AdministradorController implements Initializable {
         }
 
         // Configuración de la tabla de gestores
-        if (columnNombreGestor != null && columnCedulaGestor != null && 
-            columnTelefonoPrincipalGestor != null && columnUsuarioGestor != null) {
+        if (columnNombreGestor != null && columnCedulaGestor != null &&
+                columnTelefonoPrincipalGestor != null && columnUsuarioGestor != null) {
 
             // Crear y configurar la columna de numeración
             columnNumeroGestor = new TableColumn<>("No.");
@@ -1076,8 +1093,8 @@ public class AdministradorController implements Initializable {
                     tableGestores.getItems().indexOf(column.getValue()) + 1));
 
             // Agregar la columna de numeración como primera columna si no existe ya
-            if (tableGestores.getColumns().isEmpty() || 
-                !tableGestores.getColumns().get(0).getText().equals("No.")) {
+            if (tableGestores.getColumns().isEmpty() ||
+                    !tableGestores.getColumns().get(0).getText().equals("No.")) {
                 tableGestores.getColumns().add(0, columnNumeroGestor);
             }
 
@@ -1117,8 +1134,8 @@ public class AdministradorController implements Initializable {
                     tableCargo.getItems().indexOf(column.getValue()) + 1));
 
             // Agregar la columna de numeración como primera columna si no existe ya
-            if (tableCargo.getColumns().isEmpty() || 
-                !tableCargo.getColumns().get(0).getText().equals("No.")) {
+            if (tableCargo.getColumns().isEmpty() ||
+                    !tableCargo.getColumns().get(0).getText().equals("No.")) {
                 tableCargo.getColumns().add(0, columnNumeroCargo);
             }
 
@@ -1140,6 +1157,7 @@ public class AdministradorController implements Initializable {
 
     /**
      * Actualiza los números de fila en una tabla
+     *
      * @param tableView La tabla a actualizar
      */
     private void actualizarNumerosDeFilas(TableView<?> tableView) {
@@ -1172,6 +1190,7 @@ public class AdministradorController implements Initializable {
 
     /**
      * Obtiene la lista de cargos del servidor y la carga en la lista observable
+     *
      * @return La lista observable de cargos
      */
     public ObservableList<Cargo> getListaCargosData() {
@@ -1275,6 +1294,7 @@ public class AdministradorController implements Initializable {
 
     /**
      * Muestra la información del cargo seleccionado en los campos del formulario
+     *
      * @param cargoSeleccionado El cargo seleccionado en la tabla
      */
     private void mostrarInformacionCargo(Cargo cargoSeleccionado) {
@@ -1283,4 +1303,46 @@ public class AdministradorController implements Initializable {
             txtPrecioCargo.setText(String.valueOf(cargoSeleccionado.getPrecio_evento()));
         }
     }
+
+    //Reportes
+
+    @FXML
+    void reporte1(ActionEvent event) {
+        List<Map<String,Object>> datos = ReporteServicio.generarReporteTrabajadoresCargoYPrecio();
+        if (datos.isEmpty()) {
+            new Alert(Alert.AlertType.INFORMATION, "No hay datos para el reporte.").showAndWait();
+            return;
+        }
+
+        String ruta = "reporte_trabajadores.pdf";
+        try {
+            PDFUtil.generarReporteTrabajadoresPDF(datos, ruta);
+            renderizarPDFaVBox(ruta);
+            // Abrir automáticamente
+
+                new Alert(Alert.AlertType.INFORMATION,
+                        "PDF guardado en: " + Paths.get(ruta).toAbsolutePath())
+                        .showAndWait();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR,
+                    "Error generando el PDF:\n" + e.getMessage()).showAndWait();
+        }
+    }
+    private void renderizarPDFaVBox(String rutaPdf) throws Exception {
+        vboxPdf.getChildren().clear();
+        try (PDDocument doc = PDDocument.load(new File(rutaPdf))) {
+            PDFRenderer renderer = new PDFRenderer(doc);
+            for (int i = 0; i < doc.getNumberOfPages(); i++) {
+                BufferedImage bim = renderer.renderImageWithDPI(i, 150);
+                Image fxImage = SwingFXUtils.toFXImage(bim, null);
+                ImageView iv = new ImageView(fxImage);
+                iv.setPreserveRatio(true);
+                iv.setFitWidth(scrollPdf.getWidth() - 20);
+                vboxPdf.getChildren().add(iv);
+            }
+        }
+    }
+
 }

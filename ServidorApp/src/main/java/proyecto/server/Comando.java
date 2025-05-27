@@ -38,4 +38,5 @@ public class Comando {
     // Comandos para Auditoría
     public static final String REGISTRAR_AUDITORIA = "REGISTRAR_AUDITORIA";
     public static final String OBTENER_REGISTROS_AUDITORIA = "OBTENER_REGISTROS_AUDITORIA";
+    public static final String GENERAR_REPORTE_TRABAJADORES_CARGO_PRECIO = "GENERAR_REPORTE_TRABAJADORES_CARGO_PRECIO";
 }

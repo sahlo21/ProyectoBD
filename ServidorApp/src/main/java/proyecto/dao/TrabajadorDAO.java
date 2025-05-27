@@ -233,4 +233,37 @@ public class TrabajadorDAO {
 
         return new ArrayList<>(mapa.values());
     }
+    public List<Map<String,Object>> obtenerTrabajadoresConCargoYPrecio() {
+        String sql = """
+        SELECT
+            t.cedula                   AS cedulaTrabajador,
+            u.nombre                   AS nombreTrabajador,
+            c.name                     AS nombreCargo,
+            c.precio_evento            AS precioPorEvento
+        FROM dbo.Trabajador AS t
+        INNER JOIN dbo.Usuario  AS u
+            ON t.cedula = u.cedula
+        INNER JOIN dbo.Cargo    AS c
+            ON t.cargo_id = c.idCargo
+        """;
+
+        List<Map<String,Object>> lista = new ArrayList<>();
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Map<String,Object> fila = new HashMap<>();
+                fila.put("cedulaTrabajador", rs.getInt("cedulaTrabajador"));
+                fila.put("nombreTrabajador", rs.getString("nombreTrabajador"));
+                fila.put("nombreCargo",      rs.getString("nombreCargo"));
+                fila.put("precioPorEvento",  rs.getDouble("precioPorEvento"));
+                lista.add(fila);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
 }

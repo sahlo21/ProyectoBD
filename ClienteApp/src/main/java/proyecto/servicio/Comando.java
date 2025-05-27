@@ -44,4 +44,5 @@ public class Comando {
     public static final String OBTENER_PRODUCTOS_EVENTO = "OBTENER_PRODUCTOS_EVENTO";
 
 
+    public static final Object GENERAR_REPORTE_TRABAJADORES_CARGO_PRECIO = "GENERAR_REPORTE_TRABAJADORES_CARGO_PRECIO";
 }

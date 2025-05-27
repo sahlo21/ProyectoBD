@@ -9,6 +9,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ManejadorCliente extends Thread {
     private final Socket socket;
@@ -256,6 +257,13 @@ public class ManejadorCliente extends Thread {
                 boolean exito = dao.eliminarEvento(idEvento);
                 salida.writeObject(exito);
             }
+            // Reporte 1: Trabajadores + Cargo + Precio
+            if (Comando.GENERAR_REPORTE_TRABAJADORES_CARGO_PRECIO.equals(comando)) {
+                TrabajadorDAO dao = new TrabajadorDAO();
+                List<Map<String,Object>> datos = dao.obtenerTrabajadoresConCargoYPrecio();
+                salida.writeObject(datos);
+            }
+
 
 
         } catch (java.net.SocketException se) {

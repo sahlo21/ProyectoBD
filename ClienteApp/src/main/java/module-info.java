@@ -3,6 +3,10 @@ module proyecto.clienteapp {
     requires javafx.fxml;
     requires com.dlsc.formsfx;
     requires java.sql;
+    requires java.desktop;
+    requires itextpdf;
+    requires org.apache.pdfbox;
+    requires javafx.swing;
 
     opens proyecto to javafx.fxml;
     opens proyecto.controller to javafx.fxml;
