@@ -265,5 +265,41 @@ public class TrabajadorDAO {
         }
         return lista;
     }
+    public List<Map<String,Object>> obtenerResumenEventosConCostos() {
+        String sql = """
+        SELECT 
+            E.nombre AS nombreEvento,
+            E.fecha,
+            E.precio AS precioEntrada,
+            COUNT(ET.idTrabajador) AS cantidadTrabajadores,
+            SUM(CA.precio_evento) AS costoTotalTrabajadores,
+            E.precio + SUM(CA.precio_evento) AS totalCostoEvento
+        FROM Evento E
+        JOIN Evento_Trabajador ET ON E.idEvento = ET.idEvento
+        JOIN Trabajador T ON ET.idTrabajador = T.cedula
+        JOIN Cargo CA ON T.cargo_id = CA.idCargo
+        GROUP BY E.nombre, E.fecha, E.precio
+    """;
+
+        List<Map<String,Object>> lista = new ArrayList<>();
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Map<String,Object> fila = new HashMap<>();
+                fila.put("nombreEvento", rs.getString("nombreEvento"));
+                fila.put("fecha", rs.getDate("fecha"));
+                fila.put("precioEntrada", rs.getDouble("precioEntrada"));
+                fila.put("cantidadTrabajadores", rs.getInt("cantidadTrabajadores"));
+                fila.put("costoTotalTrabajadores", rs.getDouble("costoTotalTrabajadores"));
+                fila.put("totalCostoEvento", rs.getDouble("totalCostoEvento"));
+                lista.add(fila);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
 
 }

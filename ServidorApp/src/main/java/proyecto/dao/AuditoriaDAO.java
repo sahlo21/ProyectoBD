@@ -6,7 +6,9 @@ import proyecto.server.ConexionBD;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Clase para manejar las operaciones de base de datos relacionadas con la auditoría
@@ -104,4 +106,38 @@ public class AuditoriaDAO {
         
         return registros;
     }
+    public List<Map<String, Object>> obtenerReporteAuditoria() {
+        String sql = """
+        SELECT 
+            U.nombre AS NombreUsuario,
+            A.accion,
+            COUNT(*) AS TotalAcciones,
+            MIN(A.fecha_hora) AS PrimeraAccion,
+            MAX(A.fecha_hora) AS UltimaAccion
+        FROM auditoria A
+        JOIN Usuario U ON A.id_usuario = U.cedula
+        GROUP BY U.nombre, A.accion
+        ORDER BY U.nombre
+    """;
+
+        List<Map<String, Object>> lista = new ArrayList<>();
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Map<String, Object> fila = new HashMap<>();
+                fila.put("nombreUsuario", rs.getString("NombreUsuario"));
+                fila.put("accion", rs.getString("accion"));
+                fila.put("totalAcciones", rs.getInt("TotalAcciones"));
+                fila.put("primeraAccion", rs.getTimestamp("PrimeraAccion"));
+                fila.put("ultimaAccion", rs.getTimestamp("UltimaAccion"));
+                lista.add(fila);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
 }

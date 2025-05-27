@@ -1308,21 +1308,16 @@ public class AdministradorController implements Initializable {
 
     @FXML
     void reporte1(ActionEvent event) {
-        List<Map<String,Object>> datos = ReporteServicio.generarReporteTrabajadoresCargoYPrecio();
+        List<Map<String,Object>> datos = ReporteServicio.generarReporteAlquileresMensuales();
         if (datos.isEmpty()) {
             new Alert(Alert.AlertType.INFORMATION, "No hay datos para el reporte.").showAndWait();
             return;
         }
 
-        String ruta = "reporte_trabajadores.pdf";
+        String ruta = "reporte_alquileres_mensuales.pdf";
         try {
-            PDFUtil.generarReporteTrabajadoresPDF(datos, ruta);
+            PDFUtil.generarReporteAlquileresMensualesPDF(datos, ruta);
             renderizarPDFaVBox(ruta);
-            // Abrir automáticamente
-
-                new Alert(Alert.AlertType.INFORMATION,
-                        "PDF guardado en: " + Paths.get(ruta).toAbsolutePath())
-                        .showAndWait();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1335,14 +1330,83 @@ public class AdministradorController implements Initializable {
         try (PDDocument doc = PDDocument.load(new File(rutaPdf))) {
             PDFRenderer renderer = new PDFRenderer(doc);
             for (int i = 0; i < doc.getNumberOfPages(); i++) {
-                BufferedImage bim = renderer.renderImageWithDPI(i, 150);
+                // Aumenta el DPI para que tenga mejor resolución
+                BufferedImage bim = renderer.renderImageWithDPI(i, 175); // Puedes probar 175 o 200
+
                 Image fxImage = SwingFXUtils.toFXImage(bim, null);
                 ImageView iv = new ImageView(fxImage);
+
                 iv.setPreserveRatio(true);
-                iv.setFitWidth(scrollPdf.getWidth() - 20);
+
+                // Ajusta el ancho y alto (zoom visual)
+                double zoom = 1.25; // 1.0 = 100%, 1.25 = 125%
+                iv.setFitWidth(scrollPdf.getWidth() * zoom); // más ancho
+                // opcionalmente puedes fijar un alto máximo:
+                // iv.setFitHeight(scrollPdf.getHeight() * zoom);
+
                 vboxPdf.getChildren().add(iv);
             }
         }
     }
+    @FXML
+    void reporte2(ActionEvent event) {
+        List<Map<String,Object>> datos = ReporteServicio.generarReporteCostosEventos();
+        if (datos.isEmpty()) {
+            new Alert(Alert.AlertType.INFORMATION, "No hay datos para el reporte.").showAndWait();
+            return;
+        }
+
+        String ruta = "reporte_costos_eventos.pdf";
+        try {
+            PDFUtil.generarReporteEventosCostosPDF(datos, ruta);
+            renderizarPDFaVBox(ruta);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR,
+                    "Error generando el PDF:\n" + e.getMessage()).showAndWait();
+        }
+    }
+    @FXML
+    void reporte3(ActionEvent event) {
+        List<Map<String,Object>> datos = ReporteServicio.generarReporteInventario();
+        if (datos.isEmpty()) {
+            new Alert(Alert.AlertType.INFORMATION, "No hay datos para el reporte.").showAndWait();
+            return;
+        }
+
+        String ruta = "reporte_inventario.pdf";
+        try {
+            PDFUtil.generarReporteInventarioPDF(datos, ruta);
+            renderizarPDFaVBox(ruta);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR,
+                    "Error generando el PDF:\n" + e.getMessage()).showAndWait();
+        }
+    }
+
+    @FXML
+    void reporte4(ActionEvent event) {
+        List<Map<String,Object>> datos = ReporteServicio.generarReporteAuditoria();
+        if (datos.isEmpty()) {
+            new Alert(Alert.AlertType.INFORMATION, "No hay datos para el reporte.").showAndWait();
+            return;
+        }
+
+        String ruta = "reporte_auditoria.pdf";
+        try {
+            PDFUtil.generarReporteAuditoriaPDF(datos, ruta);
+            renderizarPDFaVBox(ruta);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR,
+                    "Error generando el PDF:\n" + e.getMessage()).showAndWait();
+        }
+    }
+
+
 
 }

@@ -29,4 +29,83 @@ public class ReporteServicio {
         }
         return Collections.emptyList();
     }
+    public static List<Map<String, Object>> generarReporteCostosEventos() {
+        try (Socket socket = new Socket(HOST, PUERTO);
+             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+             ObjectInputStream in  = new ObjectInputStream(socket.getInputStream())) {
+
+            out.writeObject(Comando.GENERAR_REPORTE_COSTOS_EVENTOS);
+            Object resp = in.readObject();
+            if (resp instanceof List) {
+                //noinspection unchecked
+                return (List<Map<String, Object>>) resp;
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return Collections.emptyList();
+    }
+    public static List<Map<String, Object>> generarReporteInventario() {
+        try (Socket socket = new Socket(HOST, PUERTO);
+             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+             ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
+
+            out.writeObject(Comando.GENERAR_REPORTE_INVENTARIO);
+            Object respuesta = in.readObject();
+            if (respuesta instanceof List) {
+                return (List<Map<String, Object>>) respuesta;
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return Collections.emptyList();
+    }
+    public static List<Map<String, Object>> generarReporteAuditoria() {
+        try (Socket socket = new Socket(HOST, PUERTO);
+             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+             ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
+
+            out.writeObject(Comando.GENERAR_REPORTE_AUDITORIA);
+            Object respuesta = in.readObject();
+            if (respuesta instanceof List) {
+                return (List<Map<String, Object>>) respuesta;
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return Collections.emptyList();
+    }
+    public static List<Map<String, Object>> generarFacturaEvento(int idEvento) {
+        try (Socket socket = new Socket(HOST, PUERTO);
+             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+             ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
+
+            out.writeObject(Comando.GENERAR_FACTURA_EVENTO);
+            out.writeObject(idEvento);
+            Object respuesta = in.readObject();
+            if (respuesta instanceof List) {
+                return (List<Map<String, Object>>) respuesta;
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return Collections.emptyList();
+    }
+    public static List<Map<String, Object>> generarReporteAlquileresMensuales() {
+        try (Socket socket = new Socket(HOST, PUERTO);
+             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+             ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
+
+            out.writeObject(Comando.GENERAR_REPORTE_ALQUILERES_MENSUALES);
+            Object respuesta = in.readObject();
+            if (respuesta instanceof List) {
+                return (List<Map<String, Object>>) respuesta;
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return Collections.emptyList();
+    }
+
+
 }

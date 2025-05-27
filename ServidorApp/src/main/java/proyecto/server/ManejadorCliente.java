@@ -263,6 +263,35 @@ public class ManejadorCliente extends Thread {
                 List<Map<String,Object>> datos = dao.obtenerTrabajadoresConCargoYPrecio();
                 salida.writeObject(datos);
             }
+            if (Comando.GENERAR_REPORTE_COSTOS_EVENTOS.equals(comando)) {
+                TrabajadorDAO dao = new TrabajadorDAO(); // o EventoDAO
+                List<Map<String,Object>> datos = dao.obtenerResumenEventosConCostos();
+                salida.writeObject(datos);
+            }
+            if (Comando.GENERAR_REPORTE_INVENTARIO.equals(comando)) {
+                ProductoDAO dao = new ProductoDAO();
+                List<Map<String, Object>> datos = dao.obtenerReporteInventario();
+                salida.writeObject(datos);
+            }
+            if (Comando.GENERAR_REPORTE_AUDITORIA.equals(comando)) {
+                AuditoriaDAO dao = new AuditoriaDAO();
+                List<Map<String, Object>> datos = dao.obtenerReporteAuditoria();
+                salida.writeObject(datos);
+            }
+             if (Comando.GENERAR_FACTURA_EVENTO.equals(comando)) {
+                int idEvento = (int) entrada.readObject();
+                EventoDAO dao = new EventoDAO();
+                List<Map<String, Object>> datos = dao.obtenerFacturaEvento(idEvento);
+                salida.writeObject(datos);
+            }
+            if (Comando.GENERAR_REPORTE_ALQUILERES_MENSUALES.equals(comando)) {
+                EventoDAO dao = new EventoDAO();
+                List<Map<String, Object>> datos = dao.obtenerReporteAlquileresMensuales();
+                salida.writeObject(datos);
+            }
+
+
+
 
 
 

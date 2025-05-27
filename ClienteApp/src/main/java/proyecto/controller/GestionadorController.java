@@ -6,21 +6,36 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import proyecto.Aplicacion;
 import proyecto.modelo.*;
 import proyecto.servicio.*;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.sql.Date;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
-
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 public class GestionadorController implements Initializable {
     private Aplicacion aplicacion;
     ObservableList<Producto> listaProductosData = FXCollections.observableArrayList();
@@ -231,8 +246,79 @@ public class GestionadorController implements Initializable {
     public void eliminarTrabajadorEvento(ActionEvent actionEvent) {
     }
 
-    public void generarFactura(ActionEvent actionEvent) {
+
+    @FXML
+    void generarFactura(ActionEvent event) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setHeaderText("Generar Factura");
+        dialog.setContentText("Ingrese ID del evento:");
+        Optional<String> result = dialog.showAndWait();
+
+        if (result.isEmpty()) return;
+        int idEvento = Integer.parseInt(result.get());
+
+        List<Map<String, Object>> datos = ReporteServicio.generarFacturaEvento(idEvento);
+
+        if (datos.isEmpty()) {
+            new Alert(Alert.AlertType.INFORMATION, "No hay datos para la factura.").showAndWait();
+            return;
+        }
+
+
+
+        String ruta = "factura_evento_" + idEvento + ".pdf";
+        try {
+            // 1. Generar el PDF
+            PDFUtil.generarFacturaEventoPDF(datos.get(0), ruta);
+
+            // 2. Mostrar ventana emergente con el PDF renderizado
+            mostrarPDFenVentanaEmergente(ruta);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR,
+                    "Error generando el PDF:\n" + e.getMessage()).showAndWait();
+        }
     }
+    private void mostrarPDFenVentanaEmergente(String rutaPdf) throws Exception {
+        Stage ventanaPDF = new Stage();
+        ventanaPDF.setTitle("Vista previa de la factura");
+
+        VBox vboxPdf = new VBox();
+        vboxPdf.setPadding(new Insets(10));
+        vboxPdf.setSpacing(10);
+
+        ScrollPane scrollPdf = new ScrollPane(vboxPdf);
+        scrollPdf.setFitToWidth(true);
+        scrollPdf.setPrefSize(800, 600);
+
+        renderizarPDFaVBox(rutaPdf, vboxPdf, scrollPdf); // ⬅️ Usamos una versión ajustada del renderizador
+
+        Scene escena = new Scene(scrollPdf);
+        ventanaPDF.setScene(escena);
+        ventanaPDF.initModality(Modality.APPLICATION_MODAL); // bloquea otras ventanas
+        ventanaPDF.show();
+    }
+    private void renderizarPDFaVBox(String rutaPdf, VBox vboxPdf, ScrollPane scrollPdf) throws Exception {
+        vboxPdf.getChildren().clear();
+        try (PDDocument doc = PDDocument.load(new File(rutaPdf))) {
+            PDFRenderer renderer = new PDFRenderer(doc);
+            for (int i = 0; i < doc.getNumberOfPages(); i++) {
+                BufferedImage bim = renderer.renderImageWithDPI(i, 175);
+
+                Image fxImage = SwingFXUtils.toFXImage(bim, null);
+                ImageView iv = new ImageView(fxImage);
+
+                iv.setPreserveRatio(true);
+                double zoom = 1;
+                iv.setFitWidth(scrollPdf.getPrefWidth() * zoom);
+
+                vboxPdf.getChildren().add(iv);
+            }
+        }
+    }
+
+
     @FXML
     public void crearEvento(ActionEvent actionEvent) {
         String errores = validarCamposEvento();

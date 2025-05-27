@@ -2,7 +2,9 @@ package proyecto.dao;
 
 import proyecto.modelo.Evento;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 
 import proyecto.modelo.Producto;
 import proyecto.modelo.Trabajador;
@@ -130,5 +132,146 @@ public class EventoDAO {
 
         return lista;
     }
+    public List<Map<String, Object>> obtenerFacturaEvento(int idEvento) {
+        String sql = """
+        SELECT 
+            E.idEvento,
+            E.nombre AS nombreEvento,
+            E.fecha,
+            E.precio AS precioBase,
+            E.lugar,
+            C.nombre AS nombreCliente,
+            C.cedula AS cedulaCliente
+        FROM Evento E
+        JOIN Cliente C ON E.idCliente = C.cedula
+        WHERE E.idEvento = ?
+    """;
+
+        String sqlTrabajadores = """
+        SELECT 
+            U.nombre AS nombreTrabajador,
+            CA.name AS cargo,
+            CA.precio_evento AS precio
+        FROM Evento_Trabajador ET
+        JOIN Trabajador T ON ET.idTrabajador = T.cedula
+        JOIN Usuario U ON T.cedula = U.cedula
+        JOIN Cargo CA ON T.cargo_id = CA.idCargo
+        WHERE ET.idEvento = ?
+    """;
+
+        String sqlProductos = """
+        SELECT 
+            P.nombre AS nombreProducto,
+            P.cantidad,
+            P.precioDeAlquiler AS precioUnitario,
+            (P.precioDeAlquiler * P.cantidad) AS subtotal
+        FROM Evento_Producto EP
+        JOIN Producto P ON EP.idProducto = P.id
+        WHERE EP.idEvento = ?
+    """;
+
+        List<Map<String, Object>> lista = new ArrayList<>();
+        try (Connection conn = ConexionBD.obtenerConexion()) {
+            Map<String, Object> datos = new HashMap<>();
+
+            // Evento + Cliente
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, idEvento);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    datos.put("evento", rs.getString("nombreEvento"));
+                    datos.put("lugar", rs.getString("lugar"));
+                    datos.put("cliente", rs.getString("nombreCliente"));
+                    datos.put("cedulaCliente", rs.getString("cedulaCliente"));
+                    datos.put("idEvento", rs.getInt("idEvento"));
+
+                    Date fecha = rs.getDate("fecha");
+                    datos.put("fecha", fecha != null ? new SimpleDateFormat("dd/MM/yyyy").format(fecha) : "");
+
+                    double precioBase = rs.getDouble("precioBase");
+                    datos.put("precioBase", rs.wasNull() ? 0.0 : precioBase);
+                } else {
+                    // Si no hay evento, llenar con datos vacíos para evitar NPE
+                    datos.put("evento", "");
+                    datos.put("lugar", "");
+                    datos.put("cliente", "");
+                    datos.put("cedulaCliente", "");
+                    datos.put("idEvento", idEvento);
+                    datos.put("fecha", "");
+                    datos.put("precioBase", 0.0);
+                }
+            }
+
+            // Trabajadores
+            List<Map<String, Object>> trabajadores = new ArrayList<>();
+            try (PreparedStatement ps = conn.prepareStatement(sqlTrabajadores)) {
+                ps.setInt(1, idEvento);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    Map<String, Object> fila = new HashMap<>();
+                    fila.put("nombre", rs.getString("nombreTrabajador"));
+                    fila.put("cargo", rs.getString("cargo"));
+                    fila.put("precio", rs.getDouble("precio"));
+                    trabajadores.add(fila);
+                }
+            }
+            datos.put("trabajadores", trabajadores); // siempre agrega la lista, vacía o no
+
+            // Productos
+            List<Map<String, Object>> productos = new ArrayList<>();
+            try (PreparedStatement ps = conn.prepareStatement(sqlProductos)) {
+                ps.setInt(1, idEvento);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    Map<String, Object> fila = new HashMap<>();
+                    fila.put("nombre", rs.getString("nombreProducto"));
+                    fila.put("cantidad", rs.getInt("cantidad"));
+                    fila.put("precioUnitario", rs.getDouble("precioUnitario"));
+                    fila.put("subtotal", rs.getDouble("subtotal"));
+                    productos.add(fila);
+                }
+            }
+            datos.put("productos", productos); // siempre agrega la lista, vacía o no
+
+            lista.add(datos);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
+    public List<Map<String, Object>> obtenerReporteAlquileresMensuales() {
+        String sql = """
+        SELECT 
+            DATENAME(MONTH, E.fecha) AS Mes,
+            P.nombre AS Producto,
+            COUNT(*) AS VecesAlquilado,
+            SUM(P.precioDeAlquiler) AS IngresoTotal
+        FROM Evento E
+        JOIN Evento_Producto EP ON E.idEvento = EP.idEvento
+        JOIN Producto P ON P.id = EP.idProducto
+        GROUP BY DATENAME(MONTH, E.fecha), P.nombre
+        ORDER BY Mes, Producto
+    """;
+
+        List<Map<String, Object>> lista = new ArrayList<>();
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Map<String, Object> fila = new HashMap<>();
+                fila.put("mes", rs.getString("Mes"));
+                fila.put("producto", rs.getString("Producto"));
+                fila.put("vecesAlquilado", rs.getInt("VecesAlquilado"));
+                fila.put("ingresoTotal", rs.getDouble("IngresoTotal"));
+                lista.add(fila);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
 }
 

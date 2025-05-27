@@ -6,7 +6,9 @@ import proyecto.server.ConexionBD;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ProductoDAO {
 
@@ -98,5 +100,34 @@ public class ProductoDAO {
         }
     }
 
+    public List<Map<String, Object>> obtenerReporteInventario() {
+        String sql = """
+        SELECT 
+            P.nombre AS NombreProducto,
+            P.precio,
+            P.cantidad,
+            P.precio * P.cantidad AS ValorTotalStock
+        FROM Producto P
+        ORDER BY ValorTotalStock DESC
+    """;
+
+        List<Map<String, Object>> lista = new ArrayList<>();
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Map<String, Object> fila = new HashMap<>();
+                fila.put("nombreProducto", rs.getString("NombreProducto"));
+                fila.put("precio", rs.getDouble("precio"));
+                fila.put("cantidad", rs.getInt("cantidad"));
+                fila.put("valorTotalStock", rs.getDouble("ValorTotalStock"));
+                lista.add(fila);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
 
 }

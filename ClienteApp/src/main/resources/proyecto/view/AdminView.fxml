@@ -252,7 +252,28 @@
                                                 <!-- Contenedor superior con botones -->
                                                 <AnchorPane prefHeight="165.0" prefWidth="969.0">
                                                    <children>
-                                                      <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#reporte1" prefHeight="34.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Reporte" textFill="WHITE">
+                                                      <Button layoutX="114.0" layoutY="56.0" mnemonicParsing="false" onAction="#reporte1" prefHeight="34.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Reporte 1" textFill="WHITE">
+                                                         <font>
+                                                            <Font name="System Bold" size="14.0" />
+                                                         </font>
+                                                      </Button>
+                                                      <Separator layoutX="28.0" layoutY="36.0" prefHeight="13.0" prefWidth="768.0" />
+                                                      <Label layoutX="371.0" layoutY="10.0" text="Reportes" textFill="#0080ff">
+                                                         <font>
+                                                            <Font name="Tahoma Bold" size="14.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <Button layoutX="270.0" layoutY="56.0" mnemonicParsing="false" onAction="#reporte2" prefHeight="34.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Reporte 2" textFill="WHITE">
+                                                         <font>
+                                                            <Font name="System Bold" size="14.0" />
+                                                         </font>
+                                                      </Button>
+                                                      <Button layoutX="423.0" layoutY="56.0" mnemonicParsing="false" onAction="#reporte3" prefHeight="34.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Reporte 3" textFill="WHITE">
+                                                         <font>
+                                                            <Font name="System Bold" size="14.0" />
+                                                         </font>
+                                                      </Button>
+                                                      <Button layoutX="568.0" layoutY="56.0" mnemonicParsing="false" onAction="#reporte4" prefHeight="34.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Reporte 4" textFill="WHITE">
                                                          <font>
                                                             <Font name="System Bold" size="14.0" />
                                                          </font>
