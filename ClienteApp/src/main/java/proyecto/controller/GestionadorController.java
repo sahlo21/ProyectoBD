@@ -349,6 +349,7 @@ public class GestionadorController implements Initializable {
             mostrarMensajeError("Debe agregar al menos un trabajador para el evento.");
             return;
         }
+        System.out.println("Bien hasta aquí");
         Cliente cliente = ClienteServicio.buscarCliente(cedulaCliente);
         if (cliente == null) {
             mostrarMensajeError("No se encontró un cliente con la cédula ingresada.");
