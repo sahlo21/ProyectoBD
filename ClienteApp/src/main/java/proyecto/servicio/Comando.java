@@ -9,6 +9,7 @@ public class Comando {
     public static final String ELIMINAR_GESTOR = "ELIMINAR_GESTOR";
     public static final String OBTENER_GESTORES = "OBTENER_GESTORES";
     public static final String LOGIN = "LOGIN";
+    public static final String LOGOUT = "LOGOUT";
 
     public static final Object OBTENER_CARGOS = "OBTENER_CARGOS";
     public static final Object AGREGAR_CARGO = "AGREGAR_CARGO";
@@ -24,9 +25,7 @@ public class Comando {
     public static final String BUSCAR_PROVEEDOR = "BUSCAR_PROVEEDOR";
     public static final String OBTENER_PROVEEDORES = "OBTENER_PROVEEDORES";
 
-    public static final String CREAR_EVENTO = "CREAR_EVENTO";
-    public static final String ACTUALIZAR_EVENTO = "ACTUALIZAR_EVENTO";
-    public static final String ELIMINAR_EVENTO = "ELIMINAR_EVENTO";
-    public static final String OBTENER_EVENTOS = "OBTENER_EVENTOS";
-    public static final String OBTENER_TRABAJADORES = "OBTENER_TRABAJADORES";
+    // Comandos para Auditoría
+    public static final String REGISTRAR_AUDITORIA = "REGISTRAR_AUDITORIA";
+    public static final String OBTENER_REGISTROS_AUDITORIA = "OBTENER_REGISTROS_AUDITORIA";
 }

@@ -3,6 +3,7 @@ package proyecto;
 import proyecto.controller.AdministradorController;
 import proyecto.controller.GestionadorController;
 import proyecto.controller.LoginController;
+import proyecto.servicio.LoginServicio;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -16,6 +17,9 @@ import java.util.Objects;
 public class Aplicacion extends Application {
     private Stage primaryStage;
     LoginController logIn;
+
+    // Variable para controlar si se debe registrar el cierre de sesión al cambiar de vista
+    private boolean registrarLogout = true;
     @Override
     public void start(Stage primaryStage) {
 
@@ -52,6 +56,9 @@ public class Aplicacion extends Application {
             primaryStage.setTitle("Inicio de sesion");
             primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/inventario.png"))));
 
+            // Center the window on the screen
+            primaryStage.centerOnScreen();
+
             primaryStage.show();
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -59,8 +66,15 @@ public class Aplicacion extends Application {
         }
     }
     public void showAdministrador() {
-
         try {
+            // Configurar el manejador de cierre de ventana para la ventana principal
+            primaryStage.setOnCloseRequest(event -> {
+                // Cerrar sesión y registrar el logout
+                LoginServicio loginServicio = new LoginServicio();
+                if (LoginServicio.getUsuarioActual() != null) {
+                    loginServicio.cerrarSesion();
+                }
+            });
 
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/proyecto/view/AdminView.fxml"));
@@ -71,39 +85,73 @@ public class Aplicacion extends Application {
             primaryStage.setScene(scene);
             primaryStage.setTitle("Portal administrativo");
 
-            primaryStage.show();
+            // Center the window on the screen
+            primaryStage.centerOnScreen();
 
+            primaryStage.show();
 
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
     }
 
     public void showGestor() {
         try {
+            // Configurar el manejador de cierre de ventana para la ventana principal
+            primaryStage.setOnCloseRequest(event -> {
+                // Cerrar sesión y registrar el logout
+                LoginServicio loginServicio = new LoginServicio();
+                if (LoginServicio.getUsuarioActual() != null) {
+                    loginServicio.cerrarSesion();
+                }
+            });
 
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/proyecto/view/GestionadorView.fxml"));
             BorderPane rootLayout = (BorderPane) loader.load();
+
+            // Get the controller and set the application reference
             GestionadorController controller = loader.getController();
             controller.setAplicacion(this);
+
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
-            primaryStage.setTitle("Portal Gestion Inventario");
+            primaryStage.setTitle("Portal de Gestor");
+
+            // Center the window on the screen
+            primaryStage.centerOnScreen();
 
             primaryStage.show();
 
-
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
 
     public void showTrabajador() {
+        try {
+            // Configurar el manejador de cierre de ventana para la ventana principal
+            primaryStage.setOnCloseRequest(event -> {
+                // Cerrar sesión y registrar el logout
+                LoginServicio loginServicio = new LoginServicio();
+                if (LoginServicio.getUsuarioActual() != null) {
+                    loginServicio.cerrarSesion();
+                }
+            });
 
+            // Aquí deberías cargar la vista del trabajador
+            // Por ahora, solo configuramos el manejador de cierre
+            primaryStage.setTitle("Portal de Trabajador");
+
+            // Center the window on the screen
+            primaryStage.centerOnScreen();
+
+            primaryStage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -124,6 +172,9 @@ public class Aplicacion extends Application {
             cargoStage.setScene(scene);
             cargoStage.setTitle("Gestión de Cargos");
             cargoStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/inventario.png"))));
+
+            // Center the window on the screen
+            cargoStage.centerOnScreen();
 
             // Agregar un listener para cuando se cierre la ventana
             if (adminController != null) {

@@ -8,11 +8,17 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.StringConverter;
 import proyecto.Aplicacion;
+import proyecto.modelo.Cargo;
 import proyecto.modelo.Producto;
 import proyecto.modelo.Proveedor;
+import proyecto.modelo.Trabajador;
+import proyecto.servicio.CargoServicio;
+import proyecto.servicio.LoginServicio;
 import proyecto.servicio.ProductoServicio;
 import proyecto.servicio.ProveedorServicio;
+import proyecto.servicio.TrabajadorServicio;
 
 import java.net.URL;
 import java.time.Clock;
@@ -39,7 +45,6 @@ public class GestionadorController implements Initializable {
 
     @FXML
     private TableColumn<Producto, String> columnCantidadProducto;
-
 
     @FXML
     private TableColumn<Proveedor, String> columnCedulaProveedor;
@@ -126,7 +131,12 @@ public class GestionadorController implements Initializable {
 
     @FXML
     void cerrarSesionAction2(ActionEvent event) {
-
+        // Cerrar sesión y registrar el logout
+        LoginServicio loginServicio = new LoginServicio();
+        if (LoginServicio.getUsuarioActual() != null) {
+            loginServicio.cerrarSesion();
+        }
+        aplicacion.showLogin();
     }
 
     @FXML
@@ -494,30 +504,36 @@ public class GestionadorController implements Initializable {
 
             }
             private void limpiarCamposProveedor() {
-              txtCedulaProveedor.clear();
-              txtNombreProveedor.clear();
-              txtTelefono.clear();
-          }
+        txtCedulaProveedor.clear();
+        txtNombreProveedor.clear();
+        txtTelefono.clear();
+    }
+
     public void setAplicacion(Aplicacion aplicacion) {
         this.aplicacion = aplicacion;
-        tableProdcutos.getItems().clear();
-        tableProdcutos.setItems(getListaProductosData());
-        tableProveedor.getItems().clear();
-        tableProveedor.setItems(getListaProveedoresData());
-    }
-    public ObservableList<Producto> getListaProductosData() {
-        listaProductosData.clear();
-        listaProductosData.addAll(ProductoServicio.obtenerProductos());
-
-        return listaProductosData;
-    }
-    public ObservableList<Proveedor> getListaProveedoresData() {
-        listaProveedoresData.clear();
-        listaProveedoresData.addAll(ProveedorServicio.obtenerProveedores());
-
-        return listaProveedoresData;
     }
 
+    public void actualizarPorducto(ActionEvent actionEvent) {
+    }
 
+    public void eliminarElemento(ActionEvent actionEvent) {
+    }
+
+    public void eliminarTrabajadorEvento(ActionEvent actionEvent) {
+    }
+
+    public void generarFactura(ActionEvent actionEvent) {
+    }
+
+    public void crearEvento(ActionEvent actionEvent) {
+    }
+
+    public void agregarElementos(ActionEvent actionEvent) {
+    }
+
+    public void agregarTrabajadores(ActionEvent actionEvent) {
+    }
+
+    public void limpiarCasillaEvento(ActionEvent actionEvent) {
+    }
 }
-
