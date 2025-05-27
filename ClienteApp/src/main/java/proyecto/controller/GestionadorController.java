@@ -8,16 +8,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.util.StringConverter;
 import proyecto.Aplicacion;
-import proyecto.modelo.Cargo;
 import proyecto.modelo.Producto;
 import proyecto.modelo.Proveedor;
-import proyecto.modelo.Trabajador;
-import proyecto.servicio.CargoServicio;
 import proyecto.servicio.ProductoServicio;
 import proyecto.servicio.ProveedorServicio;
-import proyecto.servicio.TrabajadorServicio;
 
 import java.net.URL;
 import java.time.Clock;
@@ -44,6 +39,7 @@ public class GestionadorController implements Initializable {
 
     @FXML
     private TableColumn<Producto, String> columnCantidadProducto;
+
 
     @FXML
     private TableColumn<Proveedor, String> columnCedulaProveedor;
@@ -502,6 +498,25 @@ public class GestionadorController implements Initializable {
               txtNombreProveedor.clear();
               txtTelefono.clear();
           }
+    public void setAplicacion(Aplicacion aplicacion) {
+        this.aplicacion = aplicacion;
+        tableProdcutos.getItems().clear();
+        tableProdcutos.setItems(getListaProductosData());
+        tableProveedor.getItems().clear();
+        tableProveedor.setItems(getListaProveedoresData());
+    }
+    public ObservableList<Producto> getListaProductosData() {
+        listaProductosData.clear();
+        listaProductosData.addAll(ProductoServicio.obtenerProductos());
+
+        return listaProductosData;
+    }
+    public ObservableList<Proveedor> getListaProveedoresData() {
+        listaProveedoresData.clear();
+        listaProveedoresData.addAll(ProveedorServicio.obtenerProveedores());
+
+        return listaProveedoresData;
+    }
 
 
 }

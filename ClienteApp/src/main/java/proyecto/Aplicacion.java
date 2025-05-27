@@ -1,6 +1,7 @@
 package proyecto;
 
 import proyecto.controller.AdministradorController;
+import proyecto.controller.GestionadorController;
 import proyecto.controller.LoginController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -81,6 +82,24 @@ public class Aplicacion extends Application {
     }
 
     public void showGestor() {
+        try {
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/proyecto/view/GestionadorView.fxml"));
+            BorderPane rootLayout = (BorderPane) loader.load();
+            GestionadorController controller = loader.getController();
+            controller.setAplicacion(this);
+            Scene scene = new Scene(rootLayout);
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("Portal Gestion Inventario");
+
+            primaryStage.show();
+
+
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     public void showTrabajador() {

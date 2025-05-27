@@ -23,4 +23,10 @@ public class Comando {
     public static final String ELIMINAR_PROVEEDOR = "ELIMINAR_PROVEEDOR";
     public static final String BUSCAR_PROVEEDOR = "BUSCAR_PROVEEDOR";
     public static final String OBTENER_PROVEEDORES = "OBTENER_PROVEEDORES";
+
+    public static final String CREAR_EVENTO = "CREAR_EVENTO";
+    public static final String ACTUALIZAR_EVENTO = "ACTUALIZAR_EVENTO";
+    public static final String ELIMINAR_EVENTO = "ELIMINAR_EVENTO";
+    public static final String OBTENER_EVENTOS = "OBTENER_EVENTOS";
+    public static final String OBTENER_TRABAJADORES = "OBTENER_TRABAJADORES";
 }
