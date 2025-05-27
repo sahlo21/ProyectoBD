@@ -28,4 +28,8 @@ public class Comando {
     // Comandos para Auditoría
     public static final String REGISTRAR_AUDITORIA = "REGISTRAR_AUDITORIA";
     public static final String OBTENER_REGISTROS_AUDITORIA = "OBTENER_REGISTROS_AUDITORIA";
+    public static final Object OBTENER_EVENTOS = "OBTENER_EVENTOS";
+    public static final Object CREAR_EVENTO = "CREAR_EVENTO";
+    public static final Object ACTUALIZAR_EVENTO = "ACTUALIZAR_EVENTO";
+    public static final Object ELIMINAR_EVENTO = "ELIMINAR_EVENTO";
 }

@@ -10,6 +10,7 @@ import proyecto.Aplicacion;
 import proyecto.modelo.*;
 import proyecto.servicio.CargoServicio;
 import proyecto.servicio.GestorServicio;
+import proyecto.servicio.LoginServicio;
 import proyecto.servicio.ProveedorServicio;
 import proyecto.servicio.TrabajadorServicio;
 import javafx.collections.FXCollections;
@@ -148,6 +149,11 @@ public class AdministradorController implements Initializable {
 
     @FXML
     void cerrarSesionAction(ActionEvent event) {
+        // Cerrar sesión y registrar el logout
+        LoginServicio loginServicio = new LoginServicio();
+        if (LoginServicio.getUsuarioActual() != null) {
+            loginServicio.cerrarSesion();
+        }
         aplicacion.showLogin();
     }
 
@@ -516,8 +522,15 @@ public class AdministradorController implements Initializable {
             cargo = comboBoxCargo.getValue();
         }
         if (cargo == null) {
-            // If no cargo is selected or comboBoxCargo is null, create a default one
-            cargo = new Cargo(1, "Default", 0);
+            // If no cargo is selected, show an error message
+            mostrarMensajeError("Debe seleccionar un cargo para el trabajador");
+            return;
+        }
+
+        // Verificar si el cargo es el cargo por defecto (ID 1 y nombre "Default")
+        if ("Default".equals(cargo.getName()) && cargo.getIdCargo() == 1) {
+            mostrarMensajeError("No se puede crear un trabajador con el cargo por defecto. Por favor, seleccione un cargo válido.");
+            return;
         }
 
         // Update precio_evento if txtPrecioEvento is not null
@@ -574,12 +587,19 @@ public class AdministradorController implements Initializable {
             cargo = comboBoxCargo.getValue();
         }
         if (cargo == null) {
-            // If no cargo is selected or comboBoxCargo is null, use the one from the selected worker
+            // If no cargo is selected, use the one from the selected worker
             cargo = trabajadorSeleccionado.getCargo();
             if (cargo == null) {
-                // If still null, create a default one
-                cargo = new Cargo(1, "Default", 0);
+                // If still null, show an error message
+                mostrarMensajeError("Debe seleccionar un cargo para el trabajador");
+                return;
             }
+        }
+
+        // Verificar si el cargo es el cargo por defecto (ID 1 y nombre "Default")
+        if ("Default".equals(cargo.getName()) && cargo.getIdCargo() == 1) {
+            mostrarMensajeError("No se puede actualizar un trabajador con el cargo por defecto. Por favor, seleccione un cargo válido.");
+            return;
         }
 
         // Update precio_evento if txtPrecioEvento is not null
@@ -834,6 +854,10 @@ public class AdministradorController implements Initializable {
                 columnCargo.setCellValueFactory(cellData -> {
                     Trabajador trabajador = cellData.getValue();
                     if (trabajador != null && trabajador.getCargo() != null) {
+                        // Si el cargo es "Default" y el ID es 1, podría ser un cargo por defecto no asignado explícitamente
+                        if ("Default".equals(trabajador.getCargo().getName()) && trabajador.getCargo().getIdCargo() == 1) {
+                            return new SimpleStringProperty("Sin cargo asignado");
+                        }
                         return new SimpleStringProperty(trabajador.getCargo().getName());
                     }
                     return new SimpleStringProperty("");
@@ -953,7 +977,13 @@ public class AdministradorController implements Initializable {
         if (vendedorSeleccionado != null) {
             txtNombreTrabajador.setText(vendedorSeleccionado.getNombre());
             if (comboBoxCargo != null) {
-                comboBoxCargo.setValue(vendedorSeleccionado.getCargo());
+                Cargo cargo = vendedorSeleccionado.getCargo();
+                // Si el cargo es "Default" y el ID es 1, podría ser un cargo por defecto no asignado explícitamente
+                if (cargo != null && !("Default".equals(cargo.getName()) && cargo.getIdCargo() == 1)) {
+                    comboBoxCargo.setValue(cargo);
+                } else {
+                    comboBoxCargo.getSelectionModel().clearSelection();
+                }
             }
             txtUsuarioTrabajador.setText(vendedorSeleccionado.getUsuario());
             txtContrasenaTrabajador.setText(vendedorSeleccionado.getContrasena());
@@ -961,7 +991,13 @@ public class AdministradorController implements Initializable {
 
             // Set precio evento if the field exists and the cargo has a precio_evento
             if (txtPrecioEvento != null && vendedorSeleccionado.getCargo() != null) {
-                txtPrecioEvento.setText(String.valueOf(vendedorSeleccionado.getCargo().getPrecio_evento()));
+                Cargo cargo = vendedorSeleccionado.getCargo();
+                // Si el cargo es "Default" y el ID es 1, no mostrar el precio
+                if (!("Default".equals(cargo.getName()) && cargo.getIdCargo() == 1)) {
+                    txtPrecioEvento.setText(String.valueOf(cargo.getPrecio_evento()));
+                } else {
+                    txtPrecioEvento.clear();
+                }
             }
 
             List<String> telefonos = vendedorSeleccionado.getTelefono();

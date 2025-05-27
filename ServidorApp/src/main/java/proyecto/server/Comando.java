@@ -6,6 +6,7 @@ public class Comando {
     public static final String ACTUALIZAR_TRABAJADOR = "ACTUALIZAR_TRABAJADOR";
     public static final String ELIMINAR_TRABAJADOR = "ELIMINAR_TRABAJADOR";
     public static final String LOGIN = "LOGIN";
+    public static final String LOGOUT = "LOGOUT";
     public static final String OBTENER_CARGOS = "OBTENER_CARGOS";
     public static final String AGREGAR_CARGO = "AGREGAR_CARGO";
     public static final String ACTUALIZAR_CARGO = "ACTUALIZAR_CARGO";

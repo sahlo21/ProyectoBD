@@ -226,11 +226,7 @@ public class ManejadorCliente extends Thread {
                 // ya que la auditoría se registra a través del comando REGISTRAR_AUDITORIA
                 salida.writeObject(true);
             }
-            if (Comando.OBTENER_TRABAJADORES.equals(comando)) {
-                TrabajadorDAO dao = new TrabajadorDAO();
-                List<Trabajador> trabajadores = dao.obtenerTrabajadores();
-                salida.writeObject(trabajadores);
-            }
+            // Removed duplicate handler for OBTENER_TRABAJADORES (already defined at lines 46-50)
 
             if (Comando.OBTENER_EVENTOS.equals(comando)) {
                 EventoDAO dao = new EventoDAO();
@@ -260,8 +256,20 @@ public class ManejadorCliente extends Thread {
             }
 
 
+        } catch (java.net.SocketException se) {
+            System.out.println("Conexión cerrada por el cliente: " + se.getMessage());
+            // No es necesario imprimir el stack trace completo para conexiones cerradas normalmente
         } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error en la comunicación con el cliente: " + e.getMessage());
             e.printStackTrace();
+        } finally {
+            try {
+                if (socket != null && !socket.isClosed()) {
+                    socket.close();
+                }
+            } catch (IOException e) {
+                System.out.println("Error al cerrar el socket: " + e.getMessage());
+            }
         }
     }
 }

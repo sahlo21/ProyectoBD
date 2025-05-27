@@ -23,12 +23,12 @@ public class MainServidor {
         }
     }
 
-    // Método para logs informativos
+    // Metodo para logs informativos
     public static void logInfo(String mensaje) {
         System.out.println("[" + LocalDateTime.now().format(formatter) + "] INFO: " + mensaje);
     }
 
-    // Método para logs de error
+    // Metodo para logs de error
     public static void logError(String mensaje) {
         System.err.println("[" + LocalDateTime.now().format(formatter) + "] ERROR: " + mensaje);
     }
