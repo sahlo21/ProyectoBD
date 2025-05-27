@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Administrador extends Usuario implements IAdministradorService, Serializable {
-    private static final long serialVersionUID = 1234567890L; // Debe ser el mismo en el servidor
+    private static final long serialVersionUID = 1L; // Debe ser el mismo en el servidor
 
 
     public Administrador(int cedula, String nombre, String usuario, String contrasena, ArrayList<String> telefono) {

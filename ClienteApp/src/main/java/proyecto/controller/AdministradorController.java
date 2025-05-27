@@ -990,7 +990,7 @@ public class AdministradorController implements Initializable {
             comboBoxCargo.setConverter(new StringConverter<>() {
                 @Override
                 public String toString(Cargo cargo) {
-                    return cargo != null ? "Cargo " + cargo.getName() + " - $" + cargo.getPrecio_evento() : "";
+                    return cargo != null ? "Cargo " + cargo.getName() + " - $" + cargo.getPrecio() : "";
                 }
 
                 @Override
@@ -1249,7 +1249,7 @@ public class AdministradorController implements Initializable {
                 Cargo cargo = vendedorSeleccionado.getCargo();
                 // Si el cargo es "Default" y el ID es 1, no mostrar el precio
                 if (!("Default".equals(cargo.getName()) && cargo.getIdCargo() == 1)) {
-                    txtPrecioEvento.setText(String.valueOf(cargo.getPrecio_evento()));
+                    txtPrecioEvento.setText(String.valueOf(cargo.getPrecio()));
                 } else {
                     txtPrecioEvento.clear();
                 }
@@ -1300,7 +1300,7 @@ public class AdministradorController implements Initializable {
     private void mostrarInformacionCargo(Cargo cargoSeleccionado) {
         if (cargoSeleccionado != null) {
             txtNombreCargo.setText(cargoSeleccionado.getName());
-            txtPrecioCargo.setText(String.valueOf(cargoSeleccionado.getPrecio_evento()));
+            txtPrecioCargo.setText(String.valueOf(cargoSeleccionado.getPrecio()));
         }
     }
 

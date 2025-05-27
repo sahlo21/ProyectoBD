@@ -24,6 +24,7 @@ import java.util.ResourceBundle;
 public class GestionadorController implements Initializable {
     private Aplicacion aplicacion;
     ObservableList<Producto> listaProductosData = FXCollections.observableArrayList();
+    ObservableList<Producto> listaElementosData = FXCollections.observableArrayList();
     ObservableList<Proveedor> listaProveedoresData = FXCollections.observableArrayList();
     ObservableList<Evento> listaEventosData = FXCollections.observableArrayList();
     ObservableList<Trabajador> listaTrabajadorData = FXCollections.observableArrayList();
@@ -141,7 +142,7 @@ public class GestionadorController implements Initializable {
     private TextField txtIdEvento;
 
     @FXML
-    private TextField txtLugar;
+    private TextField txtLugarEvento;
 
     @FXML
     private TextField txtNombreEvento;
@@ -203,9 +204,8 @@ public class GestionadorController implements Initializable {
             mostrarMensajeError("Debe seleccionar un elemento.");
             return;
         }
-        if (!listaProductosData.contains(seleccionado)) {
-            listaProductosData.add(seleccionado);
-            tableElementos.setItems(listaProductosData);
+        if (!listaElementosData.contains(seleccionado)) {
+            listaElementosData.add(seleccionado);
         } else {
             mostrarMensajeError("El elemento ya fue agregado.");
         }
@@ -244,7 +244,7 @@ public class GestionadorController implements Initializable {
         int id = Integer.parseInt(txtIdEvento.getText().trim());
         String nombre = txtNombreEvento.getText().trim();
         LocalDate fecha = dpFechaEvento.getValue();
-        String lugar = txtLugar.getText().trim();
+        String lugar = txtLugarEvento.getText().trim();
         int cedulaCliente = Integer.parseInt(txtCedulaCliente.getText().trim());
 
         List<Evento> eventos = EventoServicio.obtenerEventos();
@@ -255,7 +255,7 @@ public class GestionadorController implements Initializable {
             }
         }
         // Validar que haya al menos un elemento y un trabajador agregados
-        if (listaProductosData.isEmpty()) {
+        if (listaElementosData.isEmpty()) {
             mostrarMensajeError("Debe agregar al menos un elemento para el evento.");
             return;
         }
@@ -276,7 +276,7 @@ public class GestionadorController implements Initializable {
                 lugar,
                 0.0, // Puedes calcular el precio si lo necesitas
                 cliente,
-                listaProductosData,
+                listaElementosData,
                 listaTrabajadorData
         );
 
@@ -285,7 +285,7 @@ public class GestionadorController implements Initializable {
         if (event != null) {
             listaEventosData.add(evento);
             limpiarCamposEvento();
-            listaProductosData.clear();
+            listaElementosData.clear();
             listaTrabajadorData.clear();
             tableElementos.getItems().clear();
             tableTrabajadores.getItems().clear();
@@ -325,7 +325,7 @@ public class GestionadorController implements Initializable {
                 new SimpleStringProperty(cellData.getValue().getDescripcion().isEmpty() ? "" : cellData.getValue().getDescripcion())
         );
         tableTrabajadores.setItems(listaTrabajadorData);
-        tableElementos.setItems(listaProductosData);
+        tableElementos.setItems(listaElementosData);
         tableProdcutos.setItems(listaProductosData);
         tableProveedor.setItems(listaProveedoresData);
         /*tableElementos.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
@@ -367,7 +367,7 @@ public class GestionadorController implements Initializable {
         List<Trabajador> trabajadores = servicio.obtenerTrabajadores();
 
         ObservableList<Trabajador> listaObservable = FXCollections.observableArrayList(trabajadores);
-        tableTrabajadores.setItems(listaObservable);
+        //tableTrabajadores.setItems(listaObservable);
 
         // Configurar el ComboBox de trabajadores
         comboBoxTrabajadores.setItems(listaObservable);
@@ -389,7 +389,7 @@ public class GestionadorController implements Initializable {
         List<Producto> productos = servicio.obtenerProductos();
 
         ObservableList<Producto> listaObservable = FXCollections.observableArrayList(productos);
-        tableElementos.setItems(listaObservable);
+        //tableElementos.setItems(listaObservable);
 
         comboBoxElementos.setItems(listaObservable);
         comboBoxElementos.setConverter(new StringConverter<Producto>() {
@@ -484,6 +484,7 @@ public class GestionadorController implements Initializable {
 
           if (productoAux != null) {
               listaProductosData.add(productoAux);
+              cargarProductosEnTabla();
               limpiarCamposProducto();
               mostrarMensaje("Notificación Producto", null, "El producto se ha creado con éxito",
                       Alert.AlertType.INFORMATION);
@@ -577,6 +578,12 @@ public class GestionadorController implements Initializable {
             limpiarCamposProducto();
         } else {
             mostrarMensajeError("No se pudo actualizar el producto con ID: " + id);
+        }
+    }
+
+    private void actualizarNumerosDeFilas(TableView<?> tableView) {
+        if (tableView != null) {
+            tableView.refresh();
         }
     }
 
@@ -730,7 +737,7 @@ public class GestionadorController implements Initializable {
         if (dpFechaEvento.getValue() == null) {
             errores.append("- La fecha del evento no puede estar vacía.\n");
          }
-        if (txtLugar.getText().trim().isEmpty()) {
+        if (txtLugarEvento.getText().trim().isEmpty()) {
             errores.append("- El lugar del evento no puede estar vacío.\n");
         }
         if (txtCedulaCliente.getText().trim().isEmpty()) {
@@ -758,7 +765,7 @@ public class GestionadorController implements Initializable {
         if (dpFechaEvento.getValue() != null && dpFechaEvento.getValue().isAfter(LocalDate.now().plusYears(1))) {
             errores.append("- La fecha del evento no puede ser más de un año en el futuro.\n");
         }
-        if (txtLugar.getText().trim().length() > 100) {
+        if (txtLugarEvento.getText().trim().length() > 100) {
             errores.append("- El lugar del evento no puede exceder los 100 caracteres.\n");
         }
         // ... y así sucesivamente para otros campos
@@ -770,7 +777,7 @@ public class GestionadorController implements Initializable {
         txtIdEvento.clear();
         txtNombreEvento.clear();
         dpFechaEvento.setValue(null);
-        txtLugar.clear();
+        txtLugarEvento.clear();
         txtCedulaCliente.clear();
     }
 

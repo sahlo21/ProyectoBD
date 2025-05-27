@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class Cargo implements Serializable {
+    private static final long serialVersionUID = 1L;
     int idCargo;
     String name;
     float precio_evento;
@@ -30,12 +31,12 @@ public class Cargo implements Serializable {
         this.name = name;
     }
 
-    public float getPrecio_evento() {
+    public float getPrecio() {
         return precio_evento;
     }
 
-    public void setPrecio_evento(float precio_evento) {
-        this.precio_evento = precio_evento;
+    public void setPrecio(float precio_evento) {
+        this.precio_evento= precio_evento;
     }
 
     @Override

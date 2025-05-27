@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class Cargo implements Serializable {
+    private static final long serialVersionUID = 1L;
     int idCargo;
     String name;
     float precio_evento;

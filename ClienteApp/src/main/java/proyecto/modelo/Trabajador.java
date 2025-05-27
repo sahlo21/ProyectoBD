@@ -6,7 +6,8 @@ import java.util.Objects;
 
 public class Trabajador extends Usuario implements Serializable {
     Cargo cargo;
-
+    // En proyecto/modelo/Trabajador.java
+    private static final long serialVersionUID = 1L;
     public Trabajador(int cedula, String nombre, String usuario, String contrasena, ArrayList<String> telefono, Cargo cargo) {
         super(cedula, nombre, usuario, contrasena, telefono);
         this.cargo = cargo;
@@ -43,5 +44,8 @@ public class Trabajador extends Usuario implements Serializable {
                 ", contrasena='" + contrasena + '\'' +
                 ", Telefono=" + Telefono +
                 '}';
+    }
+    public double getPrecio() {
+        return this.cargo != null ? this.cargo.getPrecio() : 0.0;
     }
 }
