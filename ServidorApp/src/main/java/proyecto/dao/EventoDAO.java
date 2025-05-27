@@ -3,28 +3,68 @@ package proyecto.dao;
 import proyecto.modelo.Evento;
 import java.sql.*;
 import java.util.*;
+
+import proyecto.modelo.Producto;
+import proyecto.modelo.Trabajador;
 import proyecto.server.ConexionBD;
 
 public class EventoDAO {
 
     public boolean crearEvento(Evento evento) {
-        String sql = "INSERT INTO Evento (idEvento, nombre, fecha, lugar, precio) VALUES (?, ?, ?, ?, ?)";
+        String sqlEvento = "INSERT INTO Evento (idEvento, nombre, fecha, lugar, precio) VALUES (?, ?, ?, ?, ?)";
+        String sqlTrabajador = "INSERT INTO Evento_Trabajador (idEvento, idTrabajador) VALUES (?, ?)";
+        String sqlProducto = "INSERT INTO Evento_Producto (idEvento, idProducto) VALUES (?, ?)";
 
-        try (Connection conn = ConexionBD.obtenerConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        Connection conn = null;
+        PreparedStatement stmtEvento = null;
+        PreparedStatement stmtTrabajador = null;
+        PreparedStatement stmtProducto = null;
 
-            stmt.setInt(1, evento.getId()); // idEvento ingresado manualmente
-            stmt.setString(2, evento.getNombre());
-            stmt.setDate(3, new java.sql.Date(evento.getFecha().getTime()));
-            stmt.setString(4, evento.getLugar());
-            stmt.setDouble(5, evento.getPrecio());
+        try {
+            conn = ConexionBD.obtenerConexion();
+            conn.setAutoCommit(false);
 
-            stmt.executeUpdate();
+            // Insertar evento
+            stmtEvento = conn.prepareStatement(sqlEvento);
+            stmtEvento.setInt(1, evento.getId());
+            stmtEvento.setString(2, evento.getNombre());
+            stmtEvento.setDate(3, new java.sql.Date(evento.getFecha().getTime()));
+            stmtEvento.setString(4, evento.getLugar());
+            stmtEvento.setDouble(5, evento.getPrecio());
+            stmtEvento.executeUpdate();
+
+            // Insertar trabajadores asociados
+            stmtTrabajador = conn.prepareStatement(sqlTrabajador);
+            for (Trabajador t : evento.getTrabajadores()) {
+                stmtTrabajador.setInt(1, evento.getId());
+                stmtTrabajador.setInt(2, t.getCedula());
+                stmtTrabajador.addBatch();
+            }
+            stmtTrabajador.executeBatch();
+
+            // Insertar productos asociados
+            stmtProducto = conn.prepareStatement(sqlProducto);
+            for (Producto p : evento.getProductos()) {
+                stmtProducto.setInt(1, evento.getId());
+                stmtProducto.setInt(2, p.getId());
+                stmtProducto.addBatch();
+            }
+            stmtProducto.executeBatch();
+
+            conn.commit();
             return true;
 
         } catch (SQLException e) {
+            if (conn != null) {
+                try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            }
             e.printStackTrace();
             return false;
+        } finally {
+            try { if (stmtEvento != null) stmtEvento.close(); } catch (SQLException e) { e.printStackTrace(); }
+            try { if (stmtTrabajador != null) stmtTrabajador.close(); } catch (SQLException e) { e.printStackTrace(); }
+            try { if (stmtProducto != null) stmtProducto.close(); } catch (SQLException e) { e.printStackTrace(); }
+            try { if (conn != null) conn.setAutoCommit(true); conn.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
     }
 

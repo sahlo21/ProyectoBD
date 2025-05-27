@@ -28,8 +28,20 @@ public class Comando {
     // Comandos para Auditoría
     public static final String REGISTRAR_AUDITORIA = "REGISTRAR_AUDITORIA";
     public static final String OBTENER_REGISTROS_AUDITORIA = "OBTENER_REGISTROS_AUDITORIA";
-    public static final Object OBTENER_EVENTOS = "OBTENER_EVENTOS";
-    public static final Object CREAR_EVENTO = "CREAR_EVENTO";
-    public static final Object ACTUALIZAR_EVENTO = "ACTUALIZAR_EVENTO";
-    public static final Object ELIMINAR_EVENTO = "ELIMINAR_EVENTO";
+
+    // Comandos para Evento
+    public static final String OBTENER_EVENTOS = "OBTENER_EVENTOS";
+    public static final String CREAR_EVENTO = "CREAR_EVENTO";
+    public static final String ACTUALIZAR_EVENTO = "ACTUALIZAR_EVENTO";
+    public static final String ELIMINAR_EVENTO = "ELIMINAR_EVENTO";
+    public static final String OBTENER_TRABAJADORES = "OBTENER_TRABAJADORES";
+
+    public static final String OBTENER_CLIENTES = "OBTENER_CLIENTES";
+    public static final String CREAR_CLIENTE = "CREAR_CLIENTE";
+    public static final String ACTUALIZAR_CLIENTE = "ACTUALIZAR_CLIENTE";
+    public static final String ELIMINAR_CLIENTE = "ELIMINAR_CLIENTE";
+    public static final String OBTENER_CLIENTE = "OBTENER_CLIENTE";
+    public static final String OBTENER_PRODUCTOS_EVENTO = "OBTENER_PRODUCTOS_EVENTO";
+
+
 }

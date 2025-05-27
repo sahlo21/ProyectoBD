@@ -74,8 +74,7 @@
                                                                               <Font name="Tahoma Bold" size="14.0" />
                                                                            </font>
                                                                         </Label>
-                                                                        <DatePicker fx:id="dpFechaEvento" layoutX="487.0" layoutY="54.0" prefHeight="25.0" prefWidth="181.0" promptText="Seleccione una fecha" />
-                                                                        <ComboBox fx:id="comboBoxLugares" layoutX="457.0" layoutY="90.0" prefHeight="25.0" prefWidth="225.0" promptText="Seleccione el lugar" style="-fx-background-color: #0080ff;" />
+                                                                        <DatePicker fx:id="dpFechaEvento" layoutX="459.0" layoutY="100.0" prefHeight="25.0" prefWidth="225.0" promptText="Seleccione una fecha" />
                                                                         <ComboBox fx:id="comboBoxTrabajadores" layoutX="458.0" layoutY="134.0" prefHeight="25.0" prefWidth="226.0" promptText="Agregue los trabajadores" style="-fx-background-color: #0080ff;" />
                                                                         <Button layoutX="696.0" layoutY="134.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#agregarTrabajadores" prefHeight="25.0" prefWidth="25.0" style="-fx-background-color: #0080ff;" textFill="WHITE">
                                                                            <font>
@@ -123,6 +122,12 @@
                                                                            </font>
                                                                         </Label>
                                                                         <TextField fx:id="txtIdEvento" alignment="CENTER" layoutX="118.0" layoutY="76.0" prefHeight="29.0" prefWidth="240.0" promptText="Ingrese nombre del evento" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
+                                                                        <Label layoutX="402.0" layoutY="67.0" prefHeight="0.0" prefWidth="57.0" text="Lugar" textFill="#0080ff">
+                                                                           <font>
+                                                                              <Font name="Tahoma Bold" size="14.0" />
+                                                                           </font>
+                                                                        </Label>
+                                                                        <TextField fx:id="txtLugarEvento" alignment="CENTER" layoutX="458.0" layoutY="62.0" prefHeight="29.0" prefWidth="240.0" promptText="Ingrese nombre del evento" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
                                                                      </children>
                                                                   </AnchorPane>
                                                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="391.0" prefWidth="963.0">

@@ -49,6 +49,8 @@ public class ManejadorCliente extends Thread {
                 salida.writeObject(trabajadores);
             }
 
+
+
             if (Comando.ACTUALIZAR_TRABAJADOR.equals(comando)) {
                 Trabajador trabajador = (Trabajador) entrada.readObject();
                 TrabajadorDAO dao = new TrabajadorDAO();

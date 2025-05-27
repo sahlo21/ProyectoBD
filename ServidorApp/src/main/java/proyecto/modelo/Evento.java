@@ -109,5 +109,14 @@ public class Evento implements Serializable {
                 ", trabajadores=" + trabajadores +
                 '}';
     }
+
+    public List<Producto> getProductos() {
+        return productos;
+    }
+    public void setProductos(List<Producto> productos) {
+        this.productos = productos;
+    }
+
+
 }
 

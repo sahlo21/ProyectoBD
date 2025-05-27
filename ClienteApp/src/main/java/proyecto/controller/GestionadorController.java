@@ -10,17 +10,11 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.StringConverter;
 import proyecto.Aplicacion;
-import proyecto.modelo.Cargo;
-import proyecto.modelo.Producto;
-import proyecto.modelo.Proveedor;
-import proyecto.modelo.Trabajador;
-import proyecto.servicio.CargoServicio;
-import proyecto.servicio.LoginServicio;
-import proyecto.servicio.ProductoServicio;
-import proyecto.servicio.ProveedorServicio;
-import proyecto.servicio.TrabajadorServicio;
+import proyecto.modelo.*;
+import proyecto.servicio.*;
 
 import java.net.URL;
+import java.sql.Date;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -31,6 +25,8 @@ public class GestionadorController implements Initializable {
     private Aplicacion aplicacion;
     ObservableList<Producto> listaProductosData = FXCollections.observableArrayList();
     ObservableList<Proveedor> listaProveedoresData = FXCollections.observableArrayList();
+    ObservableList<Evento> listaEventosData = FXCollections.observableArrayList();
+    ObservableList<Trabajador> listaTrabajadorData = FXCollections.observableArrayList();
     @FXML
     private ResourceBundle resources;
 
@@ -68,6 +64,29 @@ public class GestionadorController implements Initializable {
     private TableColumn<Proveedor, String> columnTelefonoProveedor;
 
     @FXML
+    private TableColumn<Producto, String> columnCantidadElemento;
+
+    @FXML
+    private TableColumn<Producto, String> columnNombreElemento;
+
+    @FXML
+    private TableColumn<Producto, String> columnPrecioElemento;
+    @FXML
+    private TableColumn<Trabajador, String> columnPrecioTrabajador;
+    @FXML
+    private TableColumn<Trabajador, String> columnCargoTrabajador;
+    @FXML
+    private TableColumn<Trabajador, String> columnNombreTrabajador;
+    @FXML
+    private ComboBox<Producto> comboBoxElementos;
+
+    @FXML
+    private DatePicker dpFechaEvento;
+
+    @FXML
+    private ComboBox<Trabajador> comboBoxTrabajadores;
+
+    @FXML
     private Label lblFecha2;
 
     @FXML
@@ -75,6 +94,12 @@ public class GestionadorController implements Initializable {
 
     @FXML
     private Label lblUserAdmin;
+
+    @FXML
+    private TableView<Producto> tableElementos;
+
+    @FXML
+    private TableView<Trabajador> tableTrabajadores;
 
     @FXML
     private TableView<Producto> tableProdcutos;
@@ -108,6 +133,18 @@ public class GestionadorController implements Initializable {
 
     @FXML
     private TextField txtTelefono;
+
+    @FXML
+    private TextField txtCedulaCliente;
+
+    @FXML
+    private TextField txtIdEvento;
+
+    @FXML
+    private TextField txtLugar;
+
+    @FXML
+    private TextField txtNombreEvento;
 
     @FXML
     void actualizarPrducto(ActionEvent event) {
@@ -159,8 +196,119 @@ public class GestionadorController implements Initializable {
         limpiarCamposProveedor();
     }
 
+    @FXML
+    void agregarElementos(ActionEvent event) {
+        Producto seleccionado = comboBoxElementos.getSelectionModel().getSelectedItem();
+        if (seleccionado == null) {
+            mostrarMensajeError("Debe seleccionar un elemento.");
+            return;
+        }
+        if (!listaProductosData.contains(seleccionado)) {
+            listaProductosData.add(seleccionado);
+            tableElementos.setItems(listaProductosData);
+        } else {
+            mostrarMensajeError("El elemento ya fue agregado.");
+        }
+    }
+    @FXML
+    void agregarTrabajadores(ActionEvent event) {
+        Trabajador seleccionado = comboBoxTrabajadores.getSelectionModel().getSelectedItem();
+        if (seleccionado == null) {
+            mostrarMensajeError("Debe seleccionar un trabajador.");
+            return;
+        }
+        if (!listaTrabajadorData.contains(seleccionado)) {
+            listaTrabajadorData.add(seleccionado);
+            tableTrabajadores.setItems(listaTrabajadorData);
+        } else {
+            mostrarMensajeError("El trabajador ya fue agregado.");
+        }
+    }
+
+    public void actualizarPorducto(ActionEvent actionEvent) {
+    }
+
+    public void eliminarTrabajadorEvento(ActionEvent actionEvent) {
+    }
+
+    public void generarFactura(ActionEvent actionEvent) {
+    }
+    @FXML
+    public void crearEvento(ActionEvent actionEvent) {
+        String errores = validarCamposEvento();
+        if (!errores.isEmpty()) {
+            mostrarAlerta("Error en campos", errores);
+            return;
+        }
+
+        int id = Integer.parseInt(txtIdEvento.getText().trim());
+        String nombre = txtNombreEvento.getText().trim();
+        LocalDate fecha = dpFechaEvento.getValue();
+        String lugar = txtLugar.getText().trim();
+        int cedulaCliente = Integer.parseInt(txtCedulaCliente.getText().trim());
+
+        List<Evento> eventos = EventoServicio.obtenerEventos();
+        for (Evento e : eventos) {
+            if (e.getId() == id) {
+                mostrarMensajeError("El evento con id: " + id + " ya se encuentra registrado");
+                return;
+            }
+        }
+        // Validar que haya al menos un elemento y un trabajador agregados
+        if (listaProductosData.isEmpty()) {
+            mostrarMensajeError("Debe agregar al menos un elemento para el evento.");
+            return;
+        }
+        if (listaTrabajadorData.isEmpty()) {
+            mostrarMensajeError("Debe agregar al menos un trabajador para el evento.");
+            return;
+        }
+        Cliente cliente = ClienteServicio.buscarCliente(cedulaCliente);
+        if (cliente == null) {
+            mostrarMensajeError("No se encontró un cliente con la cédula ingresada.");
+            return;
+        }
+        // Crear el evento con las listas actuales
+        Evento evento = new Evento(
+                id,
+                nombre,
+                Date.valueOf(fecha),
+                lugar,
+                0.0, // Puedes calcular el precio si lo necesitas
+                cliente,
+                listaProductosData,
+                listaTrabajadorData
+        );
+
+        Evento event = EventoServicio.crearEvento(evento);
+
+        if (event != null) {
+            listaEventosData.add(evento);
+            limpiarCamposEvento();
+            listaProductosData.clear();
+            listaTrabajadorData.clear();
+            tableElementos.getItems().clear();
+            tableTrabajadores.getItems().clear();
+            mostrarMensaje("Notificación Evento", null, "El evento se ha creado con éxito", Alert.AlertType.INFORMATION);
+        } else {
+            mostrarMensajeError("El evento con ID: " + id + " ya se encuentra registrado.");
+        }
+    }
+
+    @FXML
+    void eliminarElemento(ActionEvent event) {
+
+    }
+
 
     public void initialize(URL location, ResourceBundle resources) {
+        columnCantidadElemento.setCellValueFactory(new PropertyValueFactory<Producto, String>("cantidad"));
+        columnNombreElemento.setCellValueFactory(new PropertyValueFactory<Producto, String>("nombre"));
+        columnPrecioElemento.setCellValueFactory(new PropertyValueFactory<Producto, String>("precio"));
+        columnNombreTrabajador.setCellValueFactory(new PropertyValueFactory<Trabajador, String>("nombre"));
+        columnCargoTrabajador.setCellValueFactory(new PropertyValueFactory<Trabajador, String>("cargo"));
+        columnPrecioTrabajador.setCellValueFactory(new PropertyValueFactory<Trabajador, String>("precio"));
+        lblUserAdmin.setText(LoginServicio.getUsuarioActual().getNombre());
         columnCedulaProveedor.setCellValueFactory(new PropertyValueFactory<Proveedor, String>("id"));
         columnNombreProveedor.setCellValueFactory(new PropertyValueFactory<Proveedor, String>("nombre"));
         columnTelefonoProveedor.setCellValueFactory(new PropertyValueFactory<Proveedor, String>("numeroContacto"));
@@ -176,9 +324,20 @@ public class GestionadorController implements Initializable {
         columnDescripcionProducto.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getDescripcion().isEmpty() ? "" : cellData.getValue().getDescripcion())
         );
-
+        tableTrabajadores.setItems(listaTrabajadorData);
+        tableElementos.setItems(listaProductosData);
         tableProdcutos.setItems(listaProductosData);
         tableProveedor.setItems(listaProveedoresData);
+        /*tableElementos.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                txtIdProducto.setText(String.valueOf(newSelection.getId()));
+                txtNombreProducto.setText(newSelection.getNombre());
+                txtDescripProducto.setText(newSelection.getDescripcion());
+                txtPrecioProducto.setText(String.valueOf(newSelection.getPrecio()));
+                txtCantidadProducto.setText(String.valueOf(newSelection.getCantidad()));
+                txtPrecioAlquilerProducto.setText(String.valueOf(newSelection.getPrecioDeAlquiler()));
+            }
+        });*/
         tableProdcutos.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 txtIdProducto.setText(String.valueOf(newSelection.getId()));
@@ -198,8 +357,52 @@ public class GestionadorController implements Initializable {
         });
         cargarProductosEnTabla();
         cargarProveedoresEnTabla();
+        cargarElementosEnTabla();
+        cargarTrabajadoresEnTabla();
 
 
+    }
+    private void cargarTrabajadoresEnTabla() {
+        TrabajadorServicio servicio = new TrabajadorServicio();
+        List<Trabajador> trabajadores = servicio.obtenerTrabajadores();
+
+        ObservableList<Trabajador> listaObservable = FXCollections.observableArrayList(trabajadores);
+        tableTrabajadores.setItems(listaObservable);
+
+        // Configurar el ComboBox de trabajadores
+        comboBoxTrabajadores.setItems(listaObservable);
+        comboBoxTrabajadores.setConverter(new StringConverter<Trabajador>() {
+            @Override
+            public String toString(Trabajador trabajador) {
+                return trabajador != null ? trabajador.getNombre() : "";
+            }
+
+            @Override
+            public Trabajador fromString(String string) {
+                return null; // No se usa en este caso
+            }
+        });
+    }
+
+    private void cargarElementosEnTabla() {
+        ProductoServicio servicio = new ProductoServicio();
+        List<Producto> productos = servicio.obtenerProductos();
+
+        ObservableList<Producto> listaObservable = FXCollections.observableArrayList(productos);
+        tableElementos.setItems(listaObservable);
+
+        comboBoxElementos.setItems(listaObservable);
+        comboBoxElementos.setConverter(new StringConverter<Producto>() {
+            @Override
+            public String toString(Producto producto) {
+                return producto != null ? producto.getNombre() : "";
+            }
+
+            @Override
+            public Producto fromString(String string) {
+                return null; // No se usa en este caso
+            }
+        });
     }
 
     /*public void initializeTableProducto(URL location, ResourceBundle resources) {
@@ -503,7 +706,7 @@ public class GestionadorController implements Initializable {
             tableProveedor.getItems().setAll(lista);
 
             }
-            private void limpiarCamposProveedor() {
+    private void limpiarCamposProveedor() {
         txtCedulaProveedor.clear();
         txtNombreProveedor.clear();
         txtTelefono.clear();
@@ -513,25 +716,62 @@ public class GestionadorController implements Initializable {
         this.aplicacion = aplicacion;
     }
 
-    public void actualizarPorducto(ActionEvent actionEvent) {
+
+
+
+
+    private String validarCamposEvento() {
+        StringBuilder errores = new StringBuilder();
+
+        // Aquí deberías validar los campos del evento, por ejemplo:
+        if (txtNombreEvento.getText().trim().isEmpty()) {
+             errores.append("- El nombre del evento no puede estar vacío.\n");
+        }
+        if (dpFechaEvento.getValue() == null) {
+            errores.append("- La fecha del evento no puede estar vacía.\n");
+         }
+        if (txtLugar.getText().trim().isEmpty()) {
+            errores.append("- El lugar del evento no puede estar vacío.\n");
+        }
+        if (txtCedulaCliente.getText().trim().isEmpty()) {
+            errores.append("- La cédula del cliente no puede estar vacía.\n");
+        }
+        if (txtIdEvento.getText().trim().isEmpty()) {
+            errores.append("- El ID del evento no puede estar vacío.\n");
+        } else {
+            try {
+                Integer.parseInt(txtIdEvento.getText().trim());
+            } catch (NumberFormatException e) {
+                errores.append("- El ID del evento debe ser numérico.\n");
+            }
+        }
+
+        if (comboBoxTrabajadores.getSelectionModel().getSelectedItem() == null) {
+            errores.append("- Debe seleccionar un trabajador.\n");
+        }
+        if (comboBoxElementos.getSelectionModel().getSelectedItem() == null) {
+            errores.append("- Debe seleccionar al menos un elemento para el evento.\n");
+        }
+        if (dpFechaEvento.getValue() != null && dpFechaEvento.getValue().isBefore(LocalDate.now())) {
+            errores.append("- La fecha del evento no puede ser anterior a la fecha actual.\n");
+        }
+        if (dpFechaEvento.getValue() != null && dpFechaEvento.getValue().isAfter(LocalDate.now().plusYears(1))) {
+            errores.append("- La fecha del evento no puede ser más de un año en el futuro.\n");
+        }
+        if (txtLugar.getText().trim().length() > 100) {
+            errores.append("- El lugar del evento no puede exceder los 100 caracteres.\n");
+        }
+        // ... y así sucesivamente para otros campos
+
+        return errores.toString();
     }
 
-    public void eliminarElemento(ActionEvent actionEvent) {
-    }
-
-    public void eliminarTrabajadorEvento(ActionEvent actionEvent) {
-    }
-
-    public void generarFactura(ActionEvent actionEvent) {
-    }
-
-    public void crearEvento(ActionEvent actionEvent) {
-    }
-
-    public void agregarElementos(ActionEvent actionEvent) {
-    }
-
-    public void agregarTrabajadores(ActionEvent actionEvent) {
+    public void limpiarCamposEvento() {
+        txtIdEvento.clear();
+        txtNombreEvento.clear();
+        dpFechaEvento.setValue(null);
+        txtLugar.clear();
+        txtCedulaCliente.clear();
     }
 
     public void limpiarCasillaEvento(ActionEvent actionEvent) {
