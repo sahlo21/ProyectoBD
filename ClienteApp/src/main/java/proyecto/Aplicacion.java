@@ -86,4 +86,38 @@ public class Aplicacion extends Application {
     public void showTrabajador() {
 
     }
+
+    /**
+     * Carga la vista de gestión de cargos
+     * @param adminController El controlador de la vista de administrador para actualizar el combobox de cargos
+     */
+    public void showCargoView(AdministradorController adminController) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/proyecto/view/CargoView.fxml"));
+            BorderPane rootLayout = (BorderPane) loader.load();
+            AdministradorController controller = loader.getController();
+            controller.setAplicacion(this);
+
+            // Crear una nueva ventana para la vista de cargos
+            Stage cargoStage = new Stage();
+            Scene scene = new Scene(rootLayout);
+            cargoStage.setScene(scene);
+            cargoStage.setTitle("Gestión de Cargos");
+            cargoStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/inventario.png"))));
+
+            // Agregar un listener para cuando se cierre la ventana
+            if (adminController != null) {
+                cargoStage.setOnHidden(e -> {
+                    // Actualizar el combobox de cargos cuando se cierre la ventana
+                    adminController.refreshCargos();
+                });
+            }
+
+            cargoStage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

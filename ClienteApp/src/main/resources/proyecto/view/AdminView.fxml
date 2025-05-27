@@ -187,14 +187,14 @@
                                                                            </font>
                                                                         </Label>
                                                                         <ComboBox fx:id="comboBoxCargo" layoutX="254.0" layoutY="197.0" prefHeight="23.0" prefWidth="238.0" promptText="Seleccione el cargo del trabajador" style="-fx-background-color: #0080ff;" />
-                                                                        <Button layoutX="496.0" layoutY="197.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#actualizarTrabajador" prefHeight="25.0" prefWidth="25.0" style="-fx-background-color: #0080ff;" textFill="WHITE">
+                                                                        <Button layoutX="496.0" layoutY="197.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#nuevoCargo" prefHeight="25.0" prefWidth="25.0" style="-fx-background-color: #0080ff;" textFill="WHITE">
                                                                            <font>
                                                                               <Font name="System Bold" size="14.0" />
                                                                            </font>
                                                                            <graphic>
                                                                               <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                                                                  <image>
-                                                                                    <Image url="@../../img/edit2.png" />
+                                                                                    <Image url="@../../img/agregar.png" />
                                                                                  </image>
                                                                               </ImageView>
                                                                            </graphic>

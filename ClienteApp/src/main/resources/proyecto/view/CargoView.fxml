@@ -49,8 +49,8 @@
             </Button>
             <TableView fx:id="tableCargo" layoutX="76.0" layoutY="261.0" prefHeight="96.0" prefWidth="405.0">
               <columns>
-                <TableColumn prefWidth="195.0" text="Nombre" />
-                <TableColumn prefWidth="209.0" text="Cargo" />
+                <TableColumn fx:id="columnNombreCargo" prefWidth="195.0" text="Nombre" />
+                <TableColumn fx:id="columnPrecioCargo" prefWidth="209.0" text="Precio" />
               </columns>
             </TableView>
             <Button layoutX="221.0" layoutY="371.0" mnemonicParsing="false" onAction="#eliminarCargoAction" prefHeight="35.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Eliminar" textFill="WHITE">

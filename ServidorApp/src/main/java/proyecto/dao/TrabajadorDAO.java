@@ -166,7 +166,7 @@ public class TrabajadorDAO {
                     String contrasena = rs.getString("contrasena");
                     int cargoId = rs.getInt("cargo_id");
                     float precioEvento = rs.getFloat("precio_evento");
-                    Cargo cargo = new Cargo(cargoId, 1, precioEvento);
+                    Cargo cargo = new Cargo(cargoId, "Default", precioEvento);
                     trabajador = new Trabajador(cedula, nombre, usuario, contrasena, new ArrayList<>(), cargo);
                     mapa.put(cedula, trabajador);
                 }

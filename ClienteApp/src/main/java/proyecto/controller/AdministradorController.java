@@ -1,6 +1,10 @@
 package proyecto.controller;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.util.Duration;
 import javafx.util.StringConverter;
 import proyecto.Aplicacion;
 import proyecto.modelo.*;
@@ -20,6 +24,7 @@ import java.net.URL;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,8 +36,10 @@ public class AdministradorController implements Initializable {
     ObservableList<Producto> listaProductosData = FXCollections.observableArrayList();
     ObservableList<Proveedor> listaProveedoresData = FXCollections.observableArrayList();
     ObservableList<GestorEvento> listaGestoresData = FXCollections.observableArrayList();
+    ObservableList<Cargo> listaCargosData = FXCollections.observableArrayList();
     Trabajador trabajadorSeleccionado;
     GestorEvento gestorSeleccionado;
+    Cargo cargoSeleccionado;
     @FXML
     private ResourceBundle resources;
 
@@ -55,7 +62,7 @@ public class AdministradorController implements Initializable {
     private TableColumn<GestorEvento, String> columnTelefonoPrincipalGestor;
 
     @FXML
-    private TableColumn<Trabajador, Cargo> columnCargo;
+    private TableColumn<Trabajador, String> columnCargo;
 
     @FXML
     private TableColumn<Trabajador, String> columnTelefonoPrincipal;
@@ -232,6 +239,15 @@ public class AdministradorController implements Initializable {
         String contrasena = txtContrasenaGestor.getText().trim();
         int cedula = Integer.parseInt(txtCedulaGestor.getText().trim());
 
+        // Validar que la cédula no exista ya en la lista de gestores
+        List<GestorEvento> gestores = GestorServicio.obtenerGestores();
+        for (GestorEvento g : gestores) {
+            if (g.getCedula() == cedula) {
+                mostrarMensajeError("El gestor con cédula: " + cedula + " ya se encuentra registrado");
+                return;
+            }
+        }
+
         ArrayList<String> telefonos = new ArrayList<>();
         telefonos.add(txtTlf1Gestor.getText().trim());
         telefonos.add(txtTlf2Gestor.getText().trim());
@@ -298,7 +314,13 @@ public class AdministradorController implements Initializable {
 
     }
     @FXML
-    private TableView<?> tableCargo;
+    private TableView<Cargo> tableCargo;
+
+    @FXML
+    private TableColumn<Cargo, String> columnNombreCargo;
+
+    @FXML
+    private TableColumn<Cargo, Float> columnPrecioCargo;
 
     @FXML
     private TextField txtNombreCargo;
@@ -308,22 +330,160 @@ public class AdministradorController implements Initializable {
 
     @FXML
     void actualizarCargo(ActionEvent event) {
+        if (cargoSeleccionado == null) {
+            mostrarMensajeError("Debe seleccionar un cargo de la tabla para actualizar.");
+            return;
+        }
 
+        // Validar que los campos no estén vacíos
+        if (txtNombreCargo.getText().isEmpty() || txtPrecioCargo.getText().isEmpty()) {
+            mostrarMensajeError("Debe completar todos los campos");
+            return;
+        }
+
+        // Validar que el precio sea un número válido
+        if (!isNumericFloat(txtPrecioCargo.getText())) {
+            mostrarMensajeError("El precio debe ser un número válido");
+            return;
+        }
+
+        // Obtener los valores de los campos
+        String name = txtNombreCargo.getText().trim();
+        float precio = Float.parseFloat(txtPrecioCargo.getText().trim());
+
+        // Crear el cargo actualizado
+        Cargo cargoActualizado = new Cargo(cargoSeleccionado.getIdCargo(), name, precio);
+
+        // Actualizar el cargo
+        boolean actualizado = CargoServicio.actualizarCargo(cargoActualizado);
+
+        if (actualizado) {
+            mostrarMensaje("Cargo actualizado", null, "El cargo se ha actualizado correctamente", Alert.AlertType.INFORMATION);
+
+            // Limpiar los campos
+            txtNombreCargo.clear();
+            txtPrecioCargo.clear();
+
+            // Actualizar la tabla de cargos
+            if (tableCargo != null) {
+                tableCargo.getItems().clear();
+                tableCargo.setItems(getListaCargosData());
+            }
+
+            // Actualizar el combobox de cargos
+            refreshCargos();
+        } else {
+            mostrarMensajeError("No se pudo actualizar el cargo");
+        }
     }
 
     @FXML
     void agregarCargoAction(ActionEvent event) {
+        // Validar que los campos no estén vacíos
+        if (txtNombreCargo.getText().isEmpty() || txtPrecioCargo.getText().isEmpty()) {
+            mostrarMensajeError("Debe completar todos los campos");
+            return;
+        }
 
+        // Validar que el precio sea un número válido
+        if (!isNumericFloat(txtPrecioCargo.getText())) {
+            mostrarMensajeError("El precio debe ser un número válido");
+            return;
+        }
+
+        // Obtener los valores de los campos
+        String name = txtNombreCargo.getText().trim();
+        float precio = Float.parseFloat(txtPrecioCargo.getText().trim());
+
+        // Agregar el cargo
+        Cargo nuevoCargo = CargoServicio.agregarCargo(name, precio);
+
+        if (nuevoCargo != null) {
+            mostrarMensaje("Cargo agregado", null, "El cargo se ha agregado correctamente", Alert.AlertType.INFORMATION);
+
+            // Limpiar los campos
+            txtNombreCargo.clear();
+            txtPrecioCargo.clear();
+
+            // Actualizar la tabla de cargos (si existe)
+            if (tableCargo != null) {
+                tableCargo.getItems().clear();
+                tableCargo.setItems(getListaCargosData());
+            }
+
+            // Actualizar el combobox de cargos
+            refreshCargos();
+        } else {
+            mostrarMensajeError("No se pudo agregar el cargo");
+        }
+    }
+
+    /**
+     * Verifica si una cadena es un número de punto flotante válido
+     */
+    private boolean isNumericFloat(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+        try {
+            Float.parseFloat(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     @FXML
     void eliminarCargoAction(ActionEvent event) {
+        if (cargoSeleccionado == null) {
+            mostrarMensajeError("Debe seleccionar un cargo de la tabla para eliminar.");
+            return;
+        }
 
+        boolean confirmacion = mostrarMensajeConfirmacion("¿Está seguro que desea eliminar el cargo seleccionado?");
+        if (!confirmacion) {
+            return;
+        }
+
+        boolean eliminado = CargoServicio.eliminarCargo(cargoSeleccionado.getIdCargo());
+        if (eliminado) {
+            mostrarMensaje("Cargo eliminado", null, "El cargo se ha eliminado correctamente", Alert.AlertType.INFORMATION);
+
+            // Limpiar los campos
+            txtNombreCargo.clear();
+            txtPrecioCargo.clear();
+
+            // Actualizar la tabla de cargos
+            if (tableCargo != null) {
+                tableCargo.getItems().clear();
+                tableCargo.setItems(getListaCargosData());
+            }
+
+            // Actualizar el combobox de cargos
+            refreshCargos();
+        } else {
+            mostrarMensajeError("No se pudo eliminar el cargo. Puede que esté siendo utilizado por algún trabajador.");
+        }
     }
 
     @FXML
     void nuevoCargo(ActionEvent event) {
+        // Abrir la vista de gestión de cargos
+        if (aplicacion != null) {
+            // Pasar este controlador para que se pueda actualizar el combobox cuando se cierre la ventana
+            aplicacion.showCargoView(this);
+        }
+    }
 
+    /**
+     * Actualiza la lista de cargos en el combobox
+     */
+    public void refreshCargos() {
+        // Check if comboBoxCargo is not null before using it
+        if (comboBoxCargo != null) {
+            List<Cargo> cargos = CargoServicio.obtenerCargos();
+            comboBoxCargo.setItems(FXCollections.observableArrayList(cargos));
+        }
     }
 
 
@@ -341,11 +501,23 @@ public class AdministradorController implements Initializable {
         String contrasena = txtContrasenaTrabajador.getText().trim();
         int cedula = Integer.parseInt(txtCedulaTrabajador.getText().trim());
 
+        // Validar que la cédula no exista ya en la lista de trabajadores
+        List<Trabajador> trabajadores = TrabajadorServicio.obtenerTrabajadores();
+        for (Trabajador t : trabajadores) {
+            if (t.getCedula() == cedula) {
+                mostrarMensajeError("El vendedor con cédula: " + cedula + " ya se encuentra registrado");
+                return;
+            }
+        }
+
         // Use the selected cargo from comboBoxCargo
-        Cargo cargo = comboBoxCargo.getValue();
+        Cargo cargo = null;
+        if (comboBoxCargo != null) {
+            cargo = comboBoxCargo.getValue();
+        }
         if (cargo == null) {
-            // If no cargo is selected, create a default one
-            cargo = new Cargo(1, 1, 0);
+            // If no cargo is selected or comboBoxCargo is null, create a default one
+            cargo = new Cargo(1, "Default", 0);
         }
 
         // Update precio_evento if txtPrecioEvento is not null
@@ -397,13 +569,16 @@ public class AdministradorController implements Initializable {
         String contrasena = txtContrasenaTrabajador.getText().trim();
 
         // Use the selected cargo from comboBoxCargo
-        Cargo cargo = comboBoxCargo.getValue();
+        Cargo cargo = null;
+        if (comboBoxCargo != null) {
+            cargo = comboBoxCargo.getValue();
+        }
         if (cargo == null) {
-            // If no cargo is selected, use the one from the selected worker
+            // If no cargo is selected or comboBoxCargo is null, use the one from the selected worker
             cargo = trabajadorSeleccionado.getCargo();
             if (cargo == null) {
                 // If still null, create a default one
-                cargo = new Cargo(1, 1, 0);
+                cargo = new Cargo(1, "Default", 0);
             }
         }
 
@@ -520,7 +695,9 @@ public class AdministradorController implements Initializable {
         if (txtPrecioEvento != null) {
             txtPrecioEvento.clear();
         }
-        comboBoxCargo.getSelectionModel().clearSelection();
+        if (comboBoxCargo != null) {
+            comboBoxCargo.getSelectionModel().clearSelection();
+        }
     }
 
 
@@ -593,72 +770,134 @@ public class AdministradorController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         //comboBoxCargo.setItems(FXCollections.observableArrayList(Cargo.values()));
         List<Cargo> cargos = CargoServicio.obtenerCargos();
-        comboBoxCargo.setItems(FXCollections.observableArrayList(cargos));
 
-        comboBoxCargo.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(Cargo cargo) {
-                return cargo != null ? "Cargo " + cargo.getName() + " - $" + cargo.getPrecio_evento() : "";
-            }
+        // Check if comboBoxCargo is not null before using it
+        if (comboBoxCargo != null) {
+            comboBoxCargo.setItems(FXCollections.observableArrayList(cargos));
 
-            @Override
-            public Cargo fromString(String s) {
-                return comboBoxCargo.getItems().stream()
-                        .filter(c -> s.contains(String.valueOf(c.getName())))
-                        .findFirst()
-                        .orElse(null);
-            }
-        });
-        lblFecha.setText(lblFecha.getText() + LocalDate.now(Clock.systemDefaultZone()));
-        lblHora.setText(lblHora.getText() + LocalTime.now());
+            comboBoxCargo.setConverter(new StringConverter<>() {
+                @Override
+                public String toString(Cargo cargo) {
+                    return cargo != null ? "Cargo " + cargo.getName() + " - $" + cargo.getPrecio_evento() : "";
+                }
+
+                @Override
+                public Cargo fromString(String s) {
+                    return comboBoxCargo.getItems().stream()
+                            .filter(c -> s.contains(c.getName()))
+                            .findFirst()
+                            .orElse(null);
+                }
+            });
+        }
+
+        // Configure real-time clock for date and time labels
+        if (lblFecha != null && lblHora != null) {
+            // Create formatters for date and time
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+            // Create a timeline that updates every second
+            Timeline clock = new Timeline(new KeyFrame(Duration.ZERO, e -> {
+                LocalDate currentDate = LocalDate.now();
+                LocalTime currentTime = LocalTime.now();
+
+                lblFecha.setText("Fecha: " + currentDate.format(dateFormatter));
+                lblHora.setText("Hora: " + currentTime.format(timeFormatter));
+            }), new KeyFrame(Duration.seconds(1)));
+
+            // Make the timeline run indefinitely
+            clock.setCycleCount(Animation.INDEFINITE);
+            clock.play();
+        }
 
         // Configuración de la tabla de trabajadores
-        columnNombreTrabajador.setCellValueFactory(new PropertyValueFactory<Trabajador, String>("nombre"));
-        columnCedulaTrabajador.setCellValueFactory(new PropertyValueFactory<Trabajador, String>("cedula"));
-        columnTelefonoPrincipal.setCellValueFactory(cellData -> {
-            Trabajador trabajador = cellData.getValue();
-            if (trabajador != null) {
-                List<String> telefonos = trabajador.getTelefono();
-                if (telefonos != null && !telefonos.isEmpty()) {
-                    return new SimpleStringProperty(telefonos.get(0));
+        if (columnNombreTrabajador != null && columnCedulaTrabajador != null && 
+            columnTelefonoPrincipal != null && columnUsuarioTrabajador != null) {
+
+            columnNombreTrabajador.setCellValueFactory(new PropertyValueFactory<Trabajador, String>("nombre"));
+            columnCedulaTrabajador.setCellValueFactory(new PropertyValueFactory<Trabajador, String>("cedula"));
+            columnTelefonoPrincipal.setCellValueFactory(cellData -> {
+                Trabajador trabajador = cellData.getValue();
+                if (trabajador != null) {
+                    List<String> telefonos = trabajador.getTelefono();
+                    if (telefonos != null && !telefonos.isEmpty()) {
+                        return new SimpleStringProperty(telefonos.get(0));
+                    }
                 }
+                return new SimpleStringProperty("");
+            });
+            columnUsuarioTrabajador.setCellValueFactory(new PropertyValueFactory<>("usuario")); // si quieres el campo 'usuario'
+
+            // Configuración de la columna de cargo
+            if (columnCargo != null) {
+                columnCargo.setCellValueFactory(cellData -> {
+                    Trabajador trabajador = cellData.getValue();
+                    if (trabajador != null && trabajador.getCargo() != null) {
+                        return new SimpleStringProperty(trabajador.getCargo().getName());
+                    }
+                    return new SimpleStringProperty("");
+                });
             }
-            return new SimpleStringProperty("");
-        });
-        columnUsuarioTrabajador.setCellValueFactory(new PropertyValueFactory<>("usuario")); // si quieres el campo 'usuario'
+        }
 
-        // Cargar los datos de trabajadores
-        getListaVendedorData();
-        tableTrabajador.setItems(listaTrabajadoresData);
+        // Cargar los datos de trabajadores si la tabla existe
+        if (tableTrabajador != null) {
+            getListaVendedorData();
+            tableTrabajador.setItems(listaTrabajadoresData);
 
-        tableTrabajador.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            trabajadorSeleccionado = newSelection;
-            mostrarInformacionVendedor(trabajadorSeleccionado);
-        });
+            tableTrabajador.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+                trabajadorSeleccionado = newSelection;
+                mostrarInformacionVendedor(trabajadorSeleccionado);
+            });
+        }
 
         // Configuración de la tabla de gestores
-        columnNombreGestor.setCellValueFactory(new PropertyValueFactory<GestorEvento, String>("nombre"));
-        columnCedulaGestor.setCellValueFactory(new PropertyValueFactory<GestorEvento, String>("cedula"));
-        columnTelefonoPrincipalGestor.setCellValueFactory(cellData -> {
-            GestorEvento gestor = cellData.getValue();
-            if (gestor != null) {
-                List<String> telefonos = gestor.getTelefono();
-                if (telefonos != null && !telefonos.isEmpty()) {
-                    return new SimpleStringProperty(telefonos.get(0));
+        if (columnNombreGestor != null && columnCedulaGestor != null && 
+            columnTelefonoPrincipalGestor != null && columnUsuarioGestor != null) {
+
+            columnNombreGestor.setCellValueFactory(new PropertyValueFactory<GestorEvento, String>("nombre"));
+            columnCedulaGestor.setCellValueFactory(new PropertyValueFactory<GestorEvento, String>("cedula"));
+            columnTelefonoPrincipalGestor.setCellValueFactory(cellData -> {
+                GestorEvento gestor = cellData.getValue();
+                if (gestor != null) {
+                    List<String> telefonos = gestor.getTelefono();
+                    if (telefonos != null && !telefonos.isEmpty()) {
+                        return new SimpleStringProperty(telefonos.get(0));
+                    }
                 }
-            }
-            return new SimpleStringProperty("");
-        });
-        columnUsuarioGestor.setCellValueFactory(new PropertyValueFactory<>("usuario"));
+                return new SimpleStringProperty("");
+            });
+            columnUsuarioGestor.setCellValueFactory(new PropertyValueFactory<>("usuario"));
+        }
 
-        // Cargar los datos de gestores
-        getListaGestorData();
-        tableGestores.setItems(listaGestoresData);
+        // Cargar los datos de gestores si la tabla existe
+        if (tableGestores != null) {
+            getListaGestorData();
+            tableGestores.setItems(listaGestoresData);
 
-        tableGestores.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            gestorSeleccionado = newSelection;
-            mostrarInformacionGestor(gestorSeleccionado);
-        });
+            tableGestores.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+                gestorSeleccionado = newSelection;
+                mostrarInformacionGestor(gestorSeleccionado);
+            });
+        }
+
+        // Configuración de la tabla de cargos
+        if (columnNombreCargo != null && columnPrecioCargo != null) {
+            columnNombreCargo.setCellValueFactory(new PropertyValueFactory<>("name"));
+            columnPrecioCargo.setCellValueFactory(new PropertyValueFactory<>("precio_evento"));
+        }
+
+        // Cargar los datos de cargos si la tabla existe
+        if (tableCargo != null) {
+            getListaCargosData();
+            tableCargo.setItems(listaCargosData);
+
+            tableCargo.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+                cargoSeleccionado = newSelection;
+                mostrarInformacionCargo(cargoSeleccionado);
+            });
+        }
     }
 
     public ObservableList<Trabajador> getListaVendedorData() {
@@ -675,18 +914,47 @@ public class AdministradorController implements Initializable {
         return listaGestoresData;
     }
 
+    /**
+     * Obtiene la lista de cargos del servidor y la carga en la lista observable
+     * @return La lista observable de cargos
+     */
+    public ObservableList<Cargo> getListaCargosData() {
+        listaCargosData.clear();
+        listaCargosData.addAll(CargoServicio.obtenerCargos());
+
+        return listaCargosData;
+    }
+
     public void setAplicacion(Aplicacion aplicacion) {
         this.aplicacion = aplicacion;
-        tableTrabajador.getItems().clear();
-        tableTrabajador.setItems(getListaVendedorData());
-        tableGestores.getItems().clear();
-        tableGestores.setItems(getListaGestorData());
+
+        // Check if tables are not null before using them
+        if (tableTrabajador != null) {
+            tableTrabajador.getItems().clear();
+            tableTrabajador.setItems(getListaVendedorData());
+        }
+
+        if (tableGestores != null) {
+            tableGestores.getItems().clear();
+            tableGestores.setItems(getListaGestorData());
+        }
+
+        // Cargar los datos de cargos si la tabla existe
+        if (tableCargo != null) {
+            tableCargo.getItems().clear();
+            tableCargo.setItems(getListaCargosData());
+        }
+
+        // Actualizar la lista de cargos en el combobox
+        refreshCargos();
     }
 
     private void mostrarInformacionVendedor(Trabajador vendedorSeleccionado) {
         if (vendedorSeleccionado != null) {
             txtNombreTrabajador.setText(vendedorSeleccionado.getNombre());
-            comboBoxCargo.setValue(vendedorSeleccionado.getCargo());
+            if (comboBoxCargo != null) {
+                comboBoxCargo.setValue(vendedorSeleccionado.getCargo());
+            }
             txtUsuarioTrabajador.setText(vendedorSeleccionado.getUsuario());
             txtContrasenaTrabajador.setText(vendedorSeleccionado.getContrasena());
             txtCedulaTrabajador.setText(String.valueOf(vendedorSeleccionado.getCedula()));
@@ -730,6 +998,17 @@ public class AdministradorController implements Initializable {
                 txtTlf1Gestor.setText("");
                 txtTlf2Gestor.setText("");
             }
+        }
+    }
+
+    /**
+     * Muestra la información del cargo seleccionado en los campos del formulario
+     * @param cargoSeleccionado El cargo seleccionado en la tabla
+     */
+    private void mostrarInformacionCargo(Cargo cargoSeleccionado) {
+        if (cargoSeleccionado != null) {
+            txtNombreCargo.setText(cargoSeleccionado.getName());
+            txtPrecioCargo.setText(String.valueOf(cargoSeleccionado.getPrecio_evento()));
         }
     }
 }

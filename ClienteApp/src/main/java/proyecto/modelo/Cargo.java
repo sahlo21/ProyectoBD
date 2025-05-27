@@ -5,10 +5,10 @@ import java.util.Objects;
 
 public class Cargo implements Serializable {
     int idCargo;
-    int name;
+    String name;
     float precio_evento;
 
-    public Cargo(int idCargo, int name, float precio_evento) {
+    public Cargo(int idCargo, String name, float precio_evento) {
         this.idCargo = idCargo;
         this.name = name;
         this.precio_evento = precio_evento;
@@ -22,11 +22,11 @@ public class Cargo implements Serializable {
         this.idCargo = idCargo;
     }
 
-    public int getName() {
+    public String getName() {
         return name;
     }
 
-    public void setName(int name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -43,7 +43,7 @@ public class Cargo implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Cargo cargo = (Cargo) o;
-        return idCargo == cargo.idCargo && name == cargo.name && Float.compare(cargo.precio_evento, precio_evento) == 0;
+        return idCargo == cargo.idCargo && Objects.equals(name, cargo.name) && Float.compare(cargo.precio_evento, precio_evento) == 0;
     }
 
     @Override
@@ -55,7 +55,7 @@ public class Cargo implements Serializable {
     public String toString() {
         return "Cargo{" +
                 "idCargo=" + idCargo +
-                ", name=" + name +
+                ", name='" + name + '\'' +
                 ", precio_evento=" + precio_evento +
                 '}';
     }

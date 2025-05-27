@@ -52,7 +52,7 @@ public class LoginDAO {
                     if ("TRABAJADOR".equals(tipo)) {
                         int cargoId = rs.getInt("cargo_id");
                         float precioEvento = rs.getFloat("precio_evento");
-                        cargo = new Cargo(cargoId, 1, precioEvento);
+                        cargo = new Cargo(cargoId, "Default", precioEvento);
                     }
                 }
 

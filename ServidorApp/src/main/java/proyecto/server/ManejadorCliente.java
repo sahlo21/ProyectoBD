@@ -91,6 +91,27 @@ public class ManejadorCliente extends Thread {
                 List<Cargo> cargos = dao.obtenerCargos();
                 salida.writeObject(cargos);
             }
+
+            if (Comando.AGREGAR_CARGO.equals(comando)) {
+                Cargo cargo = (Cargo) entrada.readObject();
+                CargoDAO dao = new CargoDAO();
+                Cargo cargoCreado = dao.agregarCargo(cargo);
+                salida.writeObject(cargoCreado);
+            }
+
+            if (Comando.ACTUALIZAR_CARGO.equals(comando)) {
+                Cargo cargo = (Cargo) entrada.readObject();
+                CargoDAO dao = new CargoDAO();
+                boolean exito = dao.actualizarCargo(cargo);
+                salida.writeObject(exito);
+            }
+
+            if (Comando.ELIMINAR_CARGO.equals(comando)) {
+                int idCargo = (int) entrada.readObject();
+                CargoDAO dao = new CargoDAO();
+                boolean exito = dao.eliminarCargo(idCargo);
+                salida.writeObject(exito);
+            }
             if (Comando.CREAR_PRODUCTO.equals(comando)) {
                 Producto producto = (Producto) entrada.readObject();
                 ProductoDAO dao = new ProductoDAO();
