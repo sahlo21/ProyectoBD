@@ -9,6 +9,11 @@ import java.util.*;
 public class GestorEventoDAO {
 
     public boolean crearGestor(GestorEvento gestor) {
+        // Verificar si el usuario ya existe
+        if (existeUsuario(gestor.getUsuario())) {
+            return false;
+        }
+
         String sqlUsuario = "INSERT INTO Usuario (cedula, nombre, usuario, contrasena) VALUES (?, ?, ?, ?)";
         String sqlGestor = "INSERT INTO GestorEvento (cedula) VALUES (?)";
         String sqlTelefono = "INSERT INTO Telefonos (cedula_usuario, telefono) VALUES (?, ?)";
@@ -135,6 +140,31 @@ public class GestorEventoDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * Verifica si un nombre de usuario ya existe en la base de datos
+     * @param usuario El nombre de usuario a verificar
+     * @return true si el usuario ya existe, false en caso contrario
+     */
+    private boolean existeUsuario(String usuario) {
+        String sql = "SELECT COUNT(*) FROM Usuario WHERE usuario = ?";
+
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, usuario);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     public List<GestorEvento> obtenerGestores() {

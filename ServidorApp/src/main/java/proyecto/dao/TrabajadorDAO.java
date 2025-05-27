@@ -10,6 +10,11 @@ import java.util.*;
 public class TrabajadorDAO {
 
     public boolean crearTrabajador(Trabajador trabajador) {
+        // Verificar si el usuario ya existe
+        if (existeUsuario(trabajador.getUsuario())) {
+            return false;
+        }
+
         String sql = "INSERT INTO Usuario (cedula, nombre, usuario, contrasena) VALUES (?, ?, ?, ?)";
         String sqlTrabajador = "INSERT INTO Trabajador (cedula, cargo_id) VALUES (?, ?)";
         String sqlTelefono = "INSERT INTO Telefonos (cedula_usuario, telefono) VALUES (?, ?)";
@@ -143,13 +148,38 @@ public class TrabajadorDAO {
         }
     }
 
+    /**
+     * Verifica si un nombre de usuario ya existe en la base de datos
+     * @param usuario El nombre de usuario a verificar
+     * @return true si el usuario ya existe, false en caso contrario
+     */
+    private boolean existeUsuario(String usuario) {
+        String sql = "SELECT COUNT(*) FROM Usuario WHERE usuario = ?";
+
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, usuario);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
     public List<Trabajador> obtenerTrabajadores() {
         Map<Integer, Trabajador> mapa = new HashMap<>();
         String sql = "SELECT u.cedula, u.nombre, u.usuario, u.contrasena, " +
-                "t.cargo_id, c.precio_evento, tel.telefono " +
+                "t.cargo_id, c.name, c.precio_evento, tel.telefono " +
                 "FROM Usuario u " +
                 "INNER JOIN Trabajador t ON u.cedula = t.cedula " +
-                "INNER JOIN Cargo c ON t.cargo_id = c.idCargo " +
+                "LEFT JOIN Cargo c ON t.cargo_id = c.idCargo " +
                 "LEFT JOIN Telefonos tel ON u.cedula = tel.cedula_usuario";
 
         try (Connection conn = ConexionBD.obtenerConexion();
@@ -164,9 +194,29 @@ public class TrabajadorDAO {
                     String nombre = rs.getString("nombre");
                     String usuario = rs.getString("usuario");
                     String contrasena = rs.getString("contrasena");
+
+                    // Handle potentially null cargo values
+                    Cargo cargo;
                     int cargoId = rs.getInt("cargo_id");
-                    float precioEvento = rs.getFloat("precio_evento");
-                    Cargo cargo = new Cargo(cargoId, "Default", precioEvento);
+                    // rs.getInt returns 0 for NULL values, so we need to check if the column was actually NULL
+                    if (rs.wasNull()) {
+                        // Create a default cargo if cargo_id is null
+                        cargo = new Cargo(1, "Default", 0);
+                    } else {
+                        String cargoName = rs.getString("name");
+                        // If name is null, use "Default" as fallback
+                        if (rs.wasNull() || cargoName == null || cargoName.isEmpty()) {
+                            cargoName = "Default";
+                        }
+
+                        float precioEvento = rs.getFloat("precio_evento");
+                        // If precio_evento is null, use 0 as default
+                        if (rs.wasNull()) {
+                            precioEvento = 0;
+                        }
+                        cargo = new Cargo(cargoId, cargoName, precioEvento);
+                    }
+
                     trabajador = new Trabajador(cedula, nombre, usuario, contrasena, new ArrayList<>(), cargo);
                     mapa.put(cedula, trabajador);
                 }

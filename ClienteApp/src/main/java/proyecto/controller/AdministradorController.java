@@ -80,6 +80,11 @@ public class AdministradorController implements Initializable {
     @FXML
     private TableColumn<Trabajador, String> columnUsuarioTrabajador;
 
+    // Columnas para numeración de filas
+    private TableColumn<Trabajador, Number> columnNumeroTrabajador;
+    private TableColumn<GestorEvento, Number> columnNumeroGestor;
+    private TableColumn<Cargo, Number> columnNumeroCargo;
+
     @FXML
     private Label lblFecha;
 
@@ -179,6 +184,7 @@ public class AdministradorController implements Initializable {
             if (eliminado) {
                 listaGestoresData.remove(gestorSeleccionado);
                 tableGestores.refresh();
+                actualizarNumerosDeFilas(tableGestores);
                 limpiarCamposGestor();
                 mostrarMensaje("Eliminación", null, "Gestor eliminado con éxito.", Alert.AlertType.INFORMATION);
             } else {
@@ -218,6 +224,7 @@ public class AdministradorController implements Initializable {
             int index = listaGestoresData.indexOf(gestorSeleccionado);
             listaGestoresData.set(index, gestorActualizado);
             tableGestores.refresh();
+            actualizarNumerosDeFilas(tableGestores);
             limpiarCamposGestor();
             mostrarMensaje("Actualización", null, "Gestor actualizado con éxito.", Alert.AlertType.INFORMATION);
             gestorSeleccionado = null;
@@ -264,11 +271,38 @@ public class AdministradorController implements Initializable {
         GestorEvento gestorAux = servicio.crearGestor(gestor);
         if (gestorAux != null) {
             listaGestoresData.add(gestorAux);
+            actualizarNumerosDeFilas(tableGestores);
             limpiarCamposGestor();
             mostrarMensaje("Notificación Gestor", null, "El gestor se ha creado con éxito",
                     Alert.AlertType.INFORMATION);
         } else {
-            mostrarMensajeError("El gestor con cédula: " + cedula + " ya se encuentra registrado");
+            // Check if the username already exists
+            boolean usuarioDuplicado = false;
+
+            // Check in gestores
+            for (GestorEvento g : gestores) {
+                if (usuario.equalsIgnoreCase(g.getUsuario())) {
+                    usuarioDuplicado = true;
+                    break;
+                }
+            }
+
+            // If not found in gestores, check in trabajadores
+            if (!usuarioDuplicado) {
+                List<Trabajador> trabajadores = TrabajadorServicio.obtenerTrabajadores();
+                for (Trabajador t : trabajadores) {
+                    if (usuario.equalsIgnoreCase(t.getUsuario())) {
+                        usuarioDuplicado = true;
+                        break;
+                    }
+                }
+            }
+
+            if (usuarioDuplicado) {
+                mostrarMensajeError("El nombre de usuario '" + usuario + "' ya está en uso. Por favor, elija otro nombre de usuario.");
+            } else {
+                mostrarMensajeError("El gestor con cédula: " + cedula + " ya se encuentra registrado");
+            }
         }
     }
 
@@ -276,25 +310,68 @@ public class AdministradorController implements Initializable {
         StringBuilder errores = new StringBuilder();
 
         if (txtNombreGestor.getText().trim().isEmpty()) {
-            errores.append("El nombre no puede estar vacío\n");
+            errores.append("- El nombre no puede estar vacío\n");
         }
 
-        if (txtUsuarioGestor.getText().trim().isEmpty()) {
-            errores.append("El usuario no puede estar vacío\n");
+        // Validación de usuario
+        String usuario = txtUsuarioGestor.getText().trim();
+        if (usuario.isEmpty()) {
+            errores.append("- El usuario no puede estar vacío\n");
+        } else {
+            boolean usuarioDuplicado = false;
+
+            // Verificar si el usuario ya existe en otro gestor
+            List<GestorEvento> gestores = GestorServicio.obtenerGestores();
+            for (GestorEvento g : gestores) {
+                // Si estamos actualizando, ignoramos el gestor seleccionado
+                if (gestorSeleccionado != null && g.getCedula() == gestorSeleccionado.getCedula()) {
+                    continue;
+                }
+                if (usuario.equalsIgnoreCase(g.getUsuario())) {
+                    errores.append("- El nombre de usuario ya está en uso por otro gestor\n");
+                    usuarioDuplicado = true;
+                    break;
+                }
+            }
+
+            // Si no se encontró duplicado en gestores, verificar en trabajadores
+            if (!usuarioDuplicado) {
+                List<Trabajador> trabajadores = TrabajadorServicio.obtenerTrabajadores();
+                for (Trabajador t : trabajadores) {
+                    if (usuario.equalsIgnoreCase(t.getUsuario())) {
+                        errores.append("- El nombre de usuario ya está en uso por un trabajador\n");
+                        break;
+                    }
+                }
+            }
         }
 
         if (txtContrasenaGestor.getText().trim().isEmpty()) {
-            errores.append("La contraseña no puede estar vacía\n");
+            errores.append("- La contraseña no puede estar vacía\n");
         }
 
-        if (txtCedulaGestor.getText().trim().isEmpty()) {
-            errores.append("La cédula no puede estar vacía\n");
-        } else if (!isNumericInt(txtCedulaGestor.getText().trim())) {
-            errores.append("La cédula debe ser un número entero\n");
+        // Validación de cédula
+        String cedulaStr = txtCedulaGestor.getText().trim();
+        if (cedulaStr.isEmpty()) {
+            errores.append("- La cédula no puede estar vacía\n");
+        } else if (!isNumericInt(cedulaStr)) {
+            errores.append("- La cédula debe ser un número entero\n");
+        } else {
+            // Verificar si la cédula ya existe en otro gestor (solo al crear nuevo)
+            if (gestorSeleccionado == null) {
+                int cedula = Integer.parseInt(cedulaStr);
+                List<GestorEvento> gestores = GestorServicio.obtenerGestores();
+                for (GestorEvento g : gestores) {
+                    if (g.getCedula() == cedula) {
+                        errores.append("- La cédula ya está registrada para otro gestor\n");
+                        break;
+                    }
+                }
+            }
         }
 
         if (txtTlf1Gestor.getText().trim().isEmpty()) {
-            errores.append("El teléfono 1 no puede estar vacío\n");
+            errores.append("- El teléfono 1 no puede estar vacío\n");
         }
 
         return errores.toString();
@@ -341,15 +418,10 @@ public class AdministradorController implements Initializable {
             return;
         }
 
-        // Validar que los campos no estén vacíos
-        if (txtNombreCargo.getText().isEmpty() || txtPrecioCargo.getText().isEmpty()) {
-            mostrarMensajeError("Debe completar todos los campos");
-            return;
-        }
-
-        // Validar que el precio sea un número válido
-        if (!isNumericFloat(txtPrecioCargo.getText())) {
-            mostrarMensajeError("El precio debe ser un número válido");
+        // Validar los campos
+        String errores = validarCamposCargo();
+        if (!errores.isEmpty()) {
+            mostrarMensajeError(errores);
             return;
         }
 
@@ -374,6 +446,7 @@ public class AdministradorController implements Initializable {
             if (tableCargo != null) {
                 tableCargo.getItems().clear();
                 tableCargo.setItems(getListaCargosData());
+                actualizarNumerosDeFilas(tableCargo);
             }
 
             // Actualizar el combobox de cargos
@@ -383,17 +456,47 @@ public class AdministradorController implements Initializable {
         }
     }
 
-    @FXML
-    void agregarCargoAction(ActionEvent event) {
+    /**
+     * Valida los campos del formulario de cargo
+     * @return String con los errores encontrados, o cadena vacía si no hay errores
+     */
+    private String validarCamposCargo() {
+        StringBuilder errores = new StringBuilder();
+
         // Validar que los campos no estén vacíos
-        if (txtNombreCargo.getText().isEmpty() || txtPrecioCargo.getText().isEmpty()) {
-            mostrarMensajeError("Debe completar todos los campos");
-            return;
+        if (txtNombreCargo.getText().trim().isEmpty()) {
+            errores.append("- El nombre del cargo no puede estar vacío\n");
+        } else {
+            // Verificar si el nombre ya existe en otro cargo
+            String nombreCargo = txtNombreCargo.getText().trim();
+            List<Cargo> cargos = CargoServicio.obtenerCargos();
+            for (Cargo c : cargos) {
+                // Si estamos actualizando, ignoramos el cargo seleccionado
+                if (cargoSeleccionado != null && c.getIdCargo() == cargoSeleccionado.getIdCargo()) {
+                    continue;
+                }
+                if (nombreCargo.equalsIgnoreCase(c.getName())) {
+                    errores.append("- El nombre del cargo ya está en uso\n");
+                    break;
+                }
+            }
         }
 
-        // Validar que el precio sea un número válido
-        if (!isNumericFloat(txtPrecioCargo.getText())) {
-            mostrarMensajeError("El precio debe ser un número válido");
+        if (txtPrecioCargo.getText().trim().isEmpty()) {
+            errores.append("- El precio no puede estar vacío\n");
+        } else if (!isNumericFloat(txtPrecioCargo.getText().trim())) {
+            errores.append("- El precio debe ser un número válido\n");
+        }
+
+        return errores.toString();
+    }
+
+    @FXML
+    void agregarCargoAction(ActionEvent event) {
+        // Validar los campos
+        String errores = validarCamposCargo();
+        if (!errores.isEmpty()) {
+            mostrarMensajeError(errores);
             return;
         }
 
@@ -415,6 +518,7 @@ public class AdministradorController implements Initializable {
             if (tableCargo != null) {
                 tableCargo.getItems().clear();
                 tableCargo.setItems(getListaCargosData());
+                actualizarNumerosDeFilas(tableCargo);
             }
 
             // Actualizar el combobox de cargos
@@ -463,6 +567,7 @@ public class AdministradorController implements Initializable {
             if (tableCargo != null) {
                 tableCargo.getItems().clear();
                 tableCargo.setItems(getListaCargosData());
+                actualizarNumerosDeFilas(tableCargo);
             }
 
             // Actualizar el combobox de cargos
@@ -554,13 +659,37 @@ public class AdministradorController implements Initializable {
         if (trabajadorAUx != null) {
             System.out.println("taxu"+trabajadorAUx);
             listaTrabajadoresData.add(trabajadorAUx);
+            actualizarNumerosDeFilas(tableTrabajador);
             limpiarCamposTrabajador();
             mostrarMensaje("Notificacion Vendedor", null, "El trabajador se ha creado con exito",
                     Alert.AlertType.INFORMATION);
 
         } else {
-            mostrarMensajeError("El vendedor: " + cedula + " ya se encuentra registrado");
+            // Check if the username already exists
+            boolean usuarioDuplicado = false;
+            // Reuse the trabajadores list that was already defined above
+            for (Trabajador t : trabajadores) {
+                if (usuario.equalsIgnoreCase(t.getUsuario())) {
+                    usuarioDuplicado = true;
+                    break;
+                }
+            }
 
+            if (!usuarioDuplicado) {
+                List<GestorEvento> gestores = GestorServicio.obtenerGestores();
+                for (GestorEvento g : gestores) {
+                    if (usuario.equalsIgnoreCase(g.getUsuario())) {
+                        usuarioDuplicado = true;
+                        break;
+                    }
+                }
+            }
+
+            if (usuarioDuplicado) {
+                mostrarMensajeError("El nombre de usuario '" + usuario + "' ya está en uso. Por favor, elija otro nombre de usuario.");
+            } else {
+                mostrarMensajeError("El vendedor con cédula: " + cedula + " ya se encuentra registrado");
+            }
         }
     }
     @FXML
@@ -625,6 +754,7 @@ public class AdministradorController implements Initializable {
             int index = listaTrabajadoresData.indexOf(trabajadorSeleccionado);
             listaTrabajadoresData.set(index, trabajadorActualizado);
             tableTrabajador.refresh();
+            actualizarNumerosDeFilas(tableTrabajador);
             limpiarCamposTrabajador();
             mostrarMensaje("Actualización", null, "Trabajador actualizado con éxito.", Alert.AlertType.INFORMATION);
             trabajadorSeleccionado = null;
@@ -654,6 +784,7 @@ public class AdministradorController implements Initializable {
             if (eliminado) {
                 listaTrabajadoresData.remove(trabajadorSeleccionado);
                 tableTrabajador.refresh();
+                actualizarNumerosDeFilas(tableTrabajador);
                 limpiarCamposTrabajador();
                 mostrarMensaje("Eliminación", null, "Trabajador eliminado con éxito.", Alert.AlertType.INFORMATION);
             } else {
@@ -670,17 +801,61 @@ public class AdministradorController implements Initializable {
         if (txtNombreTrabajador.getText().trim().isEmpty()) {
             errores.append("- El nombre no puede estar vacío.\n");
         }
-        if (txtUsuarioTrabajador.getText().trim().isEmpty()) {
+
+        // Validación de usuario
+        String usuario = txtUsuarioTrabajador.getText().trim();
+        if (usuario.isEmpty()) {
             errores.append("- El usuario no puede estar vacío.\n");
+        } else {
+            boolean usuarioDuplicado = false;
+
+            // Verificar si el usuario ya existe en otro trabajador
+            List<Trabajador> trabajadores = TrabajadorServicio.obtenerTrabajadores();
+            for (Trabajador t : trabajadores) {
+                // Si estamos actualizando, ignoramos el trabajador seleccionado
+                if (trabajadorSeleccionado != null && t.getCedula() == trabajadorSeleccionado.getCedula()) {
+                    continue;
+                }
+                if (usuario.equalsIgnoreCase(t.getUsuario())) {
+                    errores.append("- El nombre de usuario ya está en uso por otro trabajador.\n");
+                    usuarioDuplicado = true;
+                    break;
+                }
+            }
+
+            // Si no se encontró duplicado en trabajadores, verificar en gestores
+            if (!usuarioDuplicado) {
+                List<GestorEvento> gestores = GestorServicio.obtenerGestores();
+                for (GestorEvento g : gestores) {
+                    if (usuario.equalsIgnoreCase(g.getUsuario())) {
+                        errores.append("- El nombre de usuario ya está en uso por un gestor de eventos.\n");
+                        break;
+                    }
+                }
+            }
         }
+
         if (txtContrasenaTrabajador.getText().trim().isEmpty()) {
             errores.append("- La contraseña no puede estar vacía.\n");
         }
-        if (txtCedulaTrabajador.getText().trim().isEmpty()) {
+
+        // Validación de cédula
+        String cedulaStr = txtCedulaTrabajador.getText().trim();
+        if (cedulaStr.isEmpty()) {
             errores.append("- La cédula no puede estar vacía.\n");
         } else {
             try {
-                Integer.parseInt(txtCedulaTrabajador.getText().trim());
+                int cedula = Integer.parseInt(cedulaStr);
+                // Verificar si la cédula ya existe en otro trabajador (solo al crear nuevo)
+                if (trabajadorSeleccionado == null) {
+                    List<Trabajador> trabajadores = TrabajadorServicio.obtenerTrabajadores();
+                    for (Trabajador t : trabajadores) {
+                        if (t.getCedula() == cedula) {
+                            errores.append("- La cédula ya está registrada para otro trabajador.\n");
+                            break;
+                        }
+                    }
+                }
             } catch (NumberFormatException e) {
                 errores.append("- La cédula debe ser numérica.\n");
             }
@@ -835,6 +1010,19 @@ public class AdministradorController implements Initializable {
         if (columnNombreTrabajador != null && columnCedulaTrabajador != null && 
             columnTelefonoPrincipal != null && columnUsuarioTrabajador != null) {
 
+            // Crear y configurar la columna de numeración
+            columnNumeroTrabajador = new TableColumn<>("No.");
+            columnNumeroTrabajador.setPrefWidth(50);
+            columnNumeroTrabajador.setSortable(false);
+            columnNumeroTrabajador.setCellValueFactory(column -> new javafx.beans.property.ReadOnlyObjectWrapper<Number>(
+                    tableTrabajador.getItems().indexOf(column.getValue()) + 1));
+
+            // Agregar la columna de numeración como primera columna si no existe ya
+            if (tableTrabajador.getColumns().isEmpty() || 
+                !tableTrabajador.getColumns().get(0).getText().equals("No.")) {
+                tableTrabajador.getColumns().add(0, columnNumeroTrabajador);
+            }
+
             columnNombreTrabajador.setCellValueFactory(new PropertyValueFactory<Trabajador, String>("nombre"));
             columnCedulaTrabajador.setCellValueFactory(new PropertyValueFactory<Trabajador, String>("cedula"));
             columnTelefonoPrincipal.setCellValueFactory(cellData -> {
@@ -880,6 +1068,19 @@ public class AdministradorController implements Initializable {
         if (columnNombreGestor != null && columnCedulaGestor != null && 
             columnTelefonoPrincipalGestor != null && columnUsuarioGestor != null) {
 
+            // Crear y configurar la columna de numeración
+            columnNumeroGestor = new TableColumn<>("No.");
+            columnNumeroGestor.setPrefWidth(50);
+            columnNumeroGestor.setSortable(false);
+            columnNumeroGestor.setCellValueFactory(column -> new javafx.beans.property.ReadOnlyObjectWrapper<Number>(
+                    tableGestores.getItems().indexOf(column.getValue()) + 1));
+
+            // Agregar la columna de numeración como primera columna si no existe ya
+            if (tableGestores.getColumns().isEmpty() || 
+                !tableGestores.getColumns().get(0).getText().equals("No.")) {
+                tableGestores.getColumns().add(0, columnNumeroGestor);
+            }
+
             columnNombreGestor.setCellValueFactory(new PropertyValueFactory<GestorEvento, String>("nombre"));
             columnCedulaGestor.setCellValueFactory(new PropertyValueFactory<GestorEvento, String>("cedula"));
             columnTelefonoPrincipalGestor.setCellValueFactory(cellData -> {
@@ -908,6 +1109,19 @@ public class AdministradorController implements Initializable {
 
         // Configuración de la tabla de cargos
         if (columnNombreCargo != null && columnPrecioCargo != null) {
+            // Crear y configurar la columna de numeración
+            columnNumeroCargo = new TableColumn<>("No.");
+            columnNumeroCargo.setPrefWidth(50);
+            columnNumeroCargo.setSortable(false);
+            columnNumeroCargo.setCellValueFactory(column -> new javafx.beans.property.ReadOnlyObjectWrapper<Number>(
+                    tableCargo.getItems().indexOf(column.getValue()) + 1));
+
+            // Agregar la columna de numeración como primera columna si no existe ya
+            if (tableCargo.getColumns().isEmpty() || 
+                !tableCargo.getColumns().get(0).getText().equals("No.")) {
+                tableCargo.getColumns().add(0, columnNumeroCargo);
+            }
+
             columnNombreCargo.setCellValueFactory(new PropertyValueFactory<>("name"));
             columnPrecioCargo.setCellValueFactory(new PropertyValueFactory<>("precio_evento"));
         }
@@ -924,9 +1138,23 @@ public class AdministradorController implements Initializable {
         }
     }
 
+    /**
+     * Actualiza los números de fila en una tabla
+     * @param tableView La tabla a actualizar
+     */
+    private void actualizarNumerosDeFilas(TableView<?> tableView) {
+        if (tableView != null) {
+            tableView.refresh();
+        }
+    }
+
     public ObservableList<Trabajador> getListaVendedorData() {
         listaTrabajadoresData.clear();
         listaTrabajadoresData.addAll(TrabajadorServicio.obtenerTrabajadores());
+
+        if (tableTrabajador != null) {
+            actualizarNumerosDeFilas(tableTrabajador);
+        }
 
         return listaTrabajadoresData;
     }
@@ -934,6 +1162,10 @@ public class AdministradorController implements Initializable {
     public ObservableList<GestorEvento> getListaGestorData() {
         listaGestoresData.clear();
         listaGestoresData.addAll(GestorServicio.obtenerGestores());
+
+        if (tableGestores != null) {
+            actualizarNumerosDeFilas(tableGestores);
+        }
 
         return listaGestoresData;
     }
@@ -945,6 +1177,10 @@ public class AdministradorController implements Initializable {
     public ObservableList<Cargo> getListaCargosData() {
         listaCargosData.clear();
         listaCargosData.addAll(CargoServicio.obtenerCargos());
+
+        if (tableCargo != null) {
+            actualizarNumerosDeFilas(tableCargo);
+        }
 
         return listaCargosData;
     }
