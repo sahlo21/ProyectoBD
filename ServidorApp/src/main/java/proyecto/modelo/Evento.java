@@ -22,7 +22,7 @@ public class Evento implements Serializable {
 
     // Constructor completo
     public Evento(int id, String nombre, Date fecha, String lugar, double precio,
-                  Cliente cliente, List<Producto> equipos, List<Trabajador> trabajadores) {
+                  Cliente cliente, List<Producto> productos, List<Trabajador> trabajadores) {
         this.id = id;
         this.nombre = nombre;
         this.fecha = fecha;

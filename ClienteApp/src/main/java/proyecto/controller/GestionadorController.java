@@ -28,6 +28,7 @@ import java.sql.Date;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -351,6 +352,7 @@ public class GestionadorController implements Initializable {
         }
         System.out.println("Bien hasta aquí");
         Cliente cliente = ClienteServicio.buscarCliente(cedulaCliente);
+        System.out.println("Cliente encontrado: " + cliente);
         if (cliente == null) {
             mostrarMensajeError("No se encontró un cliente con la cédula ingresada.");
             return;
@@ -363,8 +365,8 @@ public class GestionadorController implements Initializable {
                 lugar,
                 0.0, // Puedes calcular el precio si lo necesitas
                 cliente,
-                listaElementosData,
-                listaTrabajadorData
+                new ArrayList<>(listaElementosData), // <-- Conversión aquí
+                new ArrayList<>(listaTrabajadorData)
         );
 
         Evento event = EventoServicio.crearEvento(evento);
