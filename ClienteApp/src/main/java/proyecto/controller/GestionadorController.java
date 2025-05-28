@@ -352,7 +352,7 @@ public class GestionadorController implements Initializable {
         }
         System.out.println("Bien hasta aquí");
         Cliente cliente = ClienteServicio.buscarCliente(cedulaCliente);
-        System.out.println("Cliente encontrado: " + cliente);
+
         if (cliente == null) {
             mostrarMensajeError("No se encontró un cliente con la cédula ingresada.");
             return;

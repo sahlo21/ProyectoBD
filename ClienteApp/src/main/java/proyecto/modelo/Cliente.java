@@ -14,7 +14,7 @@ public class Cliente implements Serializable {
     private String genero;
     private String telefono;
 
-    public Cliente(int id, String nombre, int edad, String direccion, String genero, String telefono) {
+    public Cliente(int cedula, String nombre, int edad, String direccion, String genero, String telefono) {
         this.cedula = cedula;
         this.nombre = nombre;
         this.edad = edad;
@@ -25,7 +25,7 @@ public class Cliente implements Serializable {
 
     // Getters y Setters
     public int getId() { return cedula; }
-    public void setId(int id) { this.cedula = id; }
+    public void setId(int cedula) { this.cedula = cedula; }
 
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }

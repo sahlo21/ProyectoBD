@@ -93,7 +93,7 @@ public class ClienteDAO {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                System.out.println("Cliente encontrado: " + rs.getString("nombre"));
+
                 cliente = new Cliente(
                         rs.getInt("cedula"),
                         rs.getString("nombre"),
@@ -102,7 +102,10 @@ public class ClienteDAO {
                         rs.getString("genero"),
                         rs.getString("telefono")
 
+
                 );
+                cliente.setId(rs.getInt("cedula"));
+                System.out.println("Cliente encontrado: " + cliente.getId());
             }
         } catch (SQLException e) {
             e.printStackTrace();
