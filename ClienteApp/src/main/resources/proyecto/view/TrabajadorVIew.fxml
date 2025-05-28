@@ -77,6 +77,31 @@
                         </SplitPane>
                      </content>
                   </Tab>
+                  <Tab text="Utilidades">
+                    <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <AnchorPane prefHeight="655.0" prefWidth="807.0" />
+                              <Button layoutX="124.0" layoutY="66.0" mnemonicParsing="false" onAction="#abrirCalculadora" prefHeight="34.0" prefWidth="240.0" style="-fx-background-color: #0080ff;" text="Calculadora" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Button>
+                              <Separator layoutX="38.0" layoutY="46.0" prefHeight="13.0" prefWidth="768.0" />
+                              <Label layoutX="381.0" layoutY="20.0" text="Reportes" textFill="#0080ff">
+                                 <font>
+                                    <Font name="Tahoma Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                              <Button layoutX="444.0" layoutY="66.0" mnemonicParsing="false" onAction="#abrirCalendario" prefHeight="34.0" prefWidth="240.0" style="-fx-background-color: #0080ff;" text="Calendario" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                        </AnchorPane>
+                    </content>
+                  </Tab>
               </tabs>
             </TabPane>
          </children>

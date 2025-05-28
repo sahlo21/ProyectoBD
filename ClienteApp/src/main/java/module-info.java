@@ -7,6 +7,8 @@ module proyecto.clienteapp {
     requires itextpdf;
     requires org.apache.pdfbox;
     requires javafx.swing;
+    requires java.scripting;
+    requires exp4j;
 
     opens proyecto to javafx.fxml;
     opens proyecto.controller to javafx.fxml;

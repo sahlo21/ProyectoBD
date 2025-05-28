@@ -13,6 +13,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -702,6 +703,24 @@ public class AdministradorController implements Initializable {
             } else {
                 mostrarMensajeError("El vendedor con cédula: " + cedula + " ya se encuentra registrado");
             }
+        }
+    }
+    @FXML
+    private void abrirCalculadora(ActionEvent event) {
+        try {
+            Calculadora calc = new Calculadora();
+            Stage stage = new Stage();
+            calc.start(stage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    @FXML
+    private void abrirCalendario(ActionEvent event) {
+        try {
+            new Calendario().start(new Stage());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
