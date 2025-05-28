@@ -118,11 +118,24 @@ public class ManejadorCliente extends Thread {
                 boolean exito = dao.actualizarCargo(cargo);
                 salida.writeObject(exito);
             }
+            if (Comando.ACTUALIZAR_CLIENTE.equals(comando)) {
+                Cliente cliente = (Cliente) entrada.readObject();
+                ClienteDAO dao = new ClienteDAO();
+                boolean exito = dao.actualizarCliente(cliente);
+                salida.writeObject(exito);
+            }
 
             if (Comando.ELIMINAR_CARGO.equals(comando)) {
                 int idCargo = (int) entrada.readObject();
                 CargoDAO dao = new CargoDAO();
                 boolean exito = dao.eliminarCargo(idCargo);
+                salida.writeObject(exito);
+            }
+
+            if (Comando.ELIMINAR_CLIENTE.equals(comando)) {
+                int cedula = (int) entrada.readObject();
+                ClienteDAO dao = new ClienteDAO();
+                boolean exito = dao.eliminarCliente(cedula);
                 salida.writeObject(exito);
             }
             if (Comando.CREAR_PRODUCTO.equals(comando)) {

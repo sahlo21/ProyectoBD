@@ -53,7 +53,7 @@ public class ClienteDAO {
 
     // Actualizar cliente (solo nombre, usuario y contraseña)
     public boolean actualizarCliente(Cliente cliente) {
-        String sql = "UPDATE Cliente SET nombre = ?, edad = ?, direccion = ?, genero = ?, telefono = ? WHERE id = ?";
+        String sql = "UPDATE Cliente SET nombre = ?, edad = ?, direccion = ?, genero = ?, telefono = ? WHERE cedula = ?";
         try (Connection conn = ConexionBD.obtenerConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, cliente.getNombre());
@@ -72,7 +72,7 @@ public class ClienteDAO {
 
     // Eliminar cliente (Usuario, Cliente y sus teléfonos)
     public boolean eliminarCliente(int id) {
-        String sql = "DELETE FROM Cliente WHERE id = ?";
+        String sql = "DELETE FROM Cliente WHERE cedula = ?";
         try (Connection conn = ConexionBD.obtenerConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);

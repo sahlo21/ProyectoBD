@@ -125,54 +125,78 @@ public class ClienteController implements Initializable {
 
         }
 
-        @FXML
-        void actualizarCliente (ActionEvent event){
-            Cliente seleccionado = tableCliente.getSelectionModel().getSelectedItem();
-            if (seleccionado == null) {
-                showAlert("Advertencia", "Debes seleccionar un cliente para actualizar.", Alert.AlertType.WARNING);
-                return;
+
+
+            @FXML
+            void actualizarCliente(ActionEvent event){
+                String nombre = txtNombreCliente.getText();
+                int cedula = Integer.parseInt(txtCedulaCLiente.getText());
+                String direccion = txtDireccionCliente.getText();
+                String telefono = txtTelefonoCLiente.getText();
+                String genero = comboBoxGenero.getValue();
+                int edad = 0;
+                if (dateCliente.getValue() != null) {
+                    LocalDate nacimiento = dateCliente.getValue();
+                    LocalDate hoy = LocalDate.now();
+                    edad = Period.between(nacimiento, hoy).getYears();
+                }
+
+                ClienteServicio servicio = new ClienteServicio();
+                Cliente clienteExistente = servicio.buscarCliente(cedula); // Debes tener este método
+
+                if (clienteExistente == null) {
+                    mostrarMensajeError("No se encontró un cliente con la cédula: " + cedula);
+                    return;
+                }
+
+                // Actualizar los datos del cliente existente
+                clienteExistente.setNombre(nombre);
+                clienteExistente.setDireccion(direccion);
+                clienteExistente.setGenero(genero);
+                clienteExistente.setTelefono(telefono);
+                clienteExistente.setEdad(edad);
+
+                boolean actualizado = servicio.actualizarCliente(clienteExistente); // Método que actualiza en la base de datos
+                if (actualizado) {
+                    int index = tableCliente.getSelectionModel().getSelectedIndex();
+                    listaClientesData.set(index, clienteExistente);
+                    tableCliente.refresh(); // Si tienes una tabla visible
+
+                    limpiarCampos();
+                    mostrarMensaje("Cliente Actualizado", "Actualización exitosa", "El cliente ha sido actualizado correctamente.", Alert.AlertType.INFORMATION);
+                } else {
+                    mostrarMensajeError("Error al actualizar el cliente. Intenta nuevamente.");
+                }
             }
-            int edad = 0;
-            if (dateCliente.getValue() != null) {
-                LocalDate nacimiento = dateCliente.getValue();
-                LocalDate hoy = LocalDate.now();
-                edad = Period.between(nacimiento, hoy).getYears();
-            }
-            seleccionado = new Cliente(
-                    Integer.parseInt(txtCedulaCLiente.getText()),
-                    txtNombreCliente.getText(),
-                    edad,
-                    txtDireccionCliente.getText(),
-                    comboBoxGenero.getValue(),
-                    txtTelefonoCLiente.getText()
 
 
+    @FXML
+    void eliminarCliente(ActionEvent event) {
+        int cedula = Integer.parseInt(txtCedulaCLiente.getText());
 
-            );
+        ClienteServicio servicio = new ClienteServicio();
+        Cliente cliente = servicio.buscarCliente(cedula); // Método para buscar cliente
 
-            int index = tableCliente.getSelectionModel().getSelectedIndex();
-            listaClientesData.set(index, seleccionado);
+        if (cliente == null) {
+            mostrarMensajeError("No se encontró un cliente con la cédula: " + cedula);
+            return;
+        }
+
+        boolean eliminado = servicio.eliminarCliente(cedula); // Método que elimina en base de datos
+        if (eliminado) {
+            listaClientesData.remove(cliente); // Si usas ObservableList
+            actualizarNumerosDeFilas(tableCliente);
             limpiarCampos();
+            mostrarMensaje("Cliente Eliminado", "Eliminación exitosa", "El cliente con cédula " + cedula + " ha sido eliminado.", Alert.AlertType.INFORMATION);
+        } else {
+            mostrarMensajeError("No se pudo eliminar el cliente. Intenta nuevamente.");
         }
+    }
 
-        @FXML
-        void eliminarCliente (ActionEvent event){
-            Cliente seleccionado = tableCliente.getSelectionModel().getSelectedItem();
-            if (seleccionado != null) {
-                listaClientesData.remove(seleccionado);
-            } else {
-                showAlert("Advertencia", "Debes seleccionar un cliente para eliminar.", Alert.AlertType.WARNING);
+    @FXML
+            void nuevoCliente (ActionEvent event){
+                limpiarCampos();
             }
-        }
-
-        @FXML
-        void nuevoCliente (ActionEvent event){
-            limpiarCampos();
-        }
-
-
-
-
 
     private void showAlert (String titulo, String mensaje, Alert.AlertType tipo){
         Alert alert = new Alert(tipo);
@@ -181,6 +205,7 @@ public class ClienteController implements Initializable {
         alert.setContentText(mensaje);
         alert.showAndWait();
     }
+
     private void limpiarCampos() {
         txtNombreCliente.clear();
         txtCedulaCLiente.clear();
@@ -189,6 +214,7 @@ public class ClienteController implements Initializable {
         comboBoxGenero.getSelectionModel().clearSelection();
         dateCliente.setValue(null);
     }
+
     private void mostrarMensajeError (String mensaje){
 
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -206,12 +232,17 @@ public class ClienteController implements Initializable {
         alert.setContentText(contenido);
         alert.showAndWait();
     }
+
     private void actualizarNumerosDeFilas(TableView<?> tableView) {
         if (tableView != null) {
             tableView.refresh();
         }
     }
-
-
 }
+
+
+
+
+
+
 
