@@ -240,9 +240,14 @@ public class GestionadorController implements Initializable {
     void agregarProducto(ActionEvent event) {
         agregarProducto();
     }
+    @FXML
+    void eliminarProveedor(ActionEvent event){
+        eliminarProveedor();
+    }
 
     @FXML
     void agregarProveedor(ActionEvent event) {
+
         agregarProveedor();
     }
 
@@ -305,6 +310,7 @@ public class GestionadorController implements Initializable {
     }
 
     public void actualizarPorducto(ActionEvent actionEvent) {
+        actualizarProducto();
     }
 
     public void eliminarTrabajadorEvento(ActionEvent actionEvent) {
@@ -695,6 +701,7 @@ public class GestionadorController implements Initializable {
           txtNombreProducto.clear();
           txtDescripProducto.clear();
           txtPrecioProducto.clear();
+          txtPrecioAlquilerProducto.clear();
           txtCantidadProducto.clear();
       }
 
@@ -726,8 +733,10 @@ public class GestionadorController implements Initializable {
         boolean exito = servicio.actualizarProducto(producto);
 
         if (exito) {
+            listaProductosData.setAll(servicio.obtenerProductos());
             mostrarMensaje("Notificación", null, "Producto actualizado con éxito", Alert.AlertType.INFORMATION);
-            cargarProductosEnTabla();
+            tableProdcutos.setItems(listaProductosData);
+            tableProdcutos.refresh();
             limpiarCamposProducto();
         } else {
             mostrarMensajeError("No se pudo actualizar el producto con ID: " + id);
