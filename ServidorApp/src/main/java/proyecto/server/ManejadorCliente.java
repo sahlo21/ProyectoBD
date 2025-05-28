@@ -241,14 +241,13 @@ public class ManejadorCliente extends Thread {
                 Evento evento = (Evento) entrada.readObject();
                 EventoDAO dao = new EventoDAO();
                 boolean exito = dao.crearEvento(evento);
-                salida.writeObject(exito ? evento : null);
+                if (exito) {
+                    salida.writeObject(evento); // Devuelve el evento creado
+                } else {
+                    salida.writeObject(null); // O algún error si lo prefieres
+                }
             }
-            if (Comando.CREAR_EVENTO.equals(comando)) {
-                Evento evento = (Evento) entrada.readObject();
-                EventoDAO dao = new EventoDAO();
-                boolean exito = dao.crearEvento(evento);
-                salida.writeObject(exito ? evento : null);
-            }
+
 
             if (Comando.BUSCAR_CLIENTE.equals(comando)) {
                 int cedula = (int) entrada.readObject();

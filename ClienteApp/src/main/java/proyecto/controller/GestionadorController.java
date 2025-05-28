@@ -372,6 +372,7 @@ public class GestionadorController implements Initializable {
         Evento event = EventoServicio.crearEvento(evento);
 
         if (event != null) {
+            System.out.println("llega o no?");
             listaEventosData.add(evento);
             limpiarCamposEvento();
             listaElementosData.clear();

@@ -11,13 +11,13 @@ public class ClienteDAO {
     // Obtener todos los clientes
     public List<Cliente> obtenerClientes() {
         List<Cliente> lista = new ArrayList<>();
-        String sql = "SELECT id, nombre, edad, direccion, genero, telefono FROM Cliente";
+        String sql = "SELECT cedula, nombre, edad, direccion, genero, telefono FROM Cliente";
         try (Connection conn = ConexionBD.obtenerConexion();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 Cliente cliente = new Cliente(
-                        rs.getInt("id"),
+                        rs.getInt("cedula"),
                         rs.getString("nombre"),
                         rs.getInt("edad"),
                         rs.getString("direccion"),
@@ -34,7 +34,7 @@ public class ClienteDAO {
 
     // Insertar nuevo cliente
     public boolean insertarCliente(Cliente cliente) {
-        String sql = "INSERT INTO Cliente (id, nombre, edad, direccion, genero, telefono) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Cliente (cedula, nombre, edad, direccion, genero, telefono) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = ConexionBD.obtenerConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, cliente.getId());
@@ -93,6 +93,7 @@ public class ClienteDAO {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
+                System.out.println("Cliente encontrado: " + rs.getString("nombre"));
                 cliente = new Cliente(
                         rs.getInt("cedula"),
                         rs.getString("nombre"),
@@ -100,6 +101,7 @@ public class ClienteDAO {
                         rs.getString("direccion"),
                         rs.getString("genero"),
                         rs.getString("telefono")
+
                 );
             }
         } catch (SQLException e) {

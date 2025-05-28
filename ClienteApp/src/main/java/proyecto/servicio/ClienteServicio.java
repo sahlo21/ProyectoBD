@@ -42,6 +42,7 @@ public class ClienteServicio {
 
             Object respuesta = in.readObject();
             if (respuesta instanceof Cliente) {
+                System.out.println("Tenemosun cliente: " + respuesta);
                 return (Cliente) respuesta;
             }
         } catch (IOException | ClassNotFoundException e) {

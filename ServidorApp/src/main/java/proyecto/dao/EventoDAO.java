@@ -13,7 +13,7 @@ import proyecto.server.ConexionBD;
 public class EventoDAO {
 
     public boolean crearEvento(Evento evento) {
-        String sqlEvento = "INSERT INTO Evento (idEvento, nombre, fecha, lugar, precio) VALUES (?, ?, ?, ?, ?)";
+        String sqlEvento = "INSERT INTO Evento (idEvento, nombre, fecha, lugar, precio, idCliente) VALUES (?, ?, ?, ?, ?, ?)";
         String sqlTrabajador = "INSERT INTO Evento_Trabajador (idEvento, idTrabajador) VALUES (?, ?)";
         String sqlProducto = "INSERT INTO Evento_Producto (idEvento, idProducto) VALUES (?, ?)";
 
@@ -25,7 +25,7 @@ public class EventoDAO {
         try {
             conn = ConexionBD.obtenerConexion();
             conn.setAutoCommit(false);
-
+            System.out.println("Obtiene conexion");
             // Insertar evento
             stmtEvento = conn.prepareStatement(sqlEvento);
             stmtEvento.setInt(1, evento.getId());
@@ -33,8 +33,9 @@ public class EventoDAO {
             stmtEvento.setDate(3, new java.sql.Date(evento.getFecha().getTime()));
             stmtEvento.setString(4, evento.getLugar());
             stmtEvento.setDouble(5, evento.getPrecio());
+            stmtEvento.setInt(6, evento.getCliente().getId());
             stmtEvento.executeUpdate();
-
+            System.out.println("Evento insertado correctamente");
             // Insertar trabajadores asociados
             stmtTrabajador = conn.prepareStatement(sqlTrabajador);
             for (Trabajador t : evento.getTrabajadores()) {

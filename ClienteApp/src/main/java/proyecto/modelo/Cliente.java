@@ -7,7 +7,7 @@ public class Cliente implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private int id;
+    private int cedula;
     private String nombre;
     private int edad;
     private String direccion;
@@ -15,7 +15,7 @@ public class Cliente implements Serializable {
     private String telefono;
 
     public Cliente(int id, String nombre, int edad, String direccion, String genero, String telefono) {
-        this.id = id;
+        this.cedula = cedula;
         this.nombre = nombre;
         this.edad = edad;
         this.direccion = direccion;
@@ -24,8 +24,8 @@ public class Cliente implements Serializable {
     }
 
     // Getters y Setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getId() { return cedula; }
+    public void setId(int id) { this.cedula = id; }
 
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
@@ -45,7 +45,7 @@ public class Cliente implements Serializable {
     @Override
     public String toString() {
         return "Cliente{" +
-                "id=" + id +
+                "id=" + cedula +
                 ", nombre='" + nombre + '\'' +
                 ", edad=" + edad +
                 ", direccion='" + direccion + '\'' +
@@ -59,11 +59,11 @@ public class Cliente implements Serializable {
         if (this == o) return true;
         if (!(o instanceof Cliente)) return false;
         Cliente cliente = (Cliente) o;
-        return id == cliente.id;
+        return cedula == cliente.cedula;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(cedula);
     }
 }
