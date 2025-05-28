@@ -140,16 +140,22 @@ public class Aplicacion extends Application {
                 }
             });
 
-            // Aquí deberías cargar la vista del trabajador
-            // Por ahora, solo configuramos el manejador de cierre
-            primaryStage.setTitle("Portal de Trabajador");
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/proyecto/view/TrabajadorView.fxml"));
+            BorderPane rootLayout = (BorderPane) loader.load();
+            AdministradorController controller = loader.getController();
+            controller.setAplicacion(this);
+            Scene scene = new Scene(rootLayout);
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("Portal Trabajador");
 
             // Center the window on the screen
             primaryStage.centerOnScreen();
 
             primaryStage.show();
 
-        } catch (Exception e) {
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
