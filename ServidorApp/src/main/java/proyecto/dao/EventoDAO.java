@@ -33,7 +33,7 @@ public class EventoDAO {
             stmtEvento.setDate(3, new java.sql.Date(evento.getFecha().getTime()));
             stmtEvento.setString(4, evento.getLugar());
             stmtEvento.setDouble(5, evento.getPrecio());
-            stmtEvento.setInt(6, evento.getCliente().getId());
+            stmtEvento.setInt(6, evento.getCliente().getCedula());
             stmtEvento.executeUpdate();
             System.out.println("Evento insertado correctamente");
             // Insertar trabajadores asociados

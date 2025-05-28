@@ -37,7 +37,7 @@ public class ClienteDAO {
         String sql = "INSERT INTO Cliente (cedula, nombre, edad, direccion, genero, telefono) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = ConexionBD.obtenerConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, cliente.getId());
+            stmt.setInt(1, cliente.getCedula());
             stmt.setString(2, cliente.getNombre());
             stmt.setInt(3, cliente.getEdad());
             stmt.setString(4, cliente.getDireccion());
@@ -61,7 +61,7 @@ public class ClienteDAO {
             stmt.setString(3, cliente.getDireccion());
             stmt.setString(4, cliente.getGenero());
             stmt.setString(5, cliente.getTelefono());
-            stmt.setInt(6, cliente.getId());
+            stmt.setInt(6, cliente.getCedula());
             int filas = stmt.executeUpdate();
             return filas > 0;
         } catch (SQLException e) {
@@ -105,7 +105,7 @@ public class ClienteDAO {
 
                 );
                 cliente.setId(rs.getInt("cedula"));
-                System.out.println("Cliente encontrado: " + cliente.getId());
+                System.out.println("Cliente encontrado: " + cliente.getCedula());
             }
         } catch (SQLException e) {
             e.printStackTrace();

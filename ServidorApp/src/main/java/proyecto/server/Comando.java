@@ -45,4 +45,10 @@ public class Comando {
     public static final String GENERAR_FACTURA_EVENTO = "GENERAR_FACTURA_EVENTO";
     public static final String GENERAR_REPORTE_ALQUILERES_MENSUALES = "GENERAR_REPORTE_ALQUILERES_MENSUALES";
     public static final String BUSCAR_CLIENTE = "BUSCAR_CLIENTE";
+    //Comandos para Cliente
+    public static final String OBTENER_CLIENTES = "OBTENER_CLIENTES";
+    public static final String CREAR_CLIENTE = "CREAR_CLIENTE";
+    public static final String ACTUALIZAR_CLIENTE = "ACTUALIZAR_CLIENTE";
+    public static final String ELIMINAR_CLIENTE = "ELIMINAR_CLIENTE";
+
 }

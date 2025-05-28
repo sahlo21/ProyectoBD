@@ -42,6 +42,21 @@ public class ManejadorCliente extends Thread {
 
                     salida.writeObject(null); // para indicar fallo
                 }
+            }if (Comando.CREAR_CLIENTE.equals(comando)) {
+                Cliente cliente = (Cliente) entrada.readObject();
+                ClienteDAO dao = new ClienteDAO();
+                System.out.println(cliente.toString());
+                boolean exito = dao.insertarCliente(cliente);
+
+                if (exito) {
+                    System.out.println("exito");
+                    // Puedes devolver el mismo objeto recibido o uno actualizado desde la DB (con ID, por ejemplo)
+                    salida.writeObject(cliente);
+                } else {
+                    System.out.println("no exito");
+
+                    salida.writeObject(null); // para indicar fallo
+                }
             }
 
             if (Comando.OBTENER_TRABAJADORES.equals(comando)) {
@@ -83,6 +98,11 @@ public class ManejadorCliente extends Thread {
                 CargoDAO dao = new CargoDAO();
                 List<Cargo> cargos = dao.obtenerCargos();
                 salida.writeObject(cargos);
+            }
+            if (Comando.OBTENER_CLIENTES.equals(comando)) {
+                ClienteDAO dao = new ClienteDAO();
+                List<Cliente> clientes = dao.obtenerClientes();
+                salida.writeObject(clientes);
             }
 
             if (Comando.AGREGAR_CARGO.equals(comando)) {

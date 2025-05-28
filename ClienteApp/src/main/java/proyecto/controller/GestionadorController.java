@@ -5,8 +5,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -92,7 +94,18 @@ public class GestionadorController implements Initializable {
     }
     @FXML
     void agregarCliente(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/proyecto/view/ClienteView.fxml"));
+            Parent root = loader.load();
 
+            Stage stage = new Stage();
+            stage.setTitle("Gestión de Clientes");
+            stage.setScene(new Scene(root));
+            //stage.initModality(Modality.APPLICATION_MODAL); // Opcional: bloquea la ventana principal
+            stage.showAndWait();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     @FXML
     private ResourceBundle resources;
@@ -470,7 +483,7 @@ public class GestionadorController implements Initializable {
         tableProveedor.setItems(listaProveedoresData);
         /*tableElementos.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
-                txtIdProducto.setText(String.valueOf(newSelection.getId()));
+                txtIdProducto.setText(String.valueOf(newSelection.getCedula()));
                 txtNombreProducto.setText(newSelection.getNombre());
                 txtDescripProducto.setText(newSelection.getDescripcion());
                 txtPrecioProducto.setText(String.valueOf(newSelection.getPrecio()));
@@ -834,7 +847,7 @@ public class GestionadorController implements Initializable {
             return;
         }
 
-        String id = proveedorSeleccionado.getId();  // Asumiendo que getId() retorna la cédula o identificador del proveedor
+        String id = proveedorSeleccionado.getId();  // Asumiendo que getCedula() retorna la cédula o identificador del proveedor
 
         boolean exito = ProveedorServicio.eliminarProveedor(id);
         if (exito) {

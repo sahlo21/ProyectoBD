@@ -609,6 +609,7 @@ public class AdministradorController implements Initializable {
     }
 
 
+
     //Implementacion de metodos auxiliares
     private void agregarTrabajador() {
         // Validar los datos antes de crear el trabajador

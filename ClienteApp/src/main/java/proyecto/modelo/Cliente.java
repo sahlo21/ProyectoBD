@@ -24,7 +24,7 @@ public class Cliente implements Serializable {
     }
 
     // Getters y Setters
-    public int getId() { return cedula; }
+    public int getCedula() { return cedula; }
     public void setId(int cedula) { this.cedula = cedula; }
 
     public String getNombre() { return nombre; }
