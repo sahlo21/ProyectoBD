@@ -45,6 +45,56 @@ public class GestionadorController implements Initializable {
     ObservableList<Evento> listaEventosData = FXCollections.observableArrayList();
     ObservableList<Trabajador> listaTrabajadorData = FXCollections.observableArrayList();
     @FXML
+    private TableColumn<?, ?> columnCedulaCliente;
+
+    @FXML
+    private TableColumn<?, ?> columnNombreCliente;
+
+    @FXML
+    private ComboBox<?> comboBoxGenero;
+
+    @FXML
+    private DatePicker dateCliente;
+
+    @FXML
+    private TableView<?> tableCliente;
+
+    @FXML
+    private TextField txtCedulaCLiente;
+
+    @FXML
+    private TextField txtDireccionCliente;
+
+    @FXML
+    private TextField txtNombreCliente;
+
+    @FXML
+    private TextField txtTelefonoCLiente;
+
+    @FXML
+    void actualizarCliente(ActionEvent event) {
+
+    }
+
+    @FXML
+    void crearCliente(ActionEvent event) {
+
+    }
+
+    @FXML
+    void eliminarCliente(ActionEvent event) {
+
+    }
+
+    @FXML
+    void nuevoCliente(ActionEvent event) {
+
+    }
+    @FXML
+    void agregarCliente(ActionEvent event) {
+
+    }
+    @FXML
     private ResourceBundle resources;
 
     @FXML

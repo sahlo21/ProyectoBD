@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="565.0" prefWidth="865.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="proyecto.controller.AdministradorController">
+   <center>
+      <AnchorPane prefHeight="508.0" prefWidth="557.0" BorderPane.alignment="CENTER">
+         <children>
+            <Separator layoutX="92.0" layoutY="55.0" prefHeight="14.0" prefWidth="570.0" />
+            <Label layoutX="331.0" layoutY="28.0" text="Gestion de clientes" textFill="#0080ff">
+               <font>
+                  <Font name="Tahoma Bold" size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="txtNombreCliente" alignment="CENTER" layoutX="170.0" layoutY="102.0" prefHeight="29.0" prefWidth="194.0" promptText="Ingrese el nombre del cliente" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
+            <Label layoutX="44.0" layoutY="107.0" text="Nombre" textFill="#0080ff">
+               <font>
+                  <Font name="Tahoma Bold" size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="txtCedulaCLiente" alignment="CENTER" layoutX="169.0" layoutY="149.0" prefHeight="29.0" prefWidth="195.0" promptText="Ingrese la cedula del cliente" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
+            <Label layoutX="44.0" layoutY="154.0" text="Cedula" textFill="#0080ff">
+               <font>
+                  <Font name="Tahoma Bold" size="14.0" />
+               </font>
+            </Label>
+            <Button layoutX="219.0" layoutY="292.0" mnemonicParsing="false" onAction="#nuevoCliente" prefHeight="34.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Nuevo" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Button layoutX="479.0" layoutY="291.0" mnemonicParsing="false" onAction="#actualizarCliente" prefHeight="35.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Actualizar" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Button layoutX="354.0" layoutY="291.0" mnemonicParsing="false" onAction="#crearCliente" prefHeight="35.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Crear" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <TableView fx:id="tableCliente" layoutX="108.0" layoutY="349.0" prefHeight="135.0" prefWidth="596.0">
+              <columns>
+                <TableColumn fx:id="columnNombreCliente" prefWidth="297.0" text="Nombre" />
+                <TableColumn fx:id="columnCedulaCliente" prefWidth="297.0" text="Cedula" />
+              </columns>
+            </TableView>
+            <Button layoutX="355.0" layoutY="504.0" mnemonicParsing="false" onAction="#eliminarCliente" prefHeight="35.0" prefWidth="116.0" style="-fx-background-color: #0080ff;" text="Eliminar" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <TextField fx:id="txtDireccionCliente" alignment="CENTER" layoutX="529.0" layoutY="103.0" prefHeight="29.0" prefWidth="194.0" promptText="Ingrese la direccion del cliente" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
+            <Label layoutX="403.0" layoutY="108.0" text="Direccion" textFill="#0080ff">
+               <font>
+                  <Font name="Tahoma Bold" size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="txtTelefonoCLiente" alignment="CENTER" layoutX="528.0" layoutY="150.0" prefHeight="29.0" prefWidth="195.0" promptText="Ingrese el telefono del cliente" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
+            <Label layoutX="403.0" layoutY="155.0" text="Telefono" textFill="#0080ff">
+               <font>
+                  <Font name="Tahoma Bold" size="14.0" />
+               </font>
+            </Label>
+            <ComboBox fx:id="comboBoxGenero" layoutX="485.0" layoutY="205.0" prefHeight="25.0" prefWidth="150.0" promptText="Genero" style="-fx-background-color: #0080ff;" />
+            <DatePicker fx:id="dateCliente" layoutX="132.0" layoutY="205.0" promptText="Fecha de naciemiento" />
+         </children>
+      </AnchorPane>
+   </center>
+   <left>
+      <AnchorPane prefHeight="387.0" prefWidth="30.0" style="-fx-background-color: #0080ff;" BorderPane.alignment="CENTER" />
+   </left>
+   <right>
+      <AnchorPane prefHeight="387.0" prefWidth="30.0" style="-fx-background-color: #0080ff;" BorderPane.alignment="CENTER" />
+   </right>
+</BorderPane>

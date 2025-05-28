@@ -128,6 +128,18 @@
                                                                            </font>
                                                                         </Label>
                                                                         <TextField fx:id="txtLugarEvento" alignment="CENTER" layoutX="458.0" layoutY="62.0" prefHeight="29.0" prefWidth="240.0" promptText="Ingrese nombre del evento" style="-fx-border-color: #0080ff; -fx-border-width: 2px 2px; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" />
+                                                                        <Button layoutX="367.0" layoutY="160.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#agregarCliente" prefHeight="25.0" prefWidth="25.0" style="-fx-background-color: #0080ff;" textFill="WHITE">
+                                                                           <font>
+                                                                              <Font name="System Bold" size="14.0" />
+                                                                           </font>
+                                                                           <graphic>
+                                                                              <ImageView fitHeight="30.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                                                                 <image>
+                                                                                    <Image url="@../../img/agregar.png" />
+                                                                                 </image>
+                                                                              </ImageView>
+                                                                           </graphic>
+                                                                        </Button>
                                                                      </children>
                                                                   </AnchorPane>
                                                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="391.0" prefWidth="963.0">
